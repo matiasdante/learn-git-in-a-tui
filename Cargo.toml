@@ -1,0 +1,11 @@
+[package]
+name = "learn-git-tui"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.104"
+dirs = "7.0.0"
+ratatui = "0.29"
+shell-words = "1.1.1"
+tui-textarea = "0.7.0"
