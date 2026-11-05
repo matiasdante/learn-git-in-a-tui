@@ -29,10 +29,7 @@
 Each exercise gives you a small situation ("a commit broke production", "a teammate pushed first") and a console. You solve it however you like; pressing `F5` inspects the **state of the repository**, not the commands you typed, so every correct path counts. If a check fails, the app explains what is missing and puts the sandbox back at the start of the exercise.
 
 ## Showcase
-
-<!-- DEMO GIF: record the mini course and save it as docs/media/demo.gif, then replace this comment with:
 <p align="center"><img src="docs/media/demo.gif" alt="learn-git-tui demo" width="800"></p>
--->
 
 ## Quick start
 
