@@ -14,6 +14,13 @@ use ratatui::DefaultTerminal;
 use ratatui::crossterm::event::{self, Event, KeyEventKind};
 
 fn main() -> ExitCode {
+    if env::args_os()
+        .nth(1)
+        .is_some_and(|a| a == "--version" || a == "-V")
+    {
+        println!("learn-git-tui {}", env!("CARGO_PKG_VERSION"));
+        return ExitCode::SUCCESS;
+    }
     let mut args = env::args_os().skip(1);
     // Subcomando oculto: git lo invoca como GIT_EDITOR / GIT_SEQUENCE_EDITOR.
     if args.next().is_some_and(|a| a == "__editor") {
