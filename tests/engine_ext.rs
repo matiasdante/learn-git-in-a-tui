@@ -31,7 +31,11 @@ fn chmod_makes_a_hook_runnable() {
     h.run("echo #!/bin/sh > .git/hooks/pre-commit");
     h.run("echo echo hook-ran >> .git/hooks/pre-commit");
     h.run("chmod +x .git/hooks/pre-commit");
-    assert!(h.run("git hook run pre-commit").contains("hook-ran"));
+    // Los hooks que dispara git (acá, commit) corren con sh también en Windows.
+    assert!(
+        h.run("git commit --allow-empty -m first")
+            .contains("hook-ran")
+    );
     assert!(h.try_run("chmod 755 f", None, None).is_err());
 }
 
