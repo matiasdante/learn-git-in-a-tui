@@ -2,26 +2,9 @@ id = "describe"
 level = 2
 order = 9
 
-[title]
-en = "Naming a commit: describe"
-es = "Ponerle nombre a un commit: describe"
-
-[theory]
-en = """
-A build needs a version string, but commits only have hashes. `git describe` finds the closest tag behind the current commit and builds a readable name:
-
-  v1.0-2-g3f9a1c2
-
-That reads: 2 commits after v1.0, at commit 3f9a1c2 (the g stands for git). If you are exactly on the tag, you just get v1.0. Handy for build numbers and "About" screens. By default only annotated tags are considered (add --tags to use lightweight ones too)."""
-es = """
-Un build necesita un número de versión, pero los commits solo tienen hashes. `git describe` busca el tag más cercano hacia atrás desde el commit actual y arma un nombre legible:
-
-  v1.0-2-g3f9a1c2
-
-Se lee: 2 commits después de v1.0, en el commit 3f9a1c2 (la g es de git). Si estás justo en el tag, obtenés solo v1.0. Útil para números de build y pantallas "Acerca de". Por defecto solo cuentan los tags anotados (agregá --tags para incluir los livianos)."""
-
 [[exercise]]
 id = "describe-1"
+hints = 2
 solution = ["git describe > version.txt"]
 setup = [
   { do = "git", args = "init" },
@@ -34,11 +17,6 @@ setup = [
   { do = "write", path = "a.txt", content = "3\n" },
   { do = "git", args = "commit -am \"Third\"" },
 ]
-prompt = { en = "Save the git describe name of the current commit into a file called version.txt.", es = "Guardá el nombre que da git describe para el commit actual en un archivo llamado version.txt." }
-hints = [
-  { en = "You can send the output of a git command to a file with > .", es = "Podés mandar la salida de un comando git a un archivo con > ." },
-  { en = "Type: git describe > version.txt", es = "Escribí: git describe > version.txt" },
-]
 checks = [
-  { type = "file_equals_git", path = "version.txt", args = "describe", fail = { en = "version.txt must contain exactly the output of git describe.", es = "version.txt tiene que contener exactamente la salida de git describe." } },
+  { type = "file_equals_git", path = "version.txt", args = "describe" },
 ]

@@ -1,0 +1,197 @@
+"config-advanced.title" = "Configuration in depth: config"
+"config-advanced.theory" = """
+Git reads configuration from three levels, each one overriding the previous:
+
+  --system   the whole machine        (not used in this sandbox)
+  --global   your user                (~/.gitconfig)
+  --local    this repository only     (.git/config)
+
+  git config --local pull.rebase true    only this repository
+  git config --get user.name             the effective value
+  git config --list --show-origin        every value and the file it comes from
+  git config --unset user.signingkey     remove a value
+  git config --global alias.st status    now "git st" works"""
+"config-adv-1.prompt" = "Create a shortcut: make git st do the same as git status."
+"config-adv-1.hint1" = "Shortcuts are aliases: the key is alias.<name>."
+"config-adv-1.hint2" = "Type: git config --global alias.st status"
+"config-adv-1.check1.fail" = "The alias st is not defined as status yet."
+"config-adv-2.prompt" = "Make git pull rebase by default, but only in THIS repository."
+"config-adv-2.hint1" = "--local writes to .git/config of the current repository."
+"config-adv-2.check1.fail" = "pull.rebase is not true in the local configuration."
+"config-adv-3.prompt" = "A wrong signing key was configured for your user. Remove user.signingkey completely."
+"config-adv-3.hint1" = "config has an --unset option."
+"config-adv-3.check1.fail" = "user.signingkey still has a value."
+"check-attr.title" = "File attributes: check-attr"
+"check-attr.theory" = """
+A `.gitattributes` file tells git how to treat files by pattern: line endings, whether a file is binary, how to diff or merge it.
+
+  *.sh   text eol=lf        always use LF line endings
+  *.png  binary             never try to diff or merge it as text
+
+`git check-attr` answers "which attributes apply to this path?":
+
+  git check-attr eol notes.txt        notes.txt: eol: lf
+  git check-attr -a image.png         every attribute that applies"""
+"check-attr-1.prompt" = "Which end-of-line setting does .gitattributes give to notes.txt? Save the output of git check-attr for the eol attribute into answer.txt."
+"check-attr-1.hint1" = "Pass the attribute name and then the file."
+"check-attr-1.check1.fail" = "answer.txt must contain exactly the output of git check-attr eol notes.txt."
+"check-attr-2.prompt" = "Create a .gitattributes so that every .png file is treated as binary."
+"check-attr-2.hint1" = "One line is enough: the pattern, a space and the word binary."
+"check-attr-2.hint2" = "Check it with git check-attr -a logo.png"
+"check-attr-2.check1.fail" = "logo.png is not treated as binary yet."
+"check-mailmap.title" = "One person, many identities: mailmap"
+"check-mailmap.theory" = """
+People change e-mail addresses and spell their names differently. A `.mailmap` file maps the old identities to the canonical one, so shortlog and blame group them together.
+
+  Robert Smith <robert@example.com> <bob@old.example>
+  #  canonical name and e-mail          old e-mail
+
+`git check-mailmap` shows how git resolves an identity:
+
+  git check-mailmap "Bob <bob@old.example>"    ->   Robert Smith <robert@example.com>"""
+"check-mailmap-1.prompt" = "Bob <bob@old.example> is now Robert Smith <robert@example.com>. Create the .mailmap that maps the old address to the new identity."
+"check-mailmap-1.hint1" = "Format: Canonical Name <canonical@email> <old@email>"
+"check-mailmap-1.hint2" = "Quote the whole line when you echo it."
+"check-mailmap-1.check1.fail" = "git does not resolve Bob <bob@old.example> to Robert Smith <robert@example.com> yet."
+"hook.title" = "Automating with hooks: hook"
+"hook.theory" = """
+A hook is a script that git runs at a certain moment: before a commit, after a merge, before a push. They live in `.git/hooks/` and are plain scripts with the name of the event, with no extension and executable.
+
+  .git/hooks/pre-commit      runs before each commit; if it exits non-zero, the commit is cancelled
+  .git/hooks/commit-msg      checks the message
+  .git/hooks/pre-push        last chance before sending
+
+Typical use: run the linter or the tests so a broken commit never happens. `git hook run pre-commit` runs a hook by hand, and `git hook list` (newer git) shows the configured ones. Hooks are not copied by clone: share them through a tracked folder and core.hooksPath."""
+"hook-1.prompt" = "Create a pre-commit hook that prints \"No commits today\" and exits with code 1, make it executable, and try to commit to see it block you."
+"hook-1.hint1" = "The file is .git/hooks/pre-commit and its first line is #!/bin/sh (quote it, since # starts a comment)."
+"hook-1.hint2" = "Use echo ... > file for the first line, echo ... >> file for the rest, and chmod +x to make it executable."
+"hook-1.check1.fail" = "The hook pre-commit does not exit with code 1."
+"hook-1.check2.fail" = "The hook needs #!/bin/sh as its first line."
+"hook-1.check3.fail" = "Now try to commit to see the hook block you."
+"hook-1.check4.fail" = "The commit went through: the hook did not block it."
+"notes.title" = "Annotating without rewriting: notes"
+"notes.theory" = """
+A commit is immutable, but sometimes you want to add information afterwards (a review, a ticket number, a test result). `git notes` attaches text to a commit WITHOUT changing its hash; the notes live in their own ref.
+
+  git notes add -m "Reviewed by Ana" HEAD     attach a note
+  git notes show HEAD                         read it
+  git log                                     shows notes under each commit
+  git notes remove HEAD                       delete it"""
+"notes-1.prompt" = "Attach the note \"Reviewed by Ana\" to the latest commit."
+"notes-1.hint1" = "notes add takes -m for the text and the commit."
+"notes-1.hint2" = "Type: git notes add -m \"Reviewed by Ana\" HEAD"
+"notes-1.check1.fail" = "The latest commit does not have the note \"Reviewed by Ana\"."
+"replace.title" = "Swapping an object: replace"
+"replace.theory" = """
+`git replace` makes git see a different object whenever it would read the original one. It is a way to fix history locally without rewriting hashes: for example, to "graft" an old history or to hide a commit.
+
+  git replace <original> <replacement>
+  git replace -l                       list replaced objects
+  git replace -d <original>            remove the replacement
+
+It is stored in refs/replace/ and is NOT shared by default: use it with caution, and mostly as a temporary tool."""
+"replace-1.prompt" = "The commit \"Oops, bad commit\" (HEAD~1) should not be seen. Make git read the commit before it (HEAD~2) in its place, without rewriting history."
+"replace-1.hint1" = "replace takes the object to replace and then its replacement."
+"replace-1.check1.fail" = "HEAD~1 is not replaced yet."
+"replace-1.check2.fail" = "git still reads the bad commit: oops.txt is visible in HEAD~1."
+"credential.title" = "Remembering passwords: credential"
+"credential.theory" = """
+When git talks to a server that needs a password, it asks a credential helper instead of prompting you every time. `git credential` is the machinery behind it, and you can use it directly:
+
+  git credential fill       ask the helper for a password (you type protocol/host, it answers)
+  git credential approve    tell the helper "these credentials worked, save them"
+  git credential reject     tell it "they failed, forget them"
+
+Input is key=value lines (protocol, host, username, password) ended with an empty line or Ctrl+D. NEVER type real passwords in this practice; use made-up ones."""
+"credential-1.prompt" = "The helper store is configured. Save the credentials ana / s3cret for https://example.com with git credential approve (type the four lines, then press Ctrl+D)."
+"credential-1.hint1" = "Lines: protocol=https, host=example.com, username=ana, password=s3cret."
+"credential-1.hint2" = "After the fourth line press Ctrl+D to close the input."
+"credential-1.check1.fail" = "The credentials were not saved. Did you press Ctrl+D after the last line?"
+"credential-store.title" = "The store helper: credential-store"
+"credential-store.theory" = """
+`credential-store` is the simplest helper: it saves passwords in clear text in a file (~/.git-credentials). Fine for a throw-away machine, dangerous elsewhere: prefer your operating system's keychain.
+
+  git config --global credential.helper store            use ~/.git-credentials
+  git config --global credential.helper "store --file=/safe/place/creds"   another file
+
+Anyone who can read that file can read your passwords."""
+"credential-store-1.prompt" = "Configure git (for your user) to remember passwords with the store helper."
+"credential-store-1.hint1" = "The key is credential.helper."
+"credential-store-1.check1.fail" = "credential.helper is not store yet."
+"verify-commit.title" = "Signed commits: verify-commit"
+"verify-commit.theory" = """
+Anyone can type any name in a commit. A SIGNATURE proves who really made it. Git signs with GPG or, since 2.34, with an SSH key you already have.
+
+  git config gpg.format ssh
+  git config user.signingkey ~/.ssh/id_ed25519
+  git config gpg.ssh.allowedSignersFile allowed_signers    who is trusted
+  git commit -S -m "message"        sign the commit
+  git verify-commit HEAD            check the signature
+  git log --show-signature          see it in the log
+
+The sandbox already created a key (key / key.pub) and the allowed_signers file for you."""
+"verify-commit-1.prompt" = "a.txt is staged and git is configured to sign with SSH. Make a signed commit and verify its signature."
+"verify-commit-1.hint1" = "Add -S to git commit."
+"verify-commit-1.hint2" = "Then run git verify-commit HEAD."
+"verify-commit-1.check1.fail" = "The latest commit does not have a good signature (%G? is not G)."
+"verify-commit-1.check2.fail" = "Verify the signature with git verify-commit HEAD."
+"verify-tag.title" = "Signed tags: verify-tag"
+"verify-tag.theory" = """
+Releases are the most important thing to sign: users want to know that v1.0 really comes from you. A signed tag is an annotated tag with a signature.
+
+  git tag -s v1.0 -m "Release 1.0"    create it signed
+  git verify-tag v1.0                 check it (exit code 0 = valid)"""
+"verify-tag-1.prompt" = "Mark the current commit with a signed tag v1.0 (message \"Release 1.0\") and verify it."
+"verify-tag-1.hint1" = "-s makes the tag signed."
+"verify-tag-1.check1.fail" = "There is no annotated tag v1.0."
+"verify-tag-1.check2.fail" = "The tag v1.0 has no valid signature."
+"verify-tag-1.check3.fail" = "Verify the tag with git verify-tag v1.0."
+"bugreport.title" = "Reporting a bug: bugreport"
+"bugreport.theory" = """
+When you report a problem to the git project, they need to know your version, platform and settings. `git bugreport` collects that into a text file you can edit and attach.
+
+  git bugreport                     creates git-bugreport-<date>.txt
+  git bugreport -s mybug            creates git-bugreport-mybug.txt
+  git bugreport -o folder           write it somewhere else"""
+"bugreport-1.prompt" = "Create a bug report file with the suffix mybug (git opens it in the editor: save with Ctrl+S)."
+"bugreport-1.hint1" = "The -s option sets the suffix of the file name."
+"bugreport-1.check1.fail" = "git-bugreport-mybug.txt does not exist yet."
+"bugreport-1.check2.fail" = "The report should include the git version."
+"diagnose.title" = "Collecting diagnostics: diagnose"
+"diagnose.theory" = """
+For performance or corruption problems, the git maintainers ask for more than a bug report. `git diagnose` (git 2.38+) packs useful information about the repository (sizes, packfiles, configuration, refs) into a zip, WITHOUT including your files' contents.
+
+  git diagnose -s mycase       creates git-diagnostics-mycase.zip
+  git diagnose --mode=all      also include more data (careful: may contain sensitive paths)"""
+"diagnose-1.prompt" = "Collect diagnostics of this repository in a zip with the suffix mycase."
+"diagnose-1.hint1" = "The -s option sets the suffix of the zip."
+"diagnose-1.check1.fail" = "git-diagnostics-mycase.zip does not exist yet."
+"credential-cache.title" = "credential-cache (Linux and macOS)"
+"credential-cache.theory" = """
+`credential-cache` keeps your password in memory for a while (15 minutes by default) and then forgets it: safer than writing it to disk.
+
+  git config --global credential.helper 'cache --timeout=3600'
+
+It talks to a small background program through a Unix socket, so it does NOT exist on Windows (use the Git Credential Manager there). That is why it is explained and not practiced."""
+"credential-cache-daemon.title" = "credential-cache--daemon (internal)"
+"credential-cache-daemon.theory" = """
+`git credential-cache--daemon` is the background process behind `credential-cache`. The first time the helper needs it, git starts it automatically; it holds the passwords in memory, listens on a socket in ~/.cache/git/credential/ and exits by itself when the timeout expires.
+
+You never start it by hand. To make it forget everything now: git credential-cache exit."""
+"fsmonitor-daemon.title" = "fsmonitor--daemon"
+"fsmonitor-daemon.theory" = """
+In a huge repository `git status` is slow because git must check every file. `git fsmonitor--daemon` is a background process that watches the file system and tells git which files changed, so status only looks at those.
+
+  git config core.fsmonitor true     turn it on (git starts the daemon)
+  git fsmonitor--daemon status       is it running?
+  git fsmonitor--daemon stop
+
+It leaves a process running and depends on operating system services, so this practice only explains it."""
+"column.title" = "column (output layout)"
+"column.theory" = """
+`git column` arranges lines of text into columns that fit your terminal. Git uses the same engine for several commands, which you can control with the column.* settings:
+
+  git config column.ui auto     branch and tag lists in columns when the output is a terminal
+  git branch --column
+
+As a standalone filter it reads standard input: some-command | git column --mode=column. Since this practice has no pipes, it is only explained."""

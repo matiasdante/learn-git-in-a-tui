@@ -2,22 +2,9 @@ id = "show-index"
 level = 10
 order = 9
 
-[title]
-en = "Reading an index: show-index"
-es = "Leer un índice: show-index"
-
-[theory]
-en = """
-`git show-index` reads a pack index (.idx) from the standard input and prints one line per object: its offset in the pack, its hash and a checksum.
-
-  git show-index < .git/objects/pack/pack-<hash>.idx"""
-es = """
-`git show-index` lee un índice de pack (.idx) de la entrada estándar e imprime una línea por objeto: su posición en el pack, su hash y una suma de verificación.
-
-  git show-index < .git/objects/pack/pack-<hash>.idx"""
-
 [[exercise]]
 id = "show-index-1"
+hints = 1
 solution = ["git show-index < {{first:.git/objects/pack:.idx}} > objects.txt"]
 setup = [
   { do = "git", args = "init" },
@@ -32,10 +19,6 @@ setup = [
   { do = "git", args = "commit -m \"Add c\"" },
   { do = "git", args = "repack -a -d -q" },
 ]
-prompt = { en = "Save the content of the pack index into objects.txt (one line per object).", es = "Guardá el contenido del índice del pack en objects.txt (una línea por objeto)." }
-hints = [
-  { en = "show-index reads the .idx from the standard input: use < path.", es = "show-index lee el .idx de la entrada estándar: usá < ruta." },
-]
 checks = [
-  { type = "file_lines", path = "objects.txt", count = 9, fail = { en = "objects.txt should have 9 lines, one per object.", es = "objects.txt debería tener 9 líneas, una por objeto." } },
+  { type = "file_lines", path = "objects.txt", count = 9 },
 ]

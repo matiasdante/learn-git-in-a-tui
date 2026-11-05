@@ -1,0 +1,125 @@
+"format-patch.title" = "把提交变成文件：format-patch"
+"format-patch.theory" = """
+有些项目（Linux 内核、git 本身）通过邮件接收改动，而不是通过 pull request。`git format-patch` 会把每个提交变成一个自包含的文本文件，里面有作者、信息和差异，可以直接作为附件或发送。
+
+  git format-patch -2                 最近 2 个提交 -> 0001-....patch、0002-....patch
+  git format-patch main..feature      feature 上 main 没有的每个提交
+  git format-patch -o outgoing -2     把文件写入 outgoing 文件夹
+  git format-patch --stdout -1        直接打印，不写文件"""
+"format-patch-1.prompt" = "为最近两个提交（\"Add b\" 和 \"Add c\"）生成补丁文件。"
+"format-patch-1.hint1" = "-2 表示最近两个提交。"
+"format-patch-1.hint2" = "输入：git format-patch -2"
+"format-patch-1.check1.fail" = "缺少 0001-Add-b.patch。"
+"format-patch-1.check2.fail" = "缺少 0002-Add-c.patch。"
+"format-patch-1.check3.fail" = "只有最近两个提交才应该变成补丁。"
+"format-patch-2.prompt" = "为 feature 的每个提交（main 没有的那些）生成一个补丁，写入名为 outgoing 的文件夹。"
+"format-patch-2.hint1" = "main..feature 会选出 feature 中不在 main 里的提交。"
+"format-patch-2.hint2" = "加上 -o outgoing 来指定文件夹。"
+"format-patch-2.check1.fail" = "缺少 outgoing/0001-Add-f1.patch。"
+"format-patch-2.check2.fail" = "缺少 outgoing/0002-Add-f2.patch。"
+"am.title" = "应用收到的补丁：am"
+"am.theory" = """
+`git am` 是 format-patch 的另一半：它把补丁文件应用成真正的提交，并保留原来的作者、日期和信息。
+
+  git am 0001-fix.patch 0002-more.patch
+  git am --abort             放弃并回到之前
+  git am --continue          手动修好失败的补丁之后继续
+
+如果只想要改动、不想创建提交，请改用 `git apply`。"""
+"am-1.prompt" = "Alice 发来了两个补丁，保存在 patches 文件夹里。把它们都作为提交应用到 main 上。"
+"am-1.hint1" = "git am 可以按顺序接收多个补丁文件。"
+"am-1.hint2" = "输入：git am patches/0001-Add-f1.patch patches/0002-Add-f2.patch"
+"am-1.check1.fail" = "main 应该有 3 个提交：基础提交和那两个补丁。"
+"am-1.check2.fail" = "这些提交应该保留 Alice 为作者。"
+"am-1.check3.fail" = "am 会话仍在进行中。"
+"apply.title" = "应用一份差异：apply"
+"apply.theory" = """
+`git apply` 接收一份普通的差异并把它应用到你的文件上。它不会创建提交：改动只是出现在工作区里，就像你亲手敲进去的一样。
+
+  git apply fix.patch            应用
+  git apply --check fix.patch    只测试能否应用
+  git apply --stat fix.patch     显示它会改动哪些内容的摘要"""
+"apply-1.prompt" = "把 fix.patch 应用到工作区，不要创建提交。"
+"apply-1.hint1" = "输入：git apply fix.patch"
+"apply-1.check1.fail" = "a.txt 没有应用补丁后的内容。"
+"apply-1.check2.fail" = "apply 不应该创建提交。"
+"apply-1.check3.fail" = "a.txt 应该是已修改但未暂存的状态。"
+"patch-id.title" = "同一个改动，不同的提交：patch-id"
+"patch-id.theory" = """
+经过 cherry-pick 或变基之后，同一个改动会存在于哈希不同的提交里。`git patch-id` 会为“改动本身”计算一个指纹（忽略行号和空白），所以相同的补丁会得到相同的 id。
+
+  git show <commit> | git patch-id      （这里用：git show X > p.txt；git patch-id < p.txt）
+
+git cherry 和 git rebase 就是用这个思路来跳过已经应用过的提交。"""
+"patch-id-1.prompt" = "提交 \"Add f\" 在 main 和 feature 上都存在，但哈希不同。把两者的 git show 各保存成一个文件，计算它们的 patch id，然后把 same 或 different 写进 answer.txt。"
+"patch-id-1.hint1" = "git patch-id 从标准输入读取补丁：使用 < 文件。"
+"patch-id-1.hint2" = "比较两个输出的第一列。"
+"patch-id-1.check1.fail" = "请用 git patch-id 来比较这两处改动。"
+"patch-id-1.check2.fail" = "answer.txt 应该写 same：两个提交带的是同一个补丁。"
+"request-pull.title" = "请求评审：request-pull"
+"request-pull.theory" = """
+`git request-pull` 会为项目维护者写出拉取请求的文字：从某个起点以来改了什么、去哪里获取，以及提交的摘要。
+
+  git request-pull <起点> <url> [<终点>]
+
+它会检查你的工作是否真的已经发布在 <url>，所以请先推送。"""
+"request-pull-1.prompt" = "你在标签 v1.0 之后推送了 \"New feature\"。把针对 ../server.git（main 分支）、从 v1.0 开始的拉取请求文字写入 pr.txt。"
+"request-pull-1.hint1" = "参数依次是：起点、URL 和分支。"
+"request-pull-1.hint2" = "输入：git request-pull v1.0 ../server.git main > pr.txt"
+"request-pull-1.check1.fail" = "pr.txt 没有提到仓库的 URL。"
+"request-pull-1.check2.fail" = "pr.txt 没有列出提交 \"New feature\"。"
+"interpret-trailers.title" = "提交的尾注：interpret-trailers"
+"interpret-trailers.theory" = """
+尾注（trailer）是提交信息末尾形如 `键: 值` 的行：Signed-off-by、Reviewed-by、Co-authored-by……有些工具会读取它们，所以格式很重要。`git interpret-trailers` 用来添加和解析它们。
+
+  git interpret-trailers --trailer "Reviewed-by: Ana <ana@example.com>" msg.txt
+  git interpret-trailers --in-place --trailer "..." msg.txt     直接修改文件本身"""
+"trailers-1.prompt" = "给 msg.txt 里的信息添加尾注 Reviewed-by: Ana <ana@example.com>，直接修改该文件。"
+"trailers-1.hint1" = "--in-place 会把结果写回文件。"
+"trailers-1.hint2" = "把尾注放在引号里：它含有空格。"
+"trailers-1.check1.fail" = "msg.txt 还没有这个尾注。"
+"trailers-1.check2.fail" = "必须保留原来的信息。"
+"stripspace.title" = "整理文本：stripspace"
+"stripspace.theory" = """
+git 用 `git stripspace` 的规则来整理提交信息：去掉行尾空格，把连续的空行合并成一行，并删除开头和结尾的空行。你可以把它用在任何文本上：
+
+  git stripspace < messy.txt > clean.txt
+  git stripspace -s < msg.txt        同时删除注释行（以 # 开头）"""
+"stripspace-1.prompt" = "用 git stripspace 整理 messy.txt，并把结果保存到 clean.txt。"
+"stripspace-1.hint1" = "stripspace 从标准输入读取：使用 < messy.txt 和 > clean.txt。"
+"stripspace-1.check1.fail" = "clean.txt 应该是 \"Line one\"、一个空行、\"Line two\"，并且行尾没有空格。"
+"mailinfo.title" = "mailinfo（内部命令）"
+"mailinfo.theory" = """
+`git mailinfo` 是 `git am` 使用的底层命令。它从标准输入读取一封邮件，把提交的元数据（作者、邮箱、日期、主题）输出出来，并把正文和补丁分别写入你指定的两个文件。
+
+  git mailinfo msg.txt patch.txt < email.txt
+
+你很少会亲自运行它；但知道它的存在，在你需要自己写工具来导入邮件时会有帮助。"""
+"mailsplit.title" = "mailsplit（内部命令）"
+"mailsplit.theory" = """
+`git mailsplit` 也是 `git am` 机制的一部分。一个邮箱文件（mbox）里依次存着许多封邮件；mailsplit 会把它切成一个文件夹里每封邮件一个带编号的文件（0001、0002……）。
+
+  git mailsplit -o 文件夹 邮箱.mbox
+
+之后由 `git mailinfo` 处理每一封邮件。"""
+"imap-send.title" = "imap-send（需要邮件服务器）"
+"imap-send.theory" = """
+`git imap-send` 会把补丁（`git format-patch --stdout` 的输出）上传到 IMAP 邮箱的“草稿”文件夹，这样你可以在邮件客户端里检查之后再发送。
+
+  git format-patch --stdout -3 | git imap-send
+
+它需要你的配置里有一个 [imap] 段，写明服务器、用户和文件夹。真实的邮件服务器不在本练习的范围内，所以没有练习题。"""
+"quiltimport.title" = "quiltimport"
+"quiltimport.theory" = """
+Quilt 是一个较老的、用来管理补丁堆栈的工具。如果一个项目把改动存放在 `patches/` 文件夹里，并用一个 `series` 文件列出顺序，`git quiltimport` 就会把它们全部作为提交应用，作者取自每个补丁里的信息。
+
+  git quiltimport --patches patches
+
+这是一个迁移工具：把项目迁移到 git 时用一次就够了。"""
+"fmt-merge-msg.title" = "fmt-merge-msg"
+"fmt-merge-msg.theory" = """
+`git fmt-merge-msg` 根据 FETCH_HEAD 的信息生成合并提交的默认信息（"Merge branch 'feature' into main"）。`git merge` 和 `git pull` 会替你调用它；只有写脚本时才会碰到它。
+
+  git fmt-merge-msg < .git/FETCH_HEAD
+
+想自定义文字，可以设置 merge.log（包含被合并提交的标题）或 merge.branchdesc。"""

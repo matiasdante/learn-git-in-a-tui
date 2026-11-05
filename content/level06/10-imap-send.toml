@@ -1,21 +1,3 @@
 id = "imap-send"
 level = 6
 order = 10
-
-[title]
-en = "imap-send (needs a mail server)"
-es = "imap-send (necesita un servidor de correo)"
-
-[theory]
-en = """
-`git imap-send` uploads patches (the output of `git format-patch --stdout`) into a Drafts folder of an IMAP mailbox, so you can review them in your mail client before sending.
-
-  git format-patch --stdout -3 | git imap-send
-
-It needs an [imap] section in your config with host, user and folder. Real mail servers are out of the scope of this practice, so there is no exercise."""
-es = """
-`git imap-send` sube parches (la salida de `git format-patch --stdout`) a la carpeta de Borradores de un buzón IMAP, así los revisás en tu cliente de correo antes de enviarlos.
-
-  git format-patch --stdout -3 | git imap-send
-
-Necesita una sección [imap] en tu configuración con servidor, usuario y carpeta. Los servidores de correo reales quedan fuera de esta práctica, por eso no hay ejercicio."""

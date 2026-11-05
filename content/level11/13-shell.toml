@@ -1,21 +1,3 @@
 id = "shell"
 level = 11
 order = 13
-
-[title]
-en = "git shell"
-es = "git shell"
-
-[theory]
-en = """
-`git shell` is a restricted login shell for a server account used only for git over SSH. If the `git` user has it as shell, an SSH connection can run git-receive-pack, git-upload-pack and git-upload-archive, and nothing else: no interactive session, no arbitrary commands.
-
-  sudo usermod -s $(which git-shell) git
-
-This is the simplest safe way to host private repositories on your own machine."""
-es = """
-`git shell` es una shell de login restringida para una cuenta de servidor usada solo para git por SSH. Si el usuario `git` la tiene como shell, una conexión SSH puede ejecutar git-receive-pack, git-upload-pack y git-upload-archive, y nada más: ni sesión interactiva ni comandos arbitrarios.
-
-  sudo usermod -s $(which git-shell) git
-
-Es la forma segura más simple de alojar repositorios privados en tu propia máquina."""

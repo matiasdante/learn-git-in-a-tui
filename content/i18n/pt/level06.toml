@@ -1,0 +1,125 @@
+"format-patch.title" = "Commits como arquivos: format-patch"
+"format-patch.theory" = """
+Alguns projetos (o kernel do Linux, o próprio git) aceitam mudanças por e-mail, não por pull requests. O `git format-patch` transforma cada commit em um arquivo de texto autocontido, com autor, mensagem e diff, pronto para anexar ou enviar.
+
+  git format-patch -2                 os últimos 2 commits -> 0001-....patch, 0002-....patch
+  git format-patch main..feature      cada commit do feature que o main não tem
+  git format-patch -o outgoing -2     grava os arquivos na pasta outgoing
+  git format-patch --stdout -1        imprime em vez de gravar arquivos"""
+"format-patch-1.prompt" = "Crie arquivos de patch para os dois últimos commits (\"Add b\" e \"Add c\")."
+"format-patch-1.hint1" = "-2 significa os dois últimos commits."
+"format-patch-1.hint2" = "Digite: git format-patch -2"
+"format-patch-1.check1.fail" = "Falta o 0001-Add-b.patch."
+"format-patch-1.check2.fail" = "Falta o 0002-Add-c.patch."
+"format-patch-1.check3.fail" = "Só os dois últimos commits devem virar patches."
+"format-patch-2.prompt" = "Grave um patch por commit do feature (os que o main não tem) em uma pasta chamada outgoing."
+"format-patch-2.hint1" = "main..feature seleciona os commits do feature que não estão no main."
+"format-patch-2.hint2" = "Acrescente -o outgoing para escolher a pasta."
+"format-patch-2.check1.fail" = "Falta o outgoing/0001-Add-f1.patch."
+"format-patch-2.check2.fail" = "Falta o outgoing/0002-Add-f2.patch."
+"am.title" = "Aplicando patches recebidos: am"
+"am.theory" = """
+O `git am` é a outra metade do format-patch: aplica arquivos de patch como commits de verdade, mantendo o autor, a data e a mensagem originais.
+
+  git am 0001-fix.patch 0002-more.patch
+  git am --abort             desiste e volta atrás
+  git am --continue          depois de corrigir à mão um patch que falhou
+
+Use o `git apply` se você só quer as mudanças, sem criar commits."""
+"am-1.prompt" = "A Alice mandou dois patches, salvos na pasta patches. Aplique os dois como commits no main."
+"am-1.hint1" = "O git am aceita vários arquivos de patch, em ordem."
+"am-1.hint2" = "Digite: git am patches/0001-Add-f1.patch patches/0002-Add-f2.patch"
+"am-1.check1.fail" = "O main deveria ter 3 commits: a base e os dois patches."
+"am-1.check2.fail" = "Os commits deveriam manter a Alice como autora."
+"am-1.check3.fail" = "A sessão do am ainda está em andamento."
+"apply.title" = "Aplicando um diff: apply"
+"apply.theory" = """
+O `git apply` pega um diff comum e o aplica aos seus arquivos. Não cria commit: a mudança simplesmente aparece na árvore de trabalho, como se você a tivesse digitado.
+
+  git apply fix.patch            aplica
+  git apply --check fix.patch    só testa se seria possível aplicar
+  git apply --stat fix.patch     resumo do que ele altera"""
+"apply-1.prompt" = "Aplique o fix.patch na árvore de trabalho sem criar um commit."
+"apply-1.hint1" = "Digite: git apply fix.patch"
+"apply-1.check1.fail" = "O a.txt não tem o conteúdo com o patch aplicado."
+"apply-1.check2.fail" = "O apply não deveria criar commits."
+"apply-1.check3.fail" = "O a.txt deve estar modificado, mas não preparado."
+"patch-id.title" = "A mesma mudança, outro commit: patch-id"
+"patch-id.theory" = """
+Depois de um cherry-pick ou de um rebase, a mesma mudança vive em commits com hashes diferentes. O `git patch-id` calcula uma impressão digital da MUDANÇA em si (ignorando números de linha e espaços), então patches iguais geram ids iguais.
+
+  git show <commit> | git patch-id      (aqui: git show X > p.txt; git patch-id < p.txt)
+
+O git cherry e o git rebase usam essa ideia para pular commits que já foram aplicados."""
+"patch-id-1.prompt" = "O commit \"Add f\" existe no main e no feature com hashes diferentes. Salve o git show de cada um em um arquivo, calcule os patch ids e escreva same ou different em answer.txt."
+"patch-id-1.hint1" = "O git patch-id lê um patch da entrada padrão: use < arquivo."
+"patch-id-1.hint2" = "Compare a primeira coluna das duas saídas."
+"patch-id-1.check1.fail" = "Use o git patch-id para comparar as duas mudanças."
+"patch-id-1.check2.fail" = "O answer.txt deve dizer same: os dois commits carregam o mesmo patch."
+"request-pull.title" = "Pedindo uma revisão: request-pull"
+"request-pull.theory" = """
+O `git request-pull` escreve o texto de um pedido de integração para quem mantém o projeto: o que mudou desde um ponto de partida, de onde buscar e um resumo dos commits.
+
+  git request-pull <início> <url> [<fim>]
+
+Ele verifica se o trabalho está mesmo publicado em <url>, então faça o push primeiro."""
+"request-pull-1.prompt" = "Você enviou \"New feature\" depois da tag v1.0. Escreva em pr.txt o texto do pedido de integração para ../server.git (branch main), a partir da v1.0."
+"request-pull-1.hint1" = "Argumentos: ponto de partida, URL e o branch."
+"request-pull-1.hint2" = "Digite: git request-pull v1.0 ../server.git main > pr.txt"
+"request-pull-1.check1.fail" = "O pr.txt não menciona a URL do repositório."
+"request-pull-1.check2.fail" = "O pr.txt não lista o commit \"New feature\"."
+"interpret-trailers.title" = "Trailers de commit: interpret-trailers"
+"interpret-trailers.theory" = """
+Trailers são as linhas `Chave: valor` no fim de uma mensagem de commit: Signed-off-by, Reviewed-by, Co-authored-by... Há ferramentas que as leem, então o formato importa. O `git interpret-trailers` as adiciona e as interpreta.
+
+  git interpret-trailers --trailer "Reviewed-by: Ana <ana@example.com>" msg.txt
+  git interpret-trailers --in-place --trailer "..." msg.txt     edita o próprio arquivo"""
+"trailers-1.prompt" = "Adicione o trailer Reviewed-by: Ana <ana@example.com> à mensagem do msg.txt, editando o arquivo no lugar."
+"trailers-1.hint1" = "O --in-place grava o resultado de volta no arquivo."
+"trailers-1.hint2" = "Coloque o trailer entre aspas: ele tem espaços."
+"trailers-1.check1.fail" = "O msg.txt ainda não tem o trailer."
+"trailers-1.check2.fail" = "A mensagem original deve ser mantida."
+"stripspace.title" = "Limpando texto: stripspace"
+"stripspace.theory" = """
+O git limpa as mensagens de commit com as regras do `git stripspace`: remove espaços no fim das linhas, junta sequências de linhas em branco em uma só e descarta as linhas em branco do início e do fim. Você pode usá-lo em qualquer texto:
+
+  git stripspace < sujo.txt > limpo.txt
+  git stripspace -s < msg.txt        remove também as linhas de comentário (que começam com #)"""
+"stripspace-1.prompt" = "Limpe o messy.txt com git stripspace e salve o resultado em clean.txt."
+"stripspace-1.hint1" = "O stripspace lê a entrada padrão: use < messy.txt e > clean.txt."
+"stripspace-1.check1.fail" = "O clean.txt deveria ser \"Line one\", uma linha em branco, \"Line two\", sem espaços no fim das linhas."
+"mailinfo.title" = "mailinfo (interno)"
+"mailinfo.theory" = """
+O `git mailinfo` é um comando de plumbing usado pelo `git am`. Lê um e-mail da entrada padrão e o separa nos metadados do commit (autor, e-mail, data, assunto) na saída, e a mensagem e o patch em dois arquivos que você nomeia.
+
+  git mailinfo msg.txt patch.txt < email.txt
+
+Você raramente o executa; saber que ele existe ajuda quando precisar montar sua própria ferramenta para importar e-mails."""
+"mailsplit.title" = "mailsplit (interno)"
+"mailsplit.theory" = """
+O `git mailsplit` também faz parte da maquinaria do `git am`. Um arquivo de caixa de correio (mbox) guarda muitos e-mails um depois do outro; o mailsplit o corta em um arquivo numerado por mensagem (0001, 0002...) dentro de uma pasta.
+
+  git mailsplit -o pasta caixa.mbox
+
+depois o `git mailinfo` processa cada mensagem."""
+"imap-send.title" = "imap-send (precisa de um servidor de e-mail)"
+"imap-send.theory" = """
+O `git imap-send` envia patches (a saída de `git format-patch --stdout`) para a pasta de Rascunhos de uma caixa IMAP, para você revisá-los no seu cliente de e-mail antes de enviar.
+
+  git format-patch --stdout -3 | git imap-send
+
+Ele precisa de uma seção [imap] na sua configuração, com servidor, usuário e pasta. Servidores de e-mail reais ficam fora do escopo desta prática, por isso não há exercício."""
+"quiltimport.title" = "quiltimport"
+"quiltimport.theory" = """
+O Quilt é uma ferramenta mais antiga para gerenciar uma pilha de patches. Se um projeto guarda suas mudanças em uma pasta `patches/` com um arquivo `series` que lista a ordem, o `git quiltimport` aplica todos como commits, usando o autor encontrado em cada patch.
+
+  git quiltimport --patches patches
+
+É uma ferramenta de migração: você a usa uma vez ao levar um projeto para o git."""
+"fmt-merge-msg.title" = "fmt-merge-msg"
+"fmt-merge-msg.theory" = """
+O `git fmt-merge-msg` monta a mensagem padrão de um commit de merge ("Merge branch 'feature' into main") a partir das informações do FETCH_HEAD. O `git merge` e o `git pull` o chamam para você; você só o encontra ao escrever scripts.
+
+  git fmt-merge-msg < .git/FETCH_HEAD
+
+Para personalizar o texto, configure merge.log (inclui os títulos dos commits mesclados) ou merge.branchdesc."""

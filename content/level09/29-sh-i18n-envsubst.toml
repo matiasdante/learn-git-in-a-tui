@@ -1,17 +1,3 @@
 id = "sh-i18n-envsubst"
 level = 9
 order = 29
-
-[title]
-en = "sh-i18n--envsubst (internal)"
-es = "sh-i18n--envsubst (interno)"
-
-[theory]
-en = """
-`git sh-i18n--envsubst` is a tiny internal program that replaces `$variables` in a translated message. Git's shell scripts (git-sh-i18n) use it to print messages in your language with the right values inserted.
-
-You will never need it, unless you are translating git itself."""
-es = """
-`git sh-i18n--envsubst` es un programita interno que reemplaza `$variables` en un mensaje traducido. Los scripts de shell de git (git-sh-i18n) lo usan para imprimir mensajes en tu idioma con los valores correctos.
-
-Nunca lo vas a necesitar, salvo que traduzcas git mismo."""

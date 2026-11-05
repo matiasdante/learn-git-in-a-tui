@@ -3,31 +3,10 @@ level = 7
 order = 3
 requires = ["git:subtree"]
 
-[title]
-en = "Copying a project in: subtree"
-es = "Copiar un proyecto adentro: subtree"
-
-[theory]
-en = """
-A subtree is the alternative to submodules: the other project's files become ORDINARY files of your repository, in a subfolder. Nobody needs special commands to clone or build.
-
-  git subtree add --prefix=vendor/lib ../lib main --squash    bring it in
-  git subtree pull --prefix=vendor/lib ../lib main --squash   update it later
-  git subtree push --prefix=vendor/lib ../lib main            send your local changes back
-
-Simpler for users than submodules, but the history of your project and the library get mixed (--squash keeps it small)."""
-es = """
-Un subtree es la alternativa a los submódulos: los archivos del otro proyecto pasan a ser archivos COMUNES de tu repositorio, en una subcarpeta. Nadie necesita comandos especiales para clonar o compilar.
-
-  git subtree add --prefix=vendor/lib ../lib main --squash    lo trae
-  git subtree pull --prefix=vendor/lib ../lib main --squash   lo actualiza después
-  git subtree push --prefix=vendor/lib ../lib main            manda tus cambios locales de vuelta
-
-Más simple para quien usa el proyecto que los submódulos, pero se mezclan las historias de tu proyecto y la librería (--squash la mantiene chica)."""
-
 [[exercise]]
 id = "subtree-1"
 cwd = "project"
+hints = 2
 solution = ["git subtree add --prefix=vendor/lib ../lib main --squash"]
 setup = [
   { do = "git", args = "init lib" },
@@ -39,13 +18,8 @@ setup = [
   { do = "git", args = "add app.txt", dir = "project" },
   { do = "git", args = "commit -m \"Add app\"", dir = "project" },
 ]
-prompt = { en = "Bring the repository ../lib (branch main) into the subfolder vendor/lib as a subtree, squashing its history.", es = "Traé el repositorio ../lib (rama main) a la subcarpeta vendor/lib como subtree, aplastando su historia." }
-hints = [
-  { en = "subtree add needs --prefix, the repository and the branch.", es = "subtree add necesita --prefix, el repositorio y la rama." },
-  { en = "Type: git subtree add --prefix=vendor/lib ../lib main --squash", es = "Escribí: git subtree add --prefix=vendor/lib ../lib main --squash" },
-]
 checks = [
-  { type = "file_exists", path = "vendor/lib/lib.txt", fail = { en = "vendor/lib/lib.txt is missing.", es = "Falta vendor/lib/lib.txt." } },
-  { type = "file_missing", path = ".gitmodules", fail = { en = "A subtree does not use .gitmodules.", es = "Un subtree no usa .gitmodules." } },
-  { type = "git_ok", args = "cat-file -e HEAD:vendor/lib/lib.txt", fail = { en = "The files must be committed in your repository.", es = "Los archivos tienen que estar commiteados en tu repositorio." } },
+  { type = "file_exists", path = "vendor/lib/lib.txt" },
+  { type = "file_missing", path = ".gitmodules" },
+  { type = "git_ok", args = "cat-file -e HEAD:vendor/lib/lib.txt" },
 ]

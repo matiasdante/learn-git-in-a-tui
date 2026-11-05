@@ -1,4 +1,5 @@
 pub mod app;
+pub mod banner;
 pub mod checks;
 pub mod console;
 pub mod content;
@@ -9,3 +10,4 @@ pub mod progress;
 pub mod requirements;
 pub mod sandbox;
 pub mod ui;
+pub mod ui_strings;

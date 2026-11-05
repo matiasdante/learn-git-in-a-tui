@@ -2,26 +2,9 @@ id = "update-ref"
 level = 9
 order = 9
 
-[title]
-en = "Moving references: update-ref"
-es = "Mover referencias: update-ref"
-
-[theory]
-en = """
-Branches and tags are just files containing a hash (in .git/refs/). `git update-ref` creates and moves them safely.
-
-  git update-ref refs/heads/manual HEAD      create the branch manual at HEAD
-  git update-ref refs/heads/manual <commit>  move it
-  git update-ref -d refs/heads/manual        delete it"""
-es = """
-Las ramas y los tags son solo archivos con un hash adentro (en .git/refs/). `git update-ref` los crea y mueve de forma segura.
-
-  git update-ref refs/heads/manual HEAD      crea la rama manual en HEAD
-  git update-ref refs/heads/manual <commit>  la mueve
-  git update-ref -d refs/heads/manual        la borra"""
-
 [[exercise]]
 id = "update-ref-1"
+hints = 1
 solution = ["git update-ref refs/heads/manual HEAD~1"]
 setup = [
   { do = "git", args = "init" },
@@ -32,11 +15,7 @@ setup = [
   { do = "git", args = "add b.txt" },
   { do = "git", args = "commit -m \"Add b\"" },
 ]
-prompt = { en = "Create a branch called manual that points to the previous commit (HEAD~1), using update-ref and not git branch.", es = "Creá una rama llamada manual que apunte al commit anterior (HEAD~1), usando update-ref y no git branch." }
-hints = [
-  { en = "The full name of a branch is refs/heads/<name>.", es = "El nombre completo de una rama es refs/heads/<nombre>." },
-]
 checks = [
-  { type = "git_output", args = "rev-parse refs/heads/manual", same_as = "rev-parse HEAD~1", fail = { en = "The branch manual does not point to HEAD~1.", es = "La rama manual no apunta a HEAD~1." } },
-  { type = "ran", any = ["update-ref"], fail = { en = "Use git update-ref.", es = "Usá git update-ref." } },
+  { type = "git_output", args = "rev-parse refs/heads/manual", same_as = "rev-parse HEAD~1" },
+  { type = "ran", any = ["update-ref"] },
 ]

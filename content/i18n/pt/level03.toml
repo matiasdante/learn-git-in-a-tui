@@ -1,0 +1,119 @@
+"clone.title" = "Obtendo uma cópia: clone"
+"clone.theory" = """
+Você entra em uma equipe e precisa do projeto na sua máquina. `git clone` baixa o repositório inteiro, com todo o histórico, e lembra de onde veio como um remoto chamado origin.
+
+  git clone <url> [pasta]
+
+Nesta prática o servidor é um repositório bare (sem pasta de trabalho) na pasta `server.git`, então a "url" é só um caminho. Não há rede envolvida."""
+"clone-1.prompt" = "O repositório da equipe está em server.git. Clone-o em uma pasta chamada project."
+"clone-1.hint1" = "git clone recebe a origem e depois o nome da pasta."
+"clone-1.hint2" = "Digite: git clone server.git project"
+"clone-1.check1.fail" = "A pasta project ainda não é um repositório."
+"clone-1.check2.fail" = "O clone deveria conter os 2 commits do servidor."
+"clone-1.check3.fail" = "O clone deveria ter um remoto chamado origin."
+"remote.title" = "Gerenciando remotos: remote"
+"remote.theory" = """
+Um remoto é um apelido para outra cópia do seu repositório. `git remote` gerencia esses apelidos.
+
+  git remote -v                       lista os remotos com suas URLs
+  git remote add origin <url>         registra um remoto
+  git remote rename origin upstream   renomeia
+  git remote set-url origin <url>     muda a URL (o servidor mudou de lugar)
+  git remote remove nome              esquece o remoto"""
+"remote-1.prompt" = "Você começou um projeto localmente. Registre ../server.git como um remoto chamado origin."
+"remote-1.hint1" = "git remote add recebe um nome e depois uma URL."
+"remote-1.hint2" = "Digite: git remote add origin ../server.git"
+"remote-1.check1.fail" = "Ainda não há um remoto chamado origin."
+"remote-1.check2.fail" = "O origin não aponta para um repositório alcançável. Confira o caminho."
+"remote-2.prompt" = "Renomeie o remoto origin para upstream."
+"remote-2.hint1" = "git remote rename recebe o nome antigo e o novo."
+"remote-2.check1.fail" = "O remoto ainda não se chama upstream."
+"remote-3.prompt" = "O origin aponta para ../old.git, que não existe mais. Faça-o apontar para ../server.git."
+"remote-3.hint1" = "Existe um subcomando do remote que muda a URL."
+"remote-3.check1.fail" = "A URL do origin ainda não é ../server.git."
+"push.title" = "Publicando seu trabalho: push"
+"push.theory" = """
+Seus commits só existem na sua máquina até você enviá-los. `git push` envia um branch para um remoto.
+
+  git push -u origin main      primeiro push: também lembra origin/main como upstream do main
+  git push                     pushes seguintes: usa o upstream lembrado
+  git push origin feature      publica outro branch
+  git push origin --delete old remove um branch do servidor
+
+Se alguém enviou antes, o git rejeita o seu push: você precisa integrar o trabalho dele (git pull) e enviar de novo. Nunca force isso em um branch compartilhado."""
+"push-1.prompt" = "Publique seu branch main no origin pela primeira vez e lembre-o como upstream."
+"push-1.hint1" = "Use -u para o git lembrar a relação entre main e origin/main."
+"push-1.hint2" = "Digite: git push -u origin main"
+"push-1.check1.fail" = "O servidor ainda não tem o branch main."
+"push-1.check2.fail" = "O main ainda não acompanha o origin/main. Você usou -u?"
+"push-2.prompt" = "Você fez commit no branch feature. Publique esse branch no origin."
+"push-2.hint1" = "Indique o remoto e depois o branch."
+"push-2.check1.fail" = "O servidor ainda não tem o branch feature."
+"push-3.prompt" = "O branch old foi publicado por engano. Apague-o do servidor (origin)."
+"push-3.hint1" = "O git push tem uma opção --delete."
+"push-3.hint2" = "Digite: git push origin --delete old"
+"push-3.check1.fail" = "O servidor ainda tem o branch old."
+"fetch.title" = "Olhar antes de mesclar: fetch"
+"fetch.theory" = """
+`git fetch` baixa commits novos do remoto, mas NÃO mexe nos seus branches nem nos seus arquivos. Eles chegam em branches de rastreamento remoto como origin/main, e você pode revisá-los antes.
+
+  git fetch                 atualiza todos os branches de rastreamento remoto do origin
+  git log main..origin/main o que há de novo no servidor
+  git fetch --prune         esquece também os branches remotos apagados no servidor"""
+"fetch-1.prompt" = "Um colega enviou um commit. Baixe-o sem alterar o seu próprio branch main."
+"fetch-1.hint1" = "Um comando baixa, mas não mescla."
+"fetch-1.hint2" = "Digite: git fetch"
+"fetch-1.check1.fail" = "O origin/main ainda não tem o commit novo."
+"fetch-1.check2.fail" = "Seu main não deveria ter mudado. Use fetch, não pull."
+"pull.title" = "Integrando: pull"
+"pull.theory" = """
+`git pull` é fetch mais integração: baixa e depois faz merge (ou rebase) do trabalho remoto no seu branch atual.
+
+  git pull               fetch + merge
+  git pull --rebase      fetch + reaplica seus commits por cima dos remotos (histórico linear)
+
+Quando você tem commits locais e o servidor tem novos, os branches divergiram. O --rebase mantém o histórico em linha reta; o padrão cria um commit de merge."""
+"pull-1.prompt" = "Um colega enviou um commit. Traga-o para o seu branch main."
+"pull-1.hint1" = "O pull baixa e integra em um só passo."
+"pull-1.check1.fail" = "O main ainda não inclui o commit da equipe."
+"pull-1.check2.fail" = "Falta o c.txt (do colega)."
+"pull-2.prompt" = "Você tem um commit local e o servidor tem um novo. Integre-os mantendo o histórico linear (sem commit de merge)."
+"pull-2.hint1" = "O pull tem uma opção que reaplica seus commits por cima."
+"pull-2.hint2" = "Digite: git pull --rebase"
+"pull-2.check1.fail" = "O histórico deveria ter 4 commits: 2 antigos, o da equipe e o seu."
+"pull-2.check2.fail" = "Há um commit de merge. Use --rebase para um histórico linear."
+"pull-2.check3.fail" = "Falta o c.txt (do colega)."
+"pull-2.check4.fail" = "Falta o d.txt (seu commit)."
+"pull-3.prompt" = "Seu push seria rejeitado: o servidor tem um commit que você não tem. Integre-o (histórico linear) e publique o seu commit."
+"pull-3.hint1" = "Primeiro integre o trabalho do servidor, depois faça o push."
+"pull-3.hint2" = "git pull --rebase e depois git push"
+"pull-3.check1.fail" = "O servidor ainda não tem o seu commit por cima do trabalho da equipe."
+"pull-3.check2.fail" = "Seu main e o origin/main são diferentes."
+"ls-remote.title" = "Espiando um servidor: ls-remote"
+"ls-remote.theory" = """
+Às vezes você só quer saber o que um remoto tem (seus branches, suas tags e os commits para onde apontam) sem baixar nada.
+
+  git ls-remote origin                  todas as refs do servidor
+  git ls-remote --heads origin          só os branches
+  git ls-remote origin refs/heads/main  uma ref específica
+
+A saída é o hash, um tab e o nome da ref."""
+"ls-remote-1.prompt" = "Pergunte ao servidor pelo commit do branch release dele e salve o resultado em answer.txt."
+"ls-remote-1.hint1" = "O ls-remote aceita o nome da ref depois do remoto."
+"ls-remote-1.hint2" = "Digite: git ls-remote origin refs/heads/release > answer.txt"
+"ls-remote-1.check1.fail" = "O answer.txt deve começar com o hash do branch release."
+"bundle.title" = "Movendo o histórico por arquivo: bundle"
+"bundle.theory" = """
+Sem rede? Um colega trabalha offline? `git bundle` empacota commits em um único arquivo que se comporta como um remoto: você pode clonar ou fazer fetch a partir dele.
+
+  git bundle create backup.bundle --all   empacota todos os branches e tags
+  git bundle verify backup.bundle         verifica se o arquivo é válido
+  git clone backup.bundle restored        recupera um repositório a partir do arquivo"""
+"bundle-1.prompt" = "Faça um backup do repositório inteiro (todos os branches) em um arquivo chamado backup.bundle."
+"bundle-1.hint1" = "git bundle create recebe o nome do arquivo e o que incluir."
+"bundle-1.hint2" = "Digite: git bundle create backup.bundle --all"
+"bundle-1.check1.fail" = "O backup.bundle não existe ou não é um bundle válido."
+"bundle-1.check2.fail" = "O bundle deveria incluir todos os branches. Use --all."
+"bundle-2.prompt" = "A pasta do projeto se perdeu, mas o backup.bundle sobreviveu. Recupere o repositório em uma pasta chamada restored."
+"bundle-2.hint1" = "Um bundle pode ser clonado como qualquer repositório."
+"bundle-2.check1.fail" = "O restored não contém os 2 commits do backup."

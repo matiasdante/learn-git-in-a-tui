@@ -2,26 +2,9 @@ id = "merge-ff"
 level = 2
 order = 4
 
-[title]
-en = "Merging: fast-forward"
-es = "Fusionar: fast-forward"
-
-[theory]
-en = """
-Your feature branch is finished and nobody touched main meanwhile. `git merge` brings the work into the branch you are on. When main has not moved, git just slides the main pointer forward: this is a fast-forward and no new commit is created.
-
-  git switch main
-  git merge feature            fast-forward when possible
-  git merge --no-ff feature    always create a merge commit, which keeps the history of the feature visible"""
-es = """
-Tu rama de funcionalidad está terminada y nadie tocó main mientras tanto. `git merge` trae el trabajo a la rama donde estás. Si main no se movió, git simplemente desliza el puntero de main hacia adelante: es un fast-forward y no se crea ningún commit nuevo.
-
-  git switch main
-  git merge feature            fast-forward cuando se puede
-  git merge --no-ff feature    siempre crea un commit de fusión, que deja visible la historia de la funcionalidad"""
-
 [[exercise]]
 id = "merge-ff-1"
+hints = 2
 solution = ["git merge feature"]
 setup = [
   { do = "git", args = "init" },
@@ -37,19 +20,15 @@ setup = [
   { do = "git", args = "commit -m \"Add c\"" },
   { do = "git", args = "switch main" },
 ]
-prompt = { en = "You are on main. Bring the work of the branch feature into main.", es = "Estás en main. Traé a main el trabajo de la rama feature." }
-hints = [
-  { en = "Merge goes in the direction of the branch you are on.", es = "La fusión va en la dirección de la rama donde estás." },
-  { en = "Type: git merge feature", es = "Escribí: git merge feature" },
-]
 checks = [
-  { type = "branch", name = "main", fail = { en = "You should be on main.", es = "Tendrías que estar en main." } },
-  { type = "git_output", args = "rev-parse HEAD", same_as = "rev-parse feature", fail = { en = "main does not include the work of feature yet.", es = "main todavía no incluye el trabajo de feature." } },
-  { type = "git_output", args = "rev-list --count HEAD", equals = "3", fail = { en = "A fast-forward should not create an extra commit.", es = "Un fast-forward no debería crear un commit extra." } },
+  { type = "branch", name = "main" },
+  { type = "git_output", args = "rev-parse HEAD", same_as = "rev-parse feature" },
+  { type = "git_output", args = "rev-list --count HEAD", equals = "3" },
 ]
 
 [[exercise]]
 id = "merge-ff-2"
+hints = 2
 solution = ["git merge --no-ff feature -m \"Merge feature\""]
 setup = [
   { do = "git", args = "init" },
@@ -62,12 +41,7 @@ setup = [
   { do = "git", args = "commit -m \"Add b\"" },
   { do = "git", args = "switch main" },
 ]
-prompt = { en = "Merge feature into main, but force a merge commit even though a fast-forward is possible.", es = "Fusioná feature en main, pero forzá un commit de fusión aunque sea posible un fast-forward." }
-hints = [
-  { en = "There is an option that means no fast-forward.", es = "Hay una opción que significa sin fast-forward." },
-  { en = "Type: git merge --no-ff feature  (an editor opens for the message: save with Ctrl+S)", es = "Escribí: git merge --no-ff feature  (se abre un editor para el mensaje: guardá con Ctrl+S)" },
-]
 checks = [
-  { type = "git_ok", args = "rev-parse --verify HEAD^2", fail = { en = "There is no merge commit. Use the --no-ff option.", es = "No hay un commit de fusión. Usá la opción --no-ff." } },
-  { type = "file_exists", path = "b.txt", fail = { en = "The work of feature is missing.", es = "Falta el trabajo de feature." } },
+  { type = "git_ok", args = "rev-parse --verify HEAD^2" },
+  { type = "file_exists", path = "b.txt" },
 ]

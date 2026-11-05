@@ -1,17 +1,3 @@
 id = "http-fetch"
 level = 11
 order = 3
-
-[title]
-en = "git http-fetch"
-es = "git http-fetch"
-
-[theory]
-en = """
-`git http-fetch` downloads objects over the old "dumb" HTTP protocol, where the server is just a folder of static files. It is an internal helper of `git fetch`/`clone` for such servers.
-
-A dumb server needs `git update-server-info` to publish the index files. Modern servers speak the smart protocol and do not need it."""
-es = """
-`git http-fetch` descarga objetos por el viejo protocolo HTTP "tonto", donde el servidor es solo una carpeta de archivos estáticos. Es un ayudante interno de `git fetch`/`clone` para esos servidores.
-
-Un servidor tonto necesita `git update-server-info` para publicar los archivos de índice. Los servidores modernos hablan el protocolo inteligente y no lo necesitan."""

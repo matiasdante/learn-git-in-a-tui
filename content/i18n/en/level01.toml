@@ -1,0 +1,184 @@
+"first-steps.title" = "First steps: version and help"
+"first-steps.theory" = """
+A teammate writes: "git does not do what the docs say on my machine". Before anything else, ask which git version is installed: features such as `git switch` or `git restore` only exist from git 2.23 on.
+
+  git --version        shows the installed version
+  git help -a          lists every available subcommand
+  git <command> -h     short usage of one subcommand (works offline)
+  git help <command>   full manual page (needs the man pages installed)
+
+Use the console below. Press F1 for a hint and F5 when you think you are done."""
+"version-1.prompt" = "Find out which git version this machine has."
+"version-1.hint1" = "The version is shown by an option that starts with two dashes."
+"version-1.hint2" = "Type: git --version"
+"version-1.check1.fail" = "You have not asked git for its version yet. Run git --version in the console."
+"help-1.prompt" = "List all the available git subcommands."
+"help-1.hint1" = "The help command has an option that means all."
+"help-1.hint2" = "Type: git help -a"
+"help-1.check1.fail" = "Run git help -a to list every subcommand."
+"config.title" = "Configuring your identity"
+"config.theory" = """
+Every commit records who made it. If you join a new project and your commits show a wrong name, the history is hard to trust. Set your identity once with `git config`:
+
+  git config --global user.name "Ada Lovelace"
+  git config --global user.email ada@example.com
+  git config --get user.name        reads one value
+
+`--global` stores it for your user. Do not worry: this practice sandbox has its own config, your real one is never touched."""
+"config-1.prompt" = "Set your name to \"Ada Lovelace\" and your email to ada@example.com."
+"config-1.hint1" = "Use git config with the keys user.name and user.email."
+"config-1.hint2" = "Quote the name because it has a space: git config --global user.name \"Ada Lovelace\""
+"config-1.check1.fail" = "user.name is not \"Ada Lovelace\" yet."
+"config-1.check2.fail" = "user.email is not ada@example.com yet."
+"init.title" = "Creating a repository"
+"init.theory" = """
+You start a small side project in an empty folder and want to track its history. `git init` turns the current folder into a repository by creating a hidden `.git` directory where git keeps everything.
+
+  git init
+
+The first branch is called `main` here. (`git init-db` is an old synonym you may still see in old scripts.)"""
+"init-1.prompt" = "Turn the empty folder into a git repository."
+"init-1.hint1" = "The command is the name of the action: initialize."
+"init-1.hint2" = "Type: git init"
+"init-1.check1.fail" = "There is no repository here yet. Run git init."
+"init-1.check2.fail" = "The repository exists but its branch is not main."
+"add.title" = "Status and staging"
+"add.theory" = """
+You edited several files, but only some belong in the next commit. Git has a middle step, the staging area (index): you choose what goes in with `git add`, and `git status` tells you where everything stands.
+
+  git status            what is untracked, modified or staged
+  git add notes.txt     stage one file
+  git add .             stage everything in this folder
+
+`git stage` is an alias of `git add`: it does the same."""
+"add-1.prompt" = "Look at git status, then stage notes.txt."
+"add-1.hint1" = "git status shows notes.txt as untracked."
+"add-1.hint2" = "Type: git add notes.txt"
+"add-1.check1.fail" = "notes.txt is not staged yet. Use git add notes.txt."
+"add-2.prompt" = "Stage only a.txt. b.txt must stay untracked."
+"add-2.hint1" = "Name the file you want instead of using a dot."
+"add-2.check1.fail" = "a.txt is not staged yet."
+"add-2.check2.fail" = "b.txt should stay untracked, but it was staged. The state was restored: stage only a.txt."
+"commit.title" = "Saving a snapshot: commit"
+"commit.theory" = """
+A commit is a snapshot of what you staged, with a message that explains why. A good message lets your future self (or a reviewer) understand the change without reading the diff.
+
+  git commit -m "Add login page"     commit what is staged
+  git commit -am "Fix typo"          stage every already-tracked change and commit
+
+`-a` only picks up files git already tracks; new files still need `git add`."""
+"commit-1.prompt" = "Commit the staged file with a message."
+"commit-1.hint1" = "Use -m to give the message on the same line."
+"commit-1.hint2" = "Type: git commit -m \"Add hello\""
+"commit-1.check1.fail" = "There is no commit yet. Run git commit -m \"your message\"."
+"commit-1.check2.fail" = "hello.txt still has pending changes."
+"commit-2.prompt" = "app.txt was modified. Stage and commit that change in a single command."
+"commit-2.hint1" = "There is a flag that stages tracked files while committing."
+"commit-2.hint2" = "Type: git commit -am \"Update app\""
+"commit-2.check1.fail" = "The change is not committed yet."
+"commit-2.check2.fail" = "app.txt still has pending changes."
+"log.title" = "Reading the history: log"
+"log.theory" = """
+A bug appeared and you need to find the commit that introduced a feature. `git log` lists commits from newest to oldest. Handy options:
+
+  git log --oneline          one line per commit
+  git log --graph --oneline  draw the branches
+  git log -3                 only the last three
+
+Every commit has a hash (its identity). The first 7 characters are usually enough to refer to it."""
+"log-1.prompt" = "Find the commit \"Add search bar\" and write its short hash (7 characters) into a file called answer.txt."
+"log-1.hint1" = "git log --oneline shows the short hash next to each message."
+"log-1.hint2" = "Write it with: echo <hash> > answer.txt"
+"log-1.check1.fail" = "answer.txt is missing or does not contain the hash of \"Add search bar\" (the second commit from the top)."
+"show.title" = "Inspecting one commit: show"
+"show.theory" = """
+A colleague asks "what did your last commit change?". `git show` displays one commit: its message and the changes it made.
+
+  git show                 the latest commit
+  git show HEAD~1          the one before
+  git show --stat          which files, with a summary
+  git show --name-only     just the file names"""
+"show-1.prompt" = "Which file did the latest commit change? Write its name into answer.txt."
+"show-1.hint1" = "git show without arguments shows the latest commit."
+"show-1.hint2" = "git show --name-only prints just the file names."
+"show-1.check1.fail" = "answer.txt should contain exactly the file name changed by the latest commit."
+"diff.title" = "What changed: diff"
+"diff.theory" = """
+Before committing, review your own work: `git diff` shows the changes that are not staged yet. Lines starting with `+` were added, lines starting with `-` were removed.
+
+  git diff             working tree vs staging area
+  git diff --staged    staging area vs last commit
+  git diff HEAD~1      compare with an older commit"""
+"diff-1.prompt" = "todo.txt has uncommitted changes. How many lines were added? Write the number into answer.txt."
+"diff-1.hint1" = "Run git diff and count the lines that start with +."
+"diff-1.hint2" = "The +++ line is a file header, it does not count."
+"diff-1.check1.fail" = "answer.txt should contain only the number of added lines."
+"rm.title" = "Removing files: rm"
+"rm.theory" = """
+Deleting a file with the normal `rm` leaves git with an unstaged deletion to handle. `git rm` removes the file and stages the deletion in one step.
+
+  git rm old.txt             delete the file and stage the deletion
+  git rm --cached secret.txt stop tracking it but keep the file on disk
+
+The second form is the fix when you committed a file by mistake (a local config, a password) and want git to forget it."""
+"rm-1.prompt" = "Remove old.txt from the project and stage that deletion."
+"rm-1.hint1" = "There is a git command that deletes and stages at once."
+"rm-1.check1.fail" = "old.txt deletion is not staged. Use git rm old.txt."
+"rm-1.check2.fail" = "old.txt still exists on disk."
+"rm-2.prompt" = "secret.txt was committed by mistake. Make git stop tracking it, but keep the file on disk."
+"rm-2.hint1" = "Look for an option of git rm that only touches the index."
+"rm-2.hint2" = "Type: git rm --cached secret.txt"
+"rm-2.check1.fail" = "git is still tracking secret.txt."
+"rm-2.check2.fail" = "The file was deleted from disk. It should remain; the state was restored."
+"mv.title" = "Renaming files: mv"
+"mv.theory" = """
+Renaming a file by hand makes git see a deletion plus a new file. `git mv` renames and stages in one go, and git recognizes the rename because the content is the same.
+
+  git mv draft.txt final.txt
+  git mv notes.txt docs/notes.txt     also moves between folders"""
+"mv-1.prompt" = "Rename draft.txt to final.txt so that git records a rename."
+"mv-1.hint1" = "The command has the same name as the Unix one, with git in front."
+"mv-1.check1.fail" = "final.txt is not a staged rename of draft.txt. Use git mv draft.txt final.txt."
+"mv-1.check2.fail" = "draft.txt still exists."
+"restore.title" = "Undoing local changes: restore"
+"restore.theory" = """
+You edited a file and broke it. Or you staged something you did not want in the commit. `git restore` brings things back without touching history.
+
+  git restore file.txt            discard your edits (careful: they are lost)
+  git restore --staged file.txt   unstage, keeping your edits"""
+"restore-1.prompt" = "config.txt was edited and broken. Discard the edit and get the committed version back."
+"restore-1.hint1" = "git status itself suggests the command."
+"restore-1.check1.fail" = "config.txt does not have the committed content (v1) yet."
+"restore-1.check2.fail" = "config.txt still shows changes."
+"restore-2.prompt" = "f.txt was staged by mistake. Unstage it but keep your edit (v2) in the file."
+"restore-2.hint1" = "You need the option that targets the staging area."
+"restore-2.hint2" = "Type: git restore --staged f.txt"
+"restore-2.check1.fail" = "f.txt should be modified but not staged."
+"restore-2.check2.fail" = "Your edit (v2) was lost; the state was restored."
+"gitignore.title" = "Ignoring files: .gitignore"
+"gitignore.theory" = """
+Logs, build folders and editor files should not be in the history. List patterns in a `.gitignore` file and git will skip them in `git status`.
+
+  *.log        every file ending in .log
+  build/       the whole build folder
+
+To ask why a file is ignored (or not), use `git check-ignore -v <path>`."""
+"gitignore-1.prompt" = "Create a .gitignore so that app.log and the build/ folder are ignored, but notes.txt is not."
+"gitignore-1.hint1" = "Create the file with echo '*.log' > .gitignore and add more lines with >>. Use the edit command if you prefer."
+"gitignore-1.hint2" = "The folder pattern ends with a slash: build/"
+"gitignore-1.check1.fail" = "app.log is not ignored yet. Add the pattern *.log."
+"gitignore-1.check2.fail" = "build/ is not ignored yet. Add the pattern build/."
+"gitignore-1.check3.fail" = "notes.txt is being ignored but it should not be."
+"clean.title" = "Cleaning untracked files: clean"
+"clean.theory" = """
+After a failed build, your folder is full of temporary files that git does not track. `git clean` deletes them. It is destructive (there is no undo), so git asks for `-f` and offers a dry run first.
+
+  git clean -n     show what would be deleted
+  git clean -f     delete untracked files
+  git clean -fd    also untracked folders"""
+"clean-1.prompt" = "Delete the untracked files (tmp1.txt and tmp2.txt) without touching a.txt."
+"clean-1.hint1" = "First preview with the dry-run option, then run it for real."
+"clean-1.hint2" = "Type: git clean -f"
+"clean-1.check1.fail" = "tmp1.txt still exists. git clean needs -f to actually delete."
+"clean-1.check2.fail" = "tmp2.txt still exists."
+"clean-1.check3.fail" = "a.txt (tracked) must not be deleted."

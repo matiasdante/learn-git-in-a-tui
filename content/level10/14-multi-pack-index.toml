@@ -2,24 +2,9 @@ id = "multi-pack-index"
 level = 10
 order = 14
 
-[title]
-en = "Many packs, one index: multi-pack-index"
-es = "Muchos packs, un índice: multi-pack-index"
-
-[theory]
-en = """
-A big repository ends up with many packfiles; looking an object up means checking each .idx. A multi-pack-index is a single index over all the packs of the repository.
-
-  git multi-pack-index write      build it (.git/objects/pack/multi-pack-index)
-  git multi-pack-index verify"""
-es = """
-Un repositorio grande termina con muchos packfiles; buscar un objeto implica revisar cada .idx. Un multi-pack-index es un único índice sobre todos los packs del repositorio.
-
-  git multi-pack-index write      lo arma (.git/objects/pack/multi-pack-index)
-  git multi-pack-index verify"""
-
 [[exercise]]
 id = "multi-pack-index-1"
+hints = 1
 solution = ["git multi-pack-index write"]
 setup = [
   { do = "git", args = "init" },
@@ -34,11 +19,7 @@ setup = [
   { do = "git", args = "commit -m \"Add c\"" },
   { do = "git", args = "repack -a -d -q" },
 ]
-prompt = { en = "Write a multi-pack-index for the packs of this repository.", es = "Escribí un multi-pack-index para los packs de este repositorio." }
-hints = [
-  { en = "Type: git multi-pack-index write", es = "Escribí: git multi-pack-index write" },
-]
 checks = [
-  { type = "file_exists", path = ".git/objects/pack/multi-pack-index", fail = { en = "The multi-pack-index does not exist yet.", es = "El multi-pack-index todavía no existe." } },
-  { type = "git_ok", args = "multi-pack-index verify", fail = { en = "The multi-pack-index is not valid.", es = "El multi-pack-index no es válido." } },
+  { type = "file_exists", path = ".git/objects/pack/multi-pack-index" },
+  { type = "git_ok", args = "multi-pack-index verify" },
 ]

@@ -1,21 +1,3 @@
 id = "merge-ours"
 level = 9
 order = 30
-
-[title]
-en = "Strategy: ours"
-es = "Estrategia: ours"
-
-[theory]
-en = """
-`ours` records a merge but keeps EXACTLY your side, ignoring all the changes of the other branches. Useful to mark a branch as merged when you do not want its content.
-
-  git merge -s ours old-branch
-
-Do not confuse it with the option -X ours, which merges normally and only prefers your side where there are conflicts."""
-es = """
-`ours` registra una fusión pero conserva EXACTAMENTE tu lado, ignorando todos los cambios de las otras ramas. Sirve para marcar una rama como fusionada cuando no querés su contenido.
-
-  git merge -s ours rama-vieja
-
-No la confundas con la opción -X ours, que fusiona normalmente y solo prefiere tu lado donde hay conflictos."""

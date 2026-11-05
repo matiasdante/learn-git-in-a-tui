@@ -2,30 +2,9 @@ id = "grep"
 level = 5
 order = 4
 
-[title]
-en = "Searching the code: grep"
-es = "Buscar en el código: grep"
-
-[theory]
-en = """
-`git grep` searches the tracked files only (no build output, no node_modules) and it is fast. It can also search any older version.
-
-  git grep TODO              lines containing TODO
-  git grep -n TODO           with line numbers
-  git grep -c TODO           count per file
-  git grep -h TODO           without file names
-  git grep TODO v1.0         search how the code was at v1.0"""
-es = """
-`git grep` busca solo en los archivos seguidos (sin resultados de build ni node_modules) y es rápido. También puede buscar en cualquier versión vieja.
-
-  git grep TODO              líneas que contienen TODO
-  git grep -n TODO           con números de línea
-  git grep -c TODO           cantidad por archivo
-  git grep -h TODO           sin los nombres de archivo
-  git grep TODO v1.0         busca cómo estaba el código en v1.0"""
-
 [[exercise]]
 id = "grep-1"
+hints = 2
 solution = ["git grep -h TODO > todos.txt"]
 setup = [
   { do = "git", args = "init" },
@@ -36,11 +15,6 @@ setup = [
   { do = "git", args = "commit -m \"Add files\"" },
   { do = "write", path = "untracked.txt", content = "TODO: ignored by git grep\n" },
 ]
-prompt = { en = "Save every line containing TODO from the tracked files (without file names) into todos.txt.", es = "Guardá en todos.txt todas las líneas con TODO de los archivos seguidos (sin nombres de archivo)." }
-hints = [
-  { en = "-h hides the file names.", es = "-h oculta los nombres de archivo." },
-  { en = "Type: git grep -h TODO > todos.txt", es = "Escribí: git grep -h TODO > todos.txt" },
-]
 checks = [
-  { type = "file_equals_git", path = "todos.txt", args = "grep -h TODO", fail = { en = "todos.txt must contain exactly the output of git grep -h TODO.", es = "todos.txt debe contener exactamente la salida de git grep -h TODO." } },
+  { type = "file_equals_git", path = "todos.txt", args = "grep -h TODO" },
 ]

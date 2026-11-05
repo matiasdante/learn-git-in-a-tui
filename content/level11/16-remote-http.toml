@@ -1,17 +1,3 @@
 id = "remote-http"
 level = 11
 order = 16
-
-[title]
-en = "git remote-http"
-es = "git remote-http"
-
-[theory]
-en = """
-`git remote-http` is the helper git starts when a URL begins with `http://`. It speaks the smart HTTP protocol (and the old dumb one) using libcurl, and it is where proxy settings (http.proxy), certificate settings and credentials come in.
-
-It shows up in process lists during a clone; the useful part is knowing the http.* settings in git config."""
-es = """
-`git remote-http` es el ayudante que git inicia cuando una URL empieza con `http://`. Habla el protocolo HTTP inteligente (y el viejo, tonto) usando libcurl, y ahí entran las opciones de proxy (http.proxy), de certificados y las credenciales.
-
-Aparece en las listas de procesos durante un clone; lo útil es conocer las opciones http.* de la configuración de git."""

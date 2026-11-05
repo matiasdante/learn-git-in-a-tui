@@ -2,24 +2,9 @@ id = "merge-base"
 level = 5
 order = 8
 
-[title]
-en = "Finding the fork point: merge-base"
-es = "Encontrar el punto de bifurcación: merge-base"
-
-[theory]
-en = """
-Where did `feature` split from `main`? `git merge-base A B` prints the best common ancestor of two commits: the point both histories share. Merge and rebase use it internally.
-
-  git merge-base main feature
-  git merge-base --is-ancestor A B    exit code 0 if A is contained in B"""
-es = """
-¿Dónde se separó `feature` de `main`? `git merge-base A B` imprime el mejor ancestro común de dos commits: el punto que comparten las dos historias. Merge y rebase lo usan internamente.
-
-  git merge-base main feature
-  git merge-base --is-ancestor A B    código de salida 0 si A está contenido en B"""
-
 [[exercise]]
 id = "merge-base-1"
+hints = 1
 solution = ["git merge-base main feature > answer.txt"]
 setup = [
   { do = "git", args = "init" },
@@ -41,10 +26,6 @@ setup = [
   { do = "git", args = "add d.txt" },
   { do = "git", args = "commit -m \"Four\"" },
 ]
-prompt = { en = "Write into answer.txt the hash of the commit where feature split from main.", es = "Escribí en answer.txt el hash del commit donde feature se separó de main." }
-hints = [
-  { en = "git merge-base takes the two branches.", es = "git merge-base recibe las dos ramas." },
-]
 checks = [
-  { type = "file_matches_rev", path = "answer.txt", rev = "feature~1", fail = { en = "answer.txt must contain the hash of the fork point (\"Two\").", es = "answer.txt debe contener el hash del punto de bifurcación (\"Two\")." } },
+  { type = "file_matches_rev", path = "answer.txt", rev = "feature~1" },
 ]

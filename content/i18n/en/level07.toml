@@ -1,0 +1,100 @@
+"worktree.title" = "Several folders, one repository: worktree"
+"worktree.theory" = """
+You are in the middle of a feature and a hotfix lands. Instead of stashing, `git worktree` gives you a second working folder of the same repository, on another branch, sharing all the history. No second clone, no duplicated objects.
+
+  git worktree add ../hotfix hotfix    new folder ../hotfix with the branch hotfix checked out
+  git worktree list                    all folders of this repository
+  git worktree remove ../hotfix        delete the extra folder when done
+
+A branch can only be checked out in one worktree at a time."""
+"worktree-1.prompt" = "Open a second working folder ../hotfix with the branch hotfix checked out, without leaving your current work."
+"worktree-1.hint1" = "worktree add takes the new folder and then the branch."
+"worktree-1.hint2" = "Type: git worktree add ../hotfix hotfix"
+"worktree-1.check1.fail" = "The folder ../hotfix does not have the branch hotfix checked out."
+"worktree-1.check2.fail" = "../hotfix does not contain the project files."
+"worktree-2.prompt" = "The hotfix is done. Remove the extra working folder ../hotfix (the branch can stay)."
+"worktree-2.hint1" = "There is a worktree subcommand to remove."
+"worktree-2.check1.fail" = "The folder ../hotfix still exists."
+"worktree-2.check2.fail" = "The branch hotfix should be kept."
+"submodule.title" = "Repositories inside repositories: submodule"
+"submodule.theory" = """
+Your app depends on a library that lives in its own repository. A submodule embeds it at a fixed commit: your repository records "libs/lib = commit abc123" instead of copying the files.
+
+  git submodule add <url> libs/lib     embed it (creates .gitmodules)
+  git submodule update --init          after cloning: fetch the submodules' content
+  git clone --recurse-submodules <url> clone and fill them in one step
+
+The superproject only stores the commit of the submodule; to move to a newer one you commit inside the submodule and then commit the new pointer in the project."""
+"submodule-1.prompt" = "Embed the repository ../lib as a submodule at libs/lib."
+"submodule-1.hint1" = "submodule add takes the URL (here a path) and where to put it."
+"submodule-1.hint2" = "Type: git submodule add ../lib libs/lib"
+"submodule-1.check1.fail" = ".gitmodules does not exist yet."
+"submodule-1.check2.fail" = "libs/lib is not registered as a submodule (mode 160000)."
+"submodule-1.check3.fail" = "The content of the library is missing."
+"submodule-2.prompt" = "You cloned the project into app, but libs/lib is empty. Fetch the content of the submodule."
+"submodule-2.hint1" = "A submodule must be initialized after a normal clone."
+"submodule-2.hint2" = "Type: git submodule update --init"
+"submodule-2.check1.fail" = "libs/lib is still empty."
+"subtree.title" = "Copying a project in: subtree"
+"subtree.theory" = """
+A subtree is the alternative to submodules: the other project's files become ORDINARY files of your repository, in a subfolder. Nobody needs special commands to clone or build.
+
+  git subtree add --prefix=vendor/lib ../lib main --squash    bring it in
+  git subtree pull --prefix=vendor/lib ../lib main --squash   update it later
+  git subtree push --prefix=vendor/lib ../lib main            send your local changes back
+
+Simpler for users than submodules, but the history of your project and the library get mixed (--squash keeps it small)."""
+"subtree-1.prompt" = "Bring the repository ../lib (branch main) into the subfolder vendor/lib as a subtree, squashing its history."
+"subtree-1.hint1" = "subtree add needs --prefix, the repository and the branch."
+"subtree-1.hint2" = "Type: git subtree add --prefix=vendor/lib ../lib main --squash"
+"subtree-1.check1.fail" = "vendor/lib/lib.txt is missing."
+"subtree-1.check2.fail" = "A subtree does not use .gitmodules."
+"subtree-1.check3.fail" = "The files must be committed in your repository."
+"sparse-checkout.title" = "Working with part of a repo: sparse-checkout"
+"sparse-checkout.theory" = """
+A huge monorepo has hundreds of folders and you only touch one. `git sparse-checkout` leaves only the folders you choose in your working tree; the rest stays in the history but not on disk.
+
+  git sparse-checkout set docs          only the folder docs
+  git sparse-checkout add backend       also backend
+  git sparse-checkout disable           bring everything back"""
+"sparse-1.prompt" = "You only work on documentation. Leave only the folder docs in your working tree."
+"sparse-1.hint1" = "sparse-checkout set takes the folders to keep."
+"sparse-1.hint2" = "Type: git sparse-checkout set docs"
+"sparse-1.check1.fail" = "docs must stay in the working tree."
+"sparse-1.check2.fail" = "frontend is still on disk."
+"sparse-1.check3.fail" = "backend is still on disk."
+"archive.title" = "Packaging a release: archive"
+"archive.theory" = """
+To ship a version you want a clean file with the tracked files only: no .git, no build junk, no untracked notes. `git archive` makes a tar or zip of any commit or tag.
+
+  git archive -o release.tar HEAD            tarball of the current commit
+  git archive -o v1.zip v1.0                 zip of a tag (the format comes from the extension)
+  git archive --prefix=app-1.0/ -o app.tar HEAD   everything inside a top folder"""
+"archive-1.prompt" = "Create release.tar with the contents of the current commit."
+"archive-1.hint1" = "archive takes -o for the output file and the commit to pack."
+"archive-1.hint2" = "Type: git archive -o release.tar HEAD"
+"archive-1.check1.fail" = "release.tar does not exist yet."
+"archive-1.check2.fail" = "Create the file with git archive."
+"get-tar-commit-id.title" = "Which commit is this tarball? get-tar-commit-id"
+"get-tar-commit-id.theory" = """
+A tarball made by `git archive` from a commit carries that commit's hash in its header. If you find an old release.tar and wonder what source it was built from:
+
+  git get-tar-commit-id < release.tar
+
+It prints the hash, or nothing if the tar was not made by git archive from a commit (a tag or tree gives it too only if it points to a commit)."""
+"get-tar-commit-id-1.prompt" = "release.tar was built from one of the commits of this repository. Write the hash of that commit into answer.txt."
+"get-tar-commit-id-1.hint1" = "The command reads the tar from standard input: use < release.tar."
+"get-tar-commit-id-1.check1.fail" = "answer.txt must contain the hash of the commit the tarball was built from."
+"submodule-helper.title" = "submodule--helper (internal)"
+"submodule-helper.theory" = """
+`git submodule--helper` is the internal program behind `git submodule`. Originally a shell script, the heavy parts (cloning, updating, status) were rewritten in C and exposed through this helper. You never call it yourself, but it shows up in error messages and process lists.
+
+If a submodule operation fails, read the message and run the public command again (git submodule update --init --recursive) instead of invoking the helper."""
+"merge-subtree.title" = "merge-subtree (merge strategy)"
+"merge-subtree.theory" = """
+`subtree` is also a MERGE STRATEGY (the program git-merge-subtree you may see listed). When you merge a project whose files live in a subfolder of yours, it finds by itself the right prefix to compare.
+
+  git merge -s subtree library/main
+  git merge -X subtree=vendor/lib library/main    when git needs the prefix spelled out
+
+`git subtree pull` uses it under the hood. For everyday work prefer the porcelain git subtree commands."""

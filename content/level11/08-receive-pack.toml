@@ -1,17 +1,3 @@
 id = "receive-pack"
 level = 11
 order = 8
-
-[title]
-en = "git receive-pack"
-es = "git receive-pack"
-
-[theory]
-en = """
-`git receive-pack` is the SERVER half of push: it receives the pack your `git push` sends, checks it, runs the server hooks (pre-receive, update, post-receive) and updates the refs.
-
-The server hooks are where policies live: reject pushes without tests, notify a chat, deploy. Configure the behavior with receive.denyCurrentBranch, receive.fsckObjects, and so on."""
-es = """
-`git receive-pack` es la mitad SERVIDOR de push: recibe el pack que manda tu `git push`, lo verifica, ejecuta los hooks del servidor (pre-receive, update, post-receive) y actualiza las referencias.
-
-En los hooks del servidor viven las políticas: rechazar pushes sin tests, avisar a un chat, desplegar. El comportamiento se configura con receive.denyCurrentBranch, receive.fsckObjects, etc."""

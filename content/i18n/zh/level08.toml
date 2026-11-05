@@ -1,0 +1,197 @@
+"config-advanced.title" = "深入配置：config"
+"config-advanced.theory" = """
+git 从三个层级读取配置，后面的层级会覆盖前面的：
+
+  --system   整台机器                 （此沙盒中不使用）
+  --global   你的用户                 （~/.gitconfig）
+  --local    仅当前仓库               （.git/config）
+
+  git config --local pull.rebase true    仅对当前仓库生效
+  git config --get user.name             读取实际生效的值
+  git config --list --show-origin        列出每个值以及它来自哪个文件
+  git config --unset user.signingkey     删除某个值
+  git config --global alias.st status    现在 "git st" 可以用了"""
+"config-adv-1.prompt" = "创建一个快捷方式：让 git st 的效果和 git status 一样。"
+"config-adv-1.hint1" = "快捷方式就是别名：配置键是 alias.<名字>。"
+"config-adv-1.hint2" = "输入：git config --global alias.st status"
+"config-adv-1.check1.fail" = "别名 st 还没有定义为 status。"
+"config-adv-2.prompt" = "让 git pull 默认使用变基，但只在“这个”仓库里生效。"
+"config-adv-2.hint1" = "--local 会写入当前仓库的 .git/config。"
+"config-adv-2.check1.fail" = "pull.rebase 在本地配置中不是 true。"
+"config-adv-3.prompt" = "你的用户配置了一个错误的签名密钥。把 user.signingkey 彻底删除。"
+"config-adv-3.hint1" = "config 有一个 --unset 选项。"
+"config-adv-3.check1.fail" = "user.signingkey 仍然有值。"
+"check-attr.title" = "文件属性：check-attr"
+"check-attr.theory" = """
+`.gitattributes` 文件按模式告诉 git 如何处理文件：换行符、是否为二进制文件、如何做差异比较或合并。
+
+  *.sh   text eol=lf        始终使用 LF 换行符
+  *.png  binary             永远不要把它当作文本去比较或合并
+
+`git check-attr` 回答“这个路径适用哪些属性？”：
+
+  git check-attr eol notes.txt        notes.txt: eol: lf
+  git check-attr -a image.png         所有适用的属性"""
+"check-attr-1.prompt" = ".gitattributes 给 notes.txt 设置了什么换行符？把 git check-attr 针对 eol 属性的输出保存到 answer.txt。"
+"check-attr-1.hint1" = "先写属性名，再写文件。"
+"check-attr-1.check1.fail" = "answer.txt 必须恰好包含 git check-attr eol notes.txt 的输出。"
+"check-attr-2.prompt" = "创建一个 .gitattributes，让所有 .png 文件都被当作二进制文件。"
+"check-attr-2.hint1" = "一行就够了：匹配模式、一个空格，再加上 binary 这个词。"
+"check-attr-2.hint2" = "用 git check-attr -a logo.png 检查一下"
+"check-attr-2.check1.fail" = "logo.png 还没有被当作二进制文件。"
+"check-mailmap.title" = "一个人，多个身份：mailmap"
+"check-mailmap.theory" = """
+人们会更换邮箱，也会用不同的方式拼写自己的名字。`.mailmap` 文件把旧身份映射到规范身份，这样 shortlog 和 blame 就会把它们归为一个人。
+
+  Robert Smith <robert@example.com> <bob@old.example>
+  #  规范的名字和邮箱                 旧邮箱
+
+`git check-mailmap` 可以显示 git 如何解析某个身份：
+
+  git check-mailmap "Bob <bob@old.example>"    ->   Robert Smith <robert@example.com>"""
+"check-mailmap-1.prompt" = "Bob <bob@old.example> 现在是 Robert Smith <robert@example.com>。创建 .mailmap，把旧地址映射到新身份。"
+"check-mailmap-1.hint1" = "格式：规范名字 <规范邮箱> <旧邮箱>"
+"check-mailmap-1.hint2" = "用 echo 时把整行放在引号里。"
+"check-mailmap-1.check1.fail" = "git 还没有把 Bob <bob@old.example> 解析为 Robert Smith <robert@example.com>。"
+"hook.title" = "用钩子实现自动化：hook"
+"hook.theory" = """
+钩子（hook）是 git 在特定时刻运行的脚本：提交之前、合并之后、推送之前。它们放在 `.git/hooks/` 里，是以事件命名的普通脚本，没有扩展名，并且可执行。
+
+  .git/hooks/pre-commit      每次提交之前运行；如果以非 0 退出，提交会被取消
+  .git/hooks/commit-msg      检查提交信息
+  .git/hooks/pre-push        推送前的最后一道关
+
+典型用法：运行 linter 或测试，让有问题的提交根本不会发生。`git hook run pre-commit` 可以手动运行某个钩子，`git hook list`（较新的 git）会列出已配置的钩子。克隆不会复制钩子：请通过受版本控制的文件夹和 core.hooksPath 来共享它们。"""
+"hook-1.prompt" = "创建一个 pre-commit 钩子，打印 \"No commits today\" 并以退出码 1 结束，让它可执行，然后尝试提交，看它如何拦住你。"
+"hook-1.hint1" = "文件是 .git/hooks/pre-commit，第一行是 #!/bin/sh（要加引号，因为 # 会开始一段注释）。"
+"hook-1.hint2" = "第一行用 echo ... > 文件，其余各行用 echo ... >> 文件，再用 chmod +x 让它可执行。"
+"hook-1.check1.fail" = "pre-commit 钩子没有以退出码 1 结束。"
+"hook-1.check2.fail" = "钩子的第一行必须是 #!/bin/sh。"
+"hook-1.check3.fail" = "现在尝试提交，看看钩子如何拦住你。"
+"hook-1.check4.fail" = "提交成功了：钩子没有拦住它。"
+"notes.title" = "不重写也能批注：notes"
+"notes.theory" = """
+提交是不可变的，但有时你想事后补充信息（一次评审、一个工单号、一个测试结果）。`git notes` 可以给提交附加文字，而“不改变”它的哈希；这些注释存放在专门的引用里。
+
+  git notes add -m "Reviewed by Ana" HEAD     附加一条注释
+  git notes show HEAD                         查看注释
+  git log                                     在每个提交下面显示注释
+  git notes remove HEAD                       删除注释"""
+"notes-1.prompt" = "给最新的提交附加注释 \"Reviewed by Ana\"。"
+"notes-1.hint1" = "notes add 用 -m 给出文字，再接提交。"
+"notes-1.hint2" = "输入：git notes add -m \"Reviewed by Ana\" HEAD"
+"notes-1.check1.fail" = "最新的提交没有注释 \"Reviewed by Ana\"。"
+"replace.title" = "用一个对象替换另一个：replace"
+"replace.theory" = """
+`git replace` 会让 git 在要读取原对象时，看到另一个对象。它是在本地修正历史而不重写哈希的一种方式：比如“嫁接”一段旧历史，或者隐藏某个提交。
+
+  git replace <原对象> <替换对象>
+  git replace -l                       列出被替换的对象
+  git replace -d <原对象>              删除替换
+
+它存放在 refs/replace/ 中，默认“不会”被共享：请谨慎使用，主要把它当作临时工具。"""
+"replace-1.prompt" = "提交 \"Oops, bad commit\"（HEAD~1）不应该被看到。让 git 改读它之前的那个提交（HEAD~2），并且不要重写历史。"
+"replace-1.hint1" = "replace 先接要被替换的对象，再接替换它的对象。"
+"replace-1.check1.fail" = "HEAD~1 还没有被替换。"
+"replace-1.check2.fail" = "git 仍然在读取那个坏提交：在 HEAD~1 里还能看到 oops.txt。"
+"credential.title" = "记住密码：credential"
+"credential.theory" = """
+当 git 与需要密码的服务器通信时，它会向凭据助手（credential helper）索取，而不是每次都问你。`git credential` 就是背后的机制，你也可以直接使用它：
+
+  git credential fill       向助手索取密码（你输入 protocol/host，它来回答）
+  git credential approve    告诉助手“这些凭据可用，请保存”
+  git credential reject     告诉它“这些凭据失败了，请忘掉”
+
+输入是 键=值 形式的行（protocol、host、username、password），以一个空行或 Ctrl+D 结束。在这个练习里“绝对不要”输入真实密码；用编造的。"""
+"credential-1.prompt" = "store 助手已配置好。用 git credential approve 保存 https://example.com 的凭据 ana / s3cret（输入四行，然后按 Ctrl+D）。"
+"credential-1.hint1" = "各行：protocol=https、host=example.com、username=ana、password=s3cret。"
+"credential-1.hint2" = "第四行之后按 Ctrl+D 关闭输入。"
+"credential-1.check1.fail" = "凭据没有被保存。最后一行之后你按 Ctrl+D 了吗？"
+"credential-store.title" = "store 助手：credential-store"
+"credential-store.theory" = """
+`credential-store` 是最简单的助手：它把密码以明文保存在一个文件里（~/.git-credentials）。放在用完即弃的机器上没问题，其他地方则很危险：请优先使用操作系统自带的钥匙串。
+
+  git config --global credential.helper store            使用 ~/.git-credentials
+  git config --global credential.helper "store --file=/安全的位置/creds"   使用另一个文件
+
+任何能读取这个文件的人，都能读到你的密码。"""
+"credential-store-1.prompt" = "为你的用户配置 git，让它用 store 助手来记住密码。"
+"credential-store-1.hint1" = "配置键是 credential.helper。"
+"credential-store-1.check1.fail" = "credential.helper 还不是 store。"
+"verify-commit.title" = "已签名的提交：verify-commit"
+"verify-commit.theory" = """
+任何人都可以在提交里写任意名字。“签名”则能证明提交到底是谁做的。git 可以用 GPG 签名，或者从 2.34 起使用你已有的 SSH 密钥签名。
+
+  git config gpg.format ssh
+  git config user.signingkey ~/.ssh/id_ed25519
+  git config gpg.ssh.allowedSignersFile allowed_signers    信任谁
+  git commit -S -m "信息"            对提交签名
+  git verify-commit HEAD             验证签名
+  git log --show-signature           在日志中查看签名
+
+沙盒已经替你创建好了密钥（key / key.pub）和 allowed_signers 文件。"""
+"verify-commit-1.prompt" = "a.txt 已暂存，git 也配置好了用 SSH 签名。做一次签名的提交，并验证它的签名。"
+"verify-commit-1.hint1" = "给 git commit 加上 -S。"
+"verify-commit-1.hint2" = "然后运行 git verify-commit HEAD。"
+"verify-commit-1.check1.fail" = "最新的提交没有有效的签名（%G? 不是 G）。"
+"verify-commit-1.check2.fail" = "请用 git verify-commit HEAD 验证签名。"
+"verify-tag.title" = "已签名的标签：verify-tag"
+"verify-tag.theory" = """
+发布版本是最需要签名的东西：使用者想确认 v1.0 确实出自你手。签名标签就是带有签名的附注标签。
+
+  git tag -s v1.0 -m "Release 1.0"    创建带签名的标签
+  git verify-tag v1.0                 验证（退出码 0 = 有效）"""
+"verify-tag-1.prompt" = "给当前提交打上签名标签 v1.0（说明为 \"Release 1.0\"），并验证它。"
+"verify-tag-1.hint1" = "-s 会让标签带上签名。"
+"verify-tag-1.check1.fail" = "没有附注标签 v1.0。"
+"verify-tag-1.check2.fail" = "标签 v1.0 没有有效的签名。"
+"verify-tag-1.check3.fail" = "请用 git verify-tag v1.0 验证这个标签。"
+"bugreport.title" = "报告 bug：bugreport"
+"bugreport.theory" = """
+当你向 git 项目报告问题时，他们需要知道你的版本、平台和配置。`git bugreport` 会把这些信息收集到一个文本文件里，你可以编辑后再附上。
+
+  git bugreport                     创建 git-bugreport-<日期>.txt
+  git bugreport -s mybug            创建 git-bugreport-mybug.txt
+  git bugreport -o 文件夹           写到其他位置"""
+"bugreport-1.prompt" = "创建一个后缀为 mybug 的 bug 报告文件（git 会在编辑器中打开它：按 Ctrl+S 保存）。"
+"bugreport-1.hint1" = "-s 选项设定文件名的后缀。"
+"bugreport-1.check1.fail" = "git-bugreport-mybug.txt 还不存在。"
+"bugreport-1.check2.fail" = "报告里应该包含 git 的版本。"
+"diagnose.title" = "收集诊断信息：diagnose"
+"diagnose.theory" = """
+遇到性能或数据损坏的问题时，git 的维护者需要的不仅是一份 bug 报告。`git diagnose`（git 2.38+）会把仓库的有用信息（大小、packfile、配置、引用）打包成一个 zip，“不包含”你文件的内容。
+
+  git diagnose -s mycase       创建 git-diagnostics-mycase.zip
+  git diagnose --mode=all      同时包含更多数据（小心：可能含有敏感路径）"""
+"diagnose-1.prompt" = "把这个仓库的诊断信息收集到一个后缀为 mycase 的 zip 里。"
+"diagnose-1.hint1" = "-s 选项设定 zip 的后缀。"
+"diagnose-1.check1.fail" = "git-diagnostics-mycase.zip 还不存在。"
+"credential-cache.title" = "credential-cache（Linux 和 macOS）"
+"credential-cache.theory" = """
+`credential-cache` 会把你的密码在内存中保存一段时间（默认 15 分钟），然后忘掉：比写到磁盘上更安全。
+
+  git config --global credential.helper 'cache --timeout=3600'
+
+它通过 Unix 套接字与一个小型后台程序通信，所以在 Windows 上“不存在”（在 Windows 上请使用 Git Credential Manager）。因此这一课只讲解，不练习。"""
+"credential-cache-daemon.title" = "credential-cache--daemon（内部命令）"
+"credential-cache-daemon.theory" = """
+`git credential-cache--daemon` 是 `credential-cache` 背后的后台进程。助手第一次需要它时，git 会自动启动它；它把密码保存在内存里，监听 ~/.cache/git/credential/ 中的一个套接字，并在超时后自行退出。
+
+你永远不需要手动启动它。想让它现在就忘掉所有内容：git credential-cache exit。"""
+"fsmonitor-daemon.title" = "fsmonitor--daemon"
+"fsmonitor-daemon.theory" = """
+在巨大的仓库里，`git status` 很慢，因为 git 必须检查每一个文件。`git fsmonitor--daemon` 是一个后台进程，它监视文件系统，并告诉 git 哪些文件发生了变化，这样 status 只需要查看这些文件。
+
+  git config core.fsmonitor true     开启（git 会启动这个守护进程）
+  git fsmonitor--daemon status       它在运行吗？
+  git fsmonitor--daemon stop
+
+它会留下一个常驻进程，并且依赖操作系统的服务，所以本练习只做讲解。"""
+"column.title" = "column（输出排版）"
+"column.theory" = """
+`git column` 会把文本行排成适合你终端宽度的若干列。git 在好几条命令里用的都是同一套机制，你可以通过 column.* 配置来控制：
+
+  git config column.ui auto     输出到终端时，分支和标签列表按列显示
+  git branch --column
+
+作为独立的过滤器，它从标准输入读取：某条命令 | git column --mode=column。由于本练习没有管道，所以只做讲解。"""

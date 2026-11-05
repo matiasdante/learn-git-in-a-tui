@@ -2,36 +2,13 @@ id = "var"
 level = 9
 order = 23
 
-[title]
-en = "Git's own variables: var"
-es = "Las variables de git: var"
-
-[theory]
-en = """
-`git var` prints values git computes: who it thinks you are, which editor it would open.
-
-  git var GIT_AUTHOR_IDENT       Name <email> timestamp timezone
-  git var GIT_COMMITTER_IDENT
-  git var GIT_EDITOR
-  git var -l                     everything"""
-es = """
-`git var` imprime valores que git calcula: quién cree que sos, qué editor abriría.
-
-  git var GIT_AUTHOR_IDENT       Nombre <email> marca-de-tiempo zona
-  git var GIT_COMMITTER_IDENT
-  git var GIT_EDITOR
-  git var -l                     todo"""
-
 [[exercise]]
 id = "var-1"
+hints = 1
 solution = ["git var GIT_AUTHOR_IDENT > answer.txt"]
 setup = [
   { do = "git", args = "init" },
 ]
-prompt = { en = "Save the identity git would use as the author of your next commit into answer.txt.", es = "Guardá en answer.txt la identidad que git usaría como autor de tu próximo commit." }
-hints = [
-  { en = "The variable is GIT_AUTHOR_IDENT.", es = "La variable es GIT_AUTHOR_IDENT." },
-]
 checks = [
-  { type = "file_equals_git", path = "answer.txt", args = "var GIT_AUTHOR_IDENT", fail = { en = "answer.txt must contain exactly the output of git var GIT_AUTHOR_IDENT.", es = "answer.txt debe contener exactamente la salida de git var GIT_AUTHOR_IDENT." } },
+  { type = "file_equals_git", path = "answer.txt", args = "var GIT_AUTHOR_IDENT" },
 ]

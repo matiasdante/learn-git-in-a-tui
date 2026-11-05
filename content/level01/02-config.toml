@@ -2,37 +2,11 @@ id = "config"
 level = 1
 order = 2
 
-[title]
-en = "Configuring your identity"
-es = "Configurar tu identidad"
-
-[theory]
-en = """
-Every commit records who made it. If you join a new project and your commits show a wrong name, the history is hard to trust. Set your identity once with `git config`:
-
-  git config --global user.name "Ada Lovelace"
-  git config --global user.email ada@example.com
-  git config --get user.name        reads one value
-
-`--global` stores it for your user. Do not worry: this practice sandbox has its own config, your real one is never touched."""
-es = """
-Cada commit registra quién lo hizo. Si entrás a un proyecto nuevo y tus commits muestran un nombre equivocado, el historial pierde confianza. Configurá tu identidad una vez con `git config`:
-
-  git config --global user.name "Ada Lovelace"
-  git config --global user.email ada@example.com
-  git config --get user.name        lee un valor
-
-`--global` lo guarda para tu usuario. Tranquilo: este sandbox de práctica tiene su propia configuración, la tuya real nunca se toca."""
-
 [[exercise]]
 id = "config-1"
+hints = 2
 solution = ["git config --global user.name \"Ada Lovelace\"", "git config --global user.email ada@example.com"]
-prompt = { en = "Set your name to \"Ada Lovelace\" and your email to ada@example.com.", es = "Configurá tu nombre como \"Ada Lovelace\" y tu email como ada@example.com." }
-hints = [
-  { en = "Use git config with the keys user.name and user.email.", es = "Usá git config con las claves user.name y user.email." },
-  { en = "Quote the name because it has a space: git config --global user.name \"Ada Lovelace\"", es = "Poné el nombre entre comillas porque tiene un espacio: git config --global user.name \"Ada Lovelace\"" },
-]
 checks = [
-  { type = "config", key = "user.name", value = "Ada Lovelace", fail = { en = "user.name is not \"Ada Lovelace\" yet.", es = "user.name todavía no es \"Ada Lovelace\"." } },
-  { type = "config", key = "user.email", value = "ada@example.com", fail = { en = "user.email is not ada@example.com yet.", es = "user.email todavía no es ada@example.com." } },
+  { type = "config", key = "user.name", value = "Ada Lovelace" },
+  { type = "config", key = "user.email", value = "ada@example.com" },
 ]

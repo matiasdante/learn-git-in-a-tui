@@ -2,26 +2,9 @@ id = "symbolic-ref"
 level = 9
 order = 10
 
-[title]
-en = "What HEAD points to: symbolic-ref"
-es = "A qué apunta HEAD: symbolic-ref"
-
-[theory]
-en = """
-HEAD is normally not a hash but a symbolic reference: the name of the current branch. `git symbolic-ref` reads and writes it.
-
-  git symbolic-ref HEAD                         refs/heads/main
-  git symbolic-ref --short HEAD                 main
-  git symbolic-ref HEAD refs/heads/other        switch the current branch WITHOUT touching files (careful!)"""
-es = """
-HEAD normalmente no es un hash sino una referencia simbólica: el nombre de la rama actual. `git symbolic-ref` la lee y la escribe.
-
-  git symbolic-ref HEAD                         refs/heads/main
-  git symbolic-ref --short HEAD                 main
-  git symbolic-ref HEAD refs/heads/otra         cambia la rama actual SIN tocar archivos (¡cuidado!)"""
-
 [[exercise]]
 id = "symbolic-ref-1"
+hints = 1
 solution = ["git symbolic-ref HEAD refs/heads/other"]
 setup = [
   { do = "git", args = "init" },
@@ -30,10 +13,6 @@ setup = [
   { do = "git", args = "commit -m \"Add a\"" },
   { do = "git", args = "branch other" },
 ]
-prompt = { en = "Make HEAD point to the branch other by editing the symbolic reference directly.", es = "Hacé que HEAD apunte a la rama other editando directamente la referencia simbólica." }
-hints = [
-  { en = "symbolic-ref takes the name (HEAD) and then the target ref.", es = "symbolic-ref recibe el nombre (HEAD) y después la referencia destino." },
-]
 checks = [
-  { type = "git_output", args = "symbolic-ref HEAD", equals = "refs/heads/other", fail = { en = "HEAD does not point to refs/heads/other yet.", es = "HEAD todavía no apunta a refs/heads/other." } },
+  { type = "git_output", args = "symbolic-ref HEAD", equals = "refs/heads/other" },
 ]

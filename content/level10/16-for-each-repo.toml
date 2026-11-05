@@ -2,26 +2,9 @@ id = "for-each-repo"
 level = 10
 order = 16
 
-[title]
-en = "The same command in many repos: for-each-repo"
-es = "El mismo comando en muchos repos: for-each-repo"
-
-[theory]
-en = """
-`git for-each-repo` runs a git command in every repository listed in a multi-valued config key. It is how `maintenance` takes care of all your registered repositories.
-
-  git config --global --add maintenance.repo /path/to/repo1
-  git config --global --add maintenance.repo /path/to/repo2
-  git for-each-repo --config=maintenance.repo gc"""
-es = """
-`git for-each-repo` ejecuta un comando de git en cada repositorio listado en una clave de configuración con varios valores. Así `maintenance` cuida todos tus repositorios registrados.
-
-  git config --global --add maintenance.repo /ruta/al/repo1
-  git config --global --add maintenance.repo /ruta/al/repo2
-  git for-each-repo --config=maintenance.repo gc"""
-
 [[exercise]]
 id = "for-each-repo-1"
+hints = 1
 solution = ["git for-each-repo --config=maintenance.repo gc"]
 setup = [
   { do = "git", args = "init r1" },
@@ -35,11 +18,7 @@ setup = [
   { do = "git", args = "config --global --add maintenance.repo r1" },
   { do = "git", args = "config --global --add maintenance.repo r2" },
 ]
-prompt = { en = "The folders r1 and r2 are listed in the config key maintenance.repo. Run gc in both with a single command.", es = "Las carpetas r1 y r2 están listadas en la clave maintenance.repo. Ejecutá gc en las dos con un solo comando." }
-hints = [
-  { en = "for-each-repo takes --config=<key> and then the git command.", es = "for-each-repo recibe --config=<clave> y después el comando de git." },
-]
 checks = [
-  { type = "git_output", args = "count-objects -v", contains = "count: 0", repo = "r1", fail = { en = "r1 still has loose objects.", es = "r1 todavía tiene objetos sueltos." } },
-  { type = "git_output", args = "count-objects -v", contains = "count: 0", repo = "r2", fail = { en = "r2 still has loose objects.", es = "r2 todavía tiene objetos sueltos." } },
+  { type = "git_output", args = "count-objects -v", contains = "count: 0", repo = "r1" },
+  { type = "git_output", args = "count-objects -v", contains = "count: 0", repo = "r2" },
 ]

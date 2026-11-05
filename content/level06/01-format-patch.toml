@@ -2,28 +2,9 @@ id = "format-patch"
 level = 6
 order = 1
 
-[title]
-en = "Commits as files: format-patch"
-es = "Commits como archivos: format-patch"
-
-[theory]
-en = """
-Some projects (the Linux kernel, git itself) accept changes by e-mail, not through pull requests. `git format-patch` turns each commit into a self-contained text file with its author, message and diff, ready to attach or send.
-
-  git format-patch -2                 the last 2 commits -> 0001-....patch, 0002-....patch
-  git format-patch main..feature      every commit of feature that main lacks
-  git format-patch -o outgoing -2     write the files in the folder outgoing
-  git format-patch --stdout -1        print instead of writing files"""
-es = """
-Algunos proyectos (el kernel de Linux, el propio git) aceptan cambios por e-mail y no por pull requests. `git format-patch` convierte cada commit en un archivo de texto autocontenido con su autor, mensaje y diff, listo para adjuntar o enviar.
-
-  git format-patch -2                 los últimos 2 commits -> 0001-....patch, 0002-....patch
-  git format-patch main..feature      cada commit de feature que le falta a main
-  git format-patch -o salida -2       escribe los archivos en la carpeta salida
-  git format-patch --stdout -1        imprime en vez de escribir archivos"""
-
 [[exercise]]
 id = "format-patch-1"
+hints = 2
 solution = ["git format-patch -2"]
 setup = [
   { do = "git", args = "init" },
@@ -37,19 +18,15 @@ setup = [
   { do = "git", args = "add c.txt" },
   { do = "git", args = "commit -m \"Add c\"" },
 ]
-prompt = { en = "Create patch files for the last two commits (\"Add b\" and \"Add c\").", es = "Creá archivos de parche para los últimos dos commits (\"Add b\" y \"Add c\")." }
-hints = [
-  { en = "-2 means the last two commits.", es = "-2 significa los últimos dos commits." },
-  { en = "Type: git format-patch -2", es = "Escribí: git format-patch -2" },
-]
 checks = [
-  { type = "file_exists", path = "0001-Add-b.patch", fail = { en = "0001-Add-b.patch is missing.", es = "Falta 0001-Add-b.patch." } },
-  { type = "file_exists", path = "0002-Add-c.patch", fail = { en = "0002-Add-c.patch is missing.", es = "Falta 0002-Add-c.patch." } },
-  { type = "file_missing", path = "0001-Add-a.patch", fail = { en = "Only the last two commits should become patches.", es = "Solo los últimos dos commits deberían volverse parches." } },
+  { type = "file_exists", path = "0001-Add-b.patch" },
+  { type = "file_exists", path = "0002-Add-c.patch" },
+  { type = "file_missing", path = "0001-Add-a.patch" },
 ]
 
 [[exercise]]
 id = "format-patch-2"
+hints = 2
 solution = ["git format-patch -o outgoing main..feature"]
 setup = [
   { do = "git", args = "init" },
@@ -65,12 +42,7 @@ setup = [
   { do = "git", args = "-c user.name=Alice -c user.email=alice@example.com commit -m \"Add f2\"" },
   { do = "git", args = "switch main" },
 ]
-prompt = { en = "Write one patch per commit of feature (the ones main does not have) into a folder called outgoing.", es = "Escribí un parche por cada commit de feature (los que main no tiene) en una carpeta llamada outgoing." }
-hints = [
-  { en = "main..feature selects the commits of feature that are not in main.", es = "main..feature selecciona los commits de feature que no están en main." },
-  { en = "Add -o outgoing to choose the folder.", es = "Sumá -o outgoing para elegir la carpeta." },
-]
 checks = [
-  { type = "file_exists", path = "outgoing/0001-Add-f1.patch", fail = { en = "outgoing/0001-Add-f1.patch is missing.", es = "Falta outgoing/0001-Add-f1.patch." } },
-  { type = "file_exists", path = "outgoing/0002-Add-f2.patch", fail = { en = "outgoing/0002-Add-f2.patch is missing.", es = "Falta outgoing/0002-Add-f2.patch." } },
+  { type = "file_exists", path = "outgoing/0001-Add-f1.patch" },
+  { type = "file_exists", path = "outgoing/0002-Add-f2.patch" },
 ]

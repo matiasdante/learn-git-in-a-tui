@@ -2,30 +2,9 @@ id = "fsck"
 level = 10
 order = 12
 
-[title]
-en = "Checking integrity: fsck"
-es = "Revisar la integridad: fsck"
-
-[theory]
-en = """
-`git fsck` ("file system check", also called fsck-objects in old scripts) verifies that every object is valid and reachable. It also finds DANGLING objects: commits nobody points to, useful to recover lost work.
-
-  git fsck                      check everything
-  git fsck --lost-found         also copy dangling objects to .git/lost-found/
-  git fsck --no-reflogs         ignore the reflog (lists what reflog still protects)
-
-When you lose a commit, git reflog is faster; fsck is the last resort."""
-es = """
-`git fsck` ("file system check", en scripts viejos también llamado fsck-objects) verifica que cada objeto sea válido y alcanzable. También encuentra objetos COLGANTES: commits a los que nadie apunta, útiles para recuperar trabajo perdido.
-
-  git fsck                      revisa todo
-  git fsck --lost-found         además copia los objetos colgantes a .git/lost-found/
-  git fsck --no-reflogs         ignora el reflog (lista lo que el reflog todavía protege)
-
-Cuando perdés un commit, git reflog es más rápido; fsck es el último recurso."""
-
 [[exercise]]
 id = "fsck-1"
+hints = 2
 solution = ["git fsck --no-reflogs", "echo {{last:fsck --no-reflogs --dangling}} > answer.txt"]
 setup = [
   { do = "git", args = "init" },
@@ -38,11 +17,6 @@ setup = [
   { do = "git", args = "reset --hard HEAD~1" },
   { do = "git", args = "reflog expire --expire=now --all" },
 ]
-prompt = { en = "The commit \"Lost work\" was lost and the reflog no longer remembers it. Find it with fsck and write its hash into answer.txt.", es = "El commit \"Lost work\" se perdió y el reflog ya no lo recuerda. Encontralo con fsck y escribí su hash en answer.txt." }
-hints = [
-  { en = "Look for lines that say dangling commit.", es = "Buscá las líneas que dicen dangling commit." },
-  { en = "git fsck --no-reflogs prints dangling commit <hash>.", es = "git fsck --no-reflogs imprime dangling commit <hash>." },
-]
 checks = [
-  { type = "git_output", args = "log -1 --format=%s {{file:answer.txt}}", equals = "Lost work", fail = { en = "answer.txt must contain the hash of the commit \"Lost work\".", es = "answer.txt debe contener el hash del commit \"Lost work\"." } },
+  { type = "git_output", args = "log -1 --format=%s {{file:answer.txt}}", equals = "Lost work" },
 ]

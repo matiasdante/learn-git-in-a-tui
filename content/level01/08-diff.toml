@@ -2,26 +2,9 @@ id = "diff"
 level = 1
 order = 8
 
-[title]
-en = "What changed: diff"
-es = "Qué cambió: diff"
-
-[theory]
-en = """
-Before committing, review your own work: `git diff` shows the changes that are not staged yet. Lines starting with `+` were added, lines starting with `-` were removed.
-
-  git diff             working tree vs staging area
-  git diff --staged    staging area vs last commit
-  git diff HEAD~1      compare with an older commit"""
-es = """
-Antes de commitear, revisá tu propio trabajo: `git diff` muestra los cambios que todavía no están preparados. Las líneas con `+` se agregaron, las líneas con `-` se quitaron.
-
-  git diff             árbol de trabajo vs área de preparación
-  git diff --staged    área de preparación vs último commit
-  git diff HEAD~1      compara con un commit más viejo"""
-
 [[exercise]]
 id = "diff-1"
+hints = 2
 solution = ["git diff", "echo 2 > answer.txt"]
 setup = [
   { do = "git", args = "init" },
@@ -30,11 +13,6 @@ setup = [
   { do = "git", args = "commit -m \"Add todo\"" },
   { do = "write", path = "todo.txt", content = "one\ntwo\nthree\nfour\nfive\n" },
 ]
-prompt = { en = "todo.txt has uncommitted changes. How many lines were added? Write the number into answer.txt.", es = "todo.txt tiene cambios sin commitear. ¿Cuántas líneas se agregaron? Escribí el número en answer.txt." }
-hints = [
-  { en = "Run git diff and count the lines that start with +.", es = "Ejecutá git diff y contá las líneas que empiezan con +." },
-  { en = "The +++ line is a file header, it does not count.", es = "La línea +++ es un encabezado de archivo, no cuenta." },
-]
 checks = [
-  { type = "file_content", path = "answer.txt", equals = "2", fail = { en = "answer.txt should contain only the number of added lines.", es = "answer.txt debería contener solo el número de líneas agregadas." } },
+  { type = "file_content", path = "answer.txt", equals = "2" },
 ]

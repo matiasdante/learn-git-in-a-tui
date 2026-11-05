@@ -2,30 +2,9 @@ id = "difftool"
 level = 5
 order = 9
 
-[title]
-en = "Viewing changes with a tool: difftool"
-es = "Ver cambios con una herramienta: difftool"
-
-[theory]
-en = """
-`git difftool` runs a diff tool you choose instead of the built-in diff. Teams use graphical viewers; here it is configured to print a unified diff in the console. It takes the same arguments as git diff:
-
-  git difftool                 working tree vs staging area
-  git difftool HEAD~1 HEAD     two commits
-  git difftool --staged
-
-(The program git launches for each file pair is `git difftool--helper`, an internal command you never call yourself.)"""
-es = """
-`git difftool` ejecuta una herramienta de diff a elección en vez del diff integrado. Los equipos usan visores gráficos; acá está configurado para imprimir un diff unificado en la consola. Recibe los mismos argumentos que git diff:
-
-  git difftool                 árbol de trabajo vs área de preparación
-  git difftool HEAD~1 HEAD     dos commits
-  git difftool --staged
-
-(El programa que git lanza para cada par de archivos es `git difftool--helper`, un comando interno que nunca llamás vos.)"""
-
 [[exercise]]
 id = "difftool-1"
+hints = 1
 solution = ["git difftool > diff.txt"]
 setup = [
   { do = "git", args = "init" },
@@ -34,10 +13,6 @@ setup = [
   { do = "git", args = "commit -m \"Add notes\"" },
   { do = "write", path = "notes.txt", content = "first\nchanged line\n" },
 ]
-prompt = { en = "notes.txt has uncommitted changes. View them with git difftool and save its output into diff.txt.", es = "notes.txt tiene cambios sin commitear. Miralos con git difftool y guardá su salida en diff.txt." }
-hints = [
-  { en = "difftool works like git diff; redirect its output with > diff.txt.", es = "difftool funciona como git diff; redirigí su salida con > diff.txt." },
-]
 checks = [
-  { type = "file_contains", path = "diff.txt", contains = "+changed line", fail = { en = "diff.txt must contain the diff of notes.txt (with the added line).", es = "diff.txt debe contener el diff de notes.txt (con la línea agregada)." } },
+  { type = "file_contains", path = "diff.txt", contains = "+changed line" },
 ]

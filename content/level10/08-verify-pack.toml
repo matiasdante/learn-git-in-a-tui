@@ -2,26 +2,9 @@ id = "verify-pack"
 level = 10
 order = 8
 
-[title]
-en = "Checking a pack: verify-pack"
-es = "Revisar un pack: verify-pack"
-
-[theory]
-en = """
-`git verify-pack` checks that a pack and its index are consistent, and with -v it lists every object with its type, size and how it is stored (delta chains).
-
-  git verify-pack -v .git/objects/pack/pack-<hash>.idx
-
-Use `ls .git/objects/pack` to find the name of the pack."""
-es = """
-`git verify-pack` comprueba que un pack y su índice sean consistentes y, con -v, lista cada objeto con su tipo, tamaño y cómo está guardado (cadenas de deltas).
-
-  git verify-pack -v .git/objects/pack/pack-<hash>.idx
-
-Usá `ls .git/objects/pack` para encontrar el nombre del pack."""
-
 [[exercise]]
 id = "verify-pack-1"
+hints = 2
 solution = ["git verify-pack -v {{first:.git/objects/pack:.idx}} > report.txt"]
 setup = [
   { do = "git", args = "init" },
@@ -36,11 +19,6 @@ setup = [
   { do = "git", args = "commit -m \"Add c\"" },
   { do = "git", args = "repack -a -d -q" },
 ]
-prompt = { en = "The repository has one pack in .git/objects/pack. Verify it in verbose mode and save the report into report.txt.", es = "El repositorio tiene un pack en .git/objects/pack. Verificalo en modo detallado y guardá el reporte en report.txt." }
-hints = [
-  { en = "ls .git/objects/pack shows the file names. Use the .idx one.", es = "ls .git/objects/pack muestra los nombres. Usá el .idx." },
-  { en = "git verify-pack -v <that path> > report.txt", es = "git verify-pack -v <esa ruta> > report.txt" },
-]
 checks = [
-  { type = "file_contains", path = "report.txt", contains = "non delta:", fail = { en = "report.txt does not look like the output of verify-pack -v.", es = "report.txt no parece la salida de verify-pack -v." } },
+  { type = "file_contains", path = "report.txt", contains = "non delta:" },
 ]

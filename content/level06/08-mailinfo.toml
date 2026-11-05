@@ -1,21 +1,3 @@
 id = "mailinfo"
 level = 6
 order = 8
-
-[title]
-en = "mailinfo (internal)"
-es = "mailinfo (interno)"
-
-[theory]
-en = """
-`git mailinfo` is a plumbing command used by `git am`. It reads one e-mail from the standard input and splits it into the commit metadata (author, e-mail, date, subject) on its output and the message and the patch into two files you name.
-
-  git mailinfo msg.txt patch.txt < email.txt
-
-You rarely run it yourself; knowing it exists helps when you need to build your own tool to import e-mails."""
-es = """
-`git mailinfo` es un comando de plumbing que usa `git am`. Lee un e-mail de la entrada estándar y lo separa en los metadatos del commit (autor, e-mail, fecha, asunto) en su salida, y el mensaje y el parche en dos archivos que le indicás.
-
-  git mailinfo msg.txt patch.txt < email.txt
-
-Casi nunca lo ejecutás vos; saber que existe ayuda cuando necesitás armar tu propia herramienta para importar e-mails."""

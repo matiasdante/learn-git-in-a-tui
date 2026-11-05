@@ -1,0 +1,196 @@
+"branch.title" = "Branches: criar, renomear, apagar"
+"branch.theory" = """
+Você precisa testar um refactor arriscado sem quebrar o código que sua equipe usa. Um branch é um ponteiro móvel para um commit: criar um é instantâneo e barato, então você pode experimentar à vontade e jogar fora.
+
+  git branch                lista os branches locais (* marca o atual)
+  git branch refactor       cria um branch no commit atual (você continua onde está)
+  git branch -m old new     renomeia um branch
+  git branch -d name        apaga um branch que já foi mesclado
+  git branch -D name        apaga mesmo sem estar mesclado (cuidado)"""
+"branch-1.prompt" = "Crie um branch chamado refactor. Você deve continuar no main."
+"branch-1.hint1" = "git branch seguido de um nome cria o branch sem mudar para ele."
+"branch-1.check1.fail" = "O branch refactor ainda não existe."
+"branch-1.check2.fail" = "Você deveria continuar no main."
+"branch-2.prompt" = "O branch old-experiment já foi mesclado e não é mais necessário. Apague-o."
+"branch-2.hint1" = "Use git branch com a opção de apagar."
+"branch-2.hint2" = "Digite: git branch -d old-experiment"
+"branch-2.check1.fail" = "O old-experiment ainda existe."
+"branch-2.check2.fail" = "O main não pode ser apagado."
+"branch-3.prompt" = "O branch featur tem um erro de digitação. Renomeie-o para feature."
+"branch-3.hint1" = "git branch -m recebe o nome antigo e depois o novo."
+"branch-3.check1.fail" = "O branch feature ainda não existe."
+"branch-3.check2.fail" = "O nome antigo featur ainda existe."
+"switch.title" = "Movendo-se entre branches: switch"
+"switch.theory" = """
+Um colega reporta um bug no `develop` enquanto você está em outro branch. `git switch` leva sua pasta de trabalho para outro branch, trocando os arquivos pela versão desse branch.
+
+  git switch develop        vai para um branch existente
+  git switch -c hotfix      cria um branch e vai para ele
+  git switch -              volta ao branch anterior
+
+Os commits que você fizer agora pertencem ao branch em que está, então os outros branches ficam intactos."""
+"switch-1.prompt" = "Vá para o branch develop."
+"switch-1.hint1" = "Digite: git switch develop"
+"switch-1.check1.fail" = "Você ainda não está no develop."
+"switch-2.prompt" = "Crie o branch hotfix e vá para ele com um único comando."
+"switch-2.hint1" = "A opção -c do switch significa criar."
+"switch-2.hint2" = "Digite: git switch -c hotfix"
+"switch-2.check1.fail" = "Você ainda não está no hotfix."
+"switch-3.prompt" = "Trabalhe em uma funcionalidade sem tocar no main: crie o branch login, vá para ele e faça commit de um arquivo novo login.txt lá."
+"switch-3.hint1" = "Crie o branch primeiro e depois crie e faça commit do arquivo estando nele."
+"switch-3.hint2" = "git switch -c login, depois echo login > login.txt, git add e git commit."
+"switch-3.check1.fail" = "Você deveria estar no branch login."
+"switch-3.check2.fail" = "O login.txt não está commitado no branch login."
+"switch-3.check3.fail" = "O login.txt foi parar no main. O trabalho pertence ao branch login."
+"checkout.title" = "checkout: o canivete suíço antigo"
+"checkout.theory" = """
+Antes do git 2.23, o `git checkout` fazia de tudo: mudar de branch, restaurar arquivos e inspecionar commits antigos. Ele continua funcionando e você vai encontrá-lo em tutoriais e scripts antigos.
+
+  git checkout main                   igual a git switch main
+  git checkout main -- config.txt     traz UM arquivo do main para sua pasta (e o prepara)
+  git checkout HEAD~1                 HEAD desanexado: olhar um commit mais antigo
+
+Em um HEAD desanexado você não está em nenhum branch. Pode olhar e experimentar, mas os commits novos se perdem fácil: crie um branch (git switch -c nome) se quiser guardá-los."""
+"checkout-1.prompt" = "Você está no branch old, onde o config.txt é v1. Traga o config.txt como está no main (v2) sem sair do old."
+"checkout-1.hint1" = "O checkout aceita um branch seguido de -- e um nome de arquivo."
+"checkout-1.hint2" = "Digite: git checkout main -- config.txt"
+"checkout-1.check1.fail" = "Você deveria continuar no branch old."
+"checkout-1.check2.fail" = "O config.txt ainda é v1."
+"checkout-1.check3.fail" = "A mudança deveria estar preparada (checkout com um arquivo o prepara)."
+"checkout-2.prompt" = "Veja o projeto como estava um commit antes do último, sem usar um branch (HEAD desanexado)."
+"checkout-2.hint1" = "HEAD~1 significa o pai do commit atual."
+"checkout-2.hint2" = "Digite: git checkout HEAD~1  (git switch --detach HEAD~1 também funciona)"
+"checkout-2.check1.fail" = "O HEAD ainda aponta para um branch. Deveria estar desanexado."
+"checkout-2.check2.fail" = "O HEAD está desanexado, mas não no commit anterior ao último."
+"merge-ff.title" = "Merge: fast-forward"
+"merge-ff.theory" = """
+Seu branch de funcionalidade está pronto e ninguém mexeu no main nesse meio-tempo. `git merge` traz o trabalho para o branch em que você está. Se o main não se moveu, o git só desliza o ponteiro do main para frente: é um fast-forward e nenhum commit novo é criado.
+
+  git switch main
+  git merge feature            fast-forward quando possível
+  git merge --no-ff feature    sempre cria um commit de merge, o que deixa visível o histórico da funcionalidade"""
+"merge-ff-1.prompt" = "Você está no main. Traga o trabalho do branch feature para o main."
+"merge-ff-1.hint1" = "O merge vai na direção do branch em que você está."
+"merge-ff-1.hint2" = "Digite: git merge feature"
+"merge-ff-1.check1.fail" = "Você deveria estar no main."
+"merge-ff-1.check2.fail" = "O main ainda não inclui o trabalho do feature."
+"merge-ff-1.check3.fail" = "Um fast-forward não deveria criar um commit extra."
+"merge-ff-2.prompt" = "Faça merge do feature no main, mas force um commit de merge mesmo sendo possível um fast-forward."
+"merge-ff-2.hint1" = "Existe uma opção que significa sem fast-forward."
+"merge-ff-2.hint2" = "Digite: git merge --no-ff feature  (um editor abre para a mensagem: salve com Ctrl+S)"
+"merge-ff-2.check1.fail" = "Não há commit de merge. Use a opção --no-ff."
+"merge-ff-2.check2.fail" = "Falta o trabalho do feature."
+"merge-3way.title" = "Merge: três vias"
+"merge-3way.theory" = """
+Enquanto você trabalhava no feature, alguém adicionou commits ao main. Os branches divergiram, então o git não pode apenas deslizar um ponteiro. Ele compara as duas pontas com o ancestral comum (um merge de três vias) e cria um novo commit de merge com dois pais.
+
+  git switch main
+  git merge feature        cria o commit de merge (um editor abre para a mensagem)
+  git merge feature -m "Merge feature"   dá a mensagem diretamente
+
+Se cada lado mudou coisas diferentes, o git as combina sozinho."""
+"merge-3way-1.prompt" = "O main e o feature divergiram. Faça merge do feature no main."
+"merge-3way-1.hint1" = "O mesmo comando de antes. O git vai criar o commit de merge para você."
+"merge-3way-1.hint2" = "Digite: git merge feature  (salve a mensagem no editor com Ctrl+S)"
+"merge-3way-1.check1.fail" = "O commit de merge ainda não existe."
+"merge-3way-1.check2.fail" = "Falta o feature.txt depois do merge."
+"merge-3way-1.check3.fail" = "Falta o main.txt depois do merge."
+"merge-conflict.title" = "Conflitos de merge"
+"merge-conflict.theory" = """
+Dois branches alteraram a mesma linha do mesmo arquivo. O git não consegue decidir qual versão está certa, então para e marca o arquivo:
+
+  <<<<<<< HEAD
+  Hello from main
+  =======
+  Hello from feature
+  >>>>>>> feature
+
+Tudo entre `<<<<<<<` e `=======` é o seu lado, o resto é o outro branch. Para resolver:
+
+  1. edite o arquivo para ficar com o conteúdo final (e apague as três linhas de marcação)
+  2. git add <arquivo>
+  3. git commit        (ou git merge --continue)
+
+Se ficar com medo, `git merge --abort` traz tudo de volta ao que era antes do merge."""
+"merge-conflict-1.prompt" = "Faça merge do feature no main. O merge vai dar conflito no greeting.txt: resolva mantendo as duas linhas (a do main primeiro) e conclua o merge com um commit."
+"merge-conflict-1.hint1" = "git merge feature para com um conflito. Abra o arquivo com: edit greeting.txt"
+"merge-conflict-1.hint2" = "Deixe só as duas linhas, sem as marcas <<<<<<<, ======= ou >>>>>>>. Salve com Ctrl+S."
+"merge-conflict-1.hint3" = "Depois: git add greeting.txt e git commit -m \"Merge feature\""
+"merge-conflict-1.check1.fail" = "O merge não terminou: ainda não há commit de merge."
+"merge-conflict-1.check2.fail" = "O greeting.txt ainda tem marcas de conflito."
+"merge-conflict-1.check3.fail" = "Falta a linha do main."
+"merge-conflict-1.check4.fail" = "Falta a linha do feature."
+"merge-conflict-2.prompt" = "Tente fazer merge do feature (vai dar conflito) e depois mude de ideia: aborte o merge para o main ficar exatamente como antes."
+"merge-conflict-2.hint1" = "Primeiro git merge feature. A opção de abortar é do mesmo comando."
+"merge-conflict-2.hint2" = "Digite: git merge --abort"
+"merge-conflict-2.check1.fail" = "Primeiro tente o merge com git merge feature."
+"merge-conflict-2.check2.fail" = "O merge ainda está em andamento. Aborte-o."
+"merge-conflict-2.check3.fail" = "O greeting.txt deveria voltar à versão do main."
+"mergetool.title" = "Resolvendo com mergetool"
+"mergetool.theory" = """
+`git mergetool` percorre cada arquivo em conflito e abre sua ferramenta configurada nele, então você não precisa caçar os arquivos sozinho. Projetos reais usam ferramentas gráficas; aqui o editor embutido abre no arquivo em conflito.
+
+  git mergetool         abre cada arquivo em conflito, um por vez
+  git commit            conclui o merge quando tudo estiver resolvido
+
+Quando você salva e fecha a ferramenta, o git marca o arquivo como resolvido (ele executa o git add por você)."""
+"mergetool-1.prompt" = "Há um merge com o feature em andamento e o greeting.txt tem um conflito. Execute git mergetool, mantenha as duas linhas no editor (salve com Ctrl+S) e depois faça o commit."
+"mergetool-1.hint1" = "Execute git mergetool: o editor abre no greeting.txt. Apague as linhas de marcação."
+"mergetool-1.hint2" = "Depois de salvar, termine com: git commit -m \"Merge feature\""
+"mergetool-1.check1.fail" = "O merge ainda não foi commitado."
+"mergetool-1.check2.fail" = "O greeting.txt ainda tem marcas de conflito."
+"mergetool-1.check3.fail" = "Falta a linha do feature."
+"tag.title" = "Marcando versões: tag"
+"tag.theory" = """
+Um branch se move a cada commit; uma tag fica parada. As tags dão um nome permanente a um commit, tipicamente uma versão como a v1.0.
+
+  git tag v0.9                    tag leve: só um nome para o commit atual
+  git tag -a v1.0 -m "Release"    tag anotada: guarda também autor, data e mensagem (use para versões)
+  git tag v0.8 HEAD~2             marca um commit mais antigo
+  git tag -d v0.8                 apaga uma tag
+  git tag                         lista as tags"""
+"tag-1.prompt" = "Hora de publicar: marque o commit atual com uma tag anotada v1.0 e a mensagem \"First release\"."
+"tag-1.hint1" = "-a torna a tag anotada e -m dá a mensagem dela."
+"tag-1.hint2" = "Digite: git tag -a v1.0 -m \"First release\""
+"tag-1.check1.fail" = "Não há uma tag anotada v1.0."
+"tag-1.check2.fail" = "A v1.0 não aponta para o commit atual."
+"tag-2.prompt" = "A versão 0.9 foi o commit anterior ao último. Marque-o como v0.9 (uma tag leve serve)."
+"tag-2.hint1" = "git tag aceita o commit a marcar depois do nome da tag."
+"tag-2.check1.fail" = "A tag v0.9 não existe."
+"tag-2.check2.fail" = "A v0.9 deve apontar para o commit anterior ao último."
+"tag-3.prompt" = "A tag wrong-tag foi criada por engano. Apague-a."
+"tag-3.hint1" = "git tag tem uma opção para apagar, -d."
+"tag-3.check1.fail" = "A wrong-tag ainda existe."
+"describe.title" = "Dando nome a um commit: describe"
+"describe.theory" = """
+Um build precisa de uma string de versão, mas os commits só têm hashes. `git describe` encontra a tag mais próxima atrás do commit atual e monta um nome legível:
+
+  v1.0-2-g3f9a1c2
+
+Isso se lê: 2 commits depois da v1.0, no commit 3f9a1c2 (o g é de git). Se você está exatamente na tag, recebe apenas v1.0. Útil para números de build e telas "Sobre". Por padrão só tags anotadas são consideradas (adicione --tags para usar também as leves)."""
+"describe-1.prompt" = "Salve o nome que o git describe dá ao commit atual em um arquivo chamado version.txt."
+"describe-1.hint1" = "Você pode enviar a saída de um comando git para um arquivo com > ."
+"describe-1.hint2" = "Digite: git describe > version.txt"
+"describe-1.check1.fail" = "O version.txt deve conter exatamente a saída do git describe."
+"stash.title" = "Guardando trabalho na gaveta: stash"
+"stash.theory" = """
+Você está no meio de uma mudança quando chega um bug urgente. Não dá para fazer commit de um trabalho pela metade, nem trocar de branch com a árvore suja. `git stash` guarda suas mudanças sem commit numa gaveta e deixa a pasta limpa.
+
+  git stash             guarda as mudanças rastreadas e limpa a árvore
+  git stash -u          guarda também os arquivos sem rastreamento
+  git stash list        o que há na gaveta
+  git stash pop         traz de volta o último stash e o remove da lista
+  git stash apply       traz de volta, mas o mantém na lista"""
+"stash-1.prompt" = "O f.txt tem mudanças pela metade e chegou um bug urgente. Guarde suas mudanças para a árvore de trabalho ficar limpa."
+"stash-1.hint1" = "Digite: git stash"
+"stash-1.check1.fail" = "O f.txt ainda tem suas mudanças."
+"stash-1.check2.fail" = "Nada foi guardado no stash."
+"stash-2.prompt" = "O bug urgente foi corrigido. Traga de volta suas mudanças guardadas e remova-as da lista do stash."
+"stash-2.hint1" = "pop traz de volta e tira da lista."
+"stash-2.check1.fail" = "Suas mudanças ainda não voltaram ao f.txt."
+"stash-2.check2.fail" = "O stash ainda tem a entrada. Use pop (ou apague-a)."
+"stash-3.prompt" = "Você criou um arquivo novo, new.txt, que o git ainda não rastreia. Guarde-o também no stash, para ele sumir da pasta."
+"stash-3.hint1" = "Um git stash simples ignora arquivos sem rastreamento. Procure a opção que os inclui."
+"stash-3.hint2" = "Digite: git stash -u"
+"stash-3.check1.fail" = "O new.txt ainda está na pasta."
+"stash-3.check2.fail" = "Nada foi guardado no stash."

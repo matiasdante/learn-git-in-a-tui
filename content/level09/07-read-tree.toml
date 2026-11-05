@@ -2,22 +2,9 @@ id = "read-tree"
 level = 9
 order = 7
 
-[title]
-en = "Tree to index: read-tree"
-es = "De un tree al índice: read-tree"
-
-[theory]
-en = """
-`git read-tree <tree-ish>` is the opposite of write-tree: it loads a tree into the index, replacing it. Files in the working folder are not touched. The porcelain commands reset and checkout use it internally.
-
-  git read-tree HEAD~1        the index now looks like the previous commit"""
-es = """
-`git read-tree <tree-ish>` es lo opuesto de write-tree: carga un tree en el índice, reemplazándolo. Los archivos de la carpeta de trabajo no se tocan. Los comandos de alto nivel reset y checkout lo usan por dentro.
-
-  git read-tree HEAD~1        el índice ahora se parece al commit anterior"""
-
 [[exercise]]
 id = "read-tree-1"
+hints = 1
 solution = ["git read-tree HEAD~1"]
 setup = [
   { do = "git", args = "init" },
@@ -28,11 +15,7 @@ setup = [
   { do = "git", args = "add b.txt" },
   { do = "git", args = "commit -m \"Add b\"" },
 ]
-prompt = { en = "Make the index look like the previous commit (HEAD~1), leaving the files on disk alone.", es = "Hacé que el índice se parezca al commit anterior (HEAD~1), sin tocar los archivos del disco." }
-hints = [
-  { en = "Type: git read-tree HEAD~1", es = "Escribí: git read-tree HEAD~1" },
-]
 checks = [
-  { type = "git_output", args = "ls-files", equals = "a.txt", fail = { en = "The index should only contain a.txt.", es = "El índice debería contener solo a.txt." } },
-  { type = "file_exists", path = "b.txt", fail = { en = "b.txt must remain on disk.", es = "b.txt tiene que quedar en el disco." } },
+  { type = "git_output", args = "ls-files", equals = "a.txt" },
+  { type = "file_exists", path = "b.txt" },
 ]

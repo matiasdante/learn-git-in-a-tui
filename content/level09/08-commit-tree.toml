@@ -2,35 +2,16 @@ id = "commit-tree"
 level = 9
 order = 8
 
-[title]
-en = "Creating a commit by hand: commit-tree"
-es = "Crear un commit a mano: commit-tree"
-
-[theory]
-en = """
-`git commit-tree <tree> -m "message"` creates a commit object for a tree, optionally with parents (-p <commit>), and prints its hash. It does NOT move any branch: the commit exists but nothing points to it until you update a ref.
-
-  git commit-tree <tree> -m "Manual commit"
-  git commit-tree <tree> -p HEAD -m "Child of HEAD""""
-es = """
-`git commit-tree <tree> -m "mensaje"` crea un objeto commit para un tree, opcionalmente con padres (-p <commit>), e imprime su hash. NO mueve ninguna rama: el commit existe pero nada apunta a él hasta que actualices una referencia.
-
-  git commit-tree <tree> -m "Commit manual"
-  git commit-tree <tree> -p HEAD -m "Hijo de HEAD""""
-
 [[exercise]]
 id = "commit-tree-1"
+hints = 1
 solution = ["git commit-tree {{write-tree}} -m \"Manual commit\" > answer.txt"]
 setup = [
   { do = "git", args = "init" },
   { do = "write", path = "a.txt", content = "a\n" },
   { do = "git", args = "add a.txt" },
 ]
-prompt = { en = "a.txt is staged. Create a commit object from the index tree with the message \"Manual commit\" and save its hash into answer.txt. No branch should move.", es = "a.txt está preparado. Creá un objeto commit a partir del tree del índice con el mensaje \"Manual commit\" y guardá su hash en answer.txt. Ninguna rama debe moverse." }
-hints = [
-  { en = "First git write-tree, then git commit-tree <that hash> -m \"Manual commit\".", es = "Primero git write-tree, después git commit-tree <ese hash> -m \"Manual commit\"." },
-]
 checks = [
-  { type = "git_output", args = "log -1 --format=%s {{file:answer.txt}}", equals = "Manual commit", fail = { en = "answer.txt must contain the hash of a commit with the message \"Manual commit\".", es = "answer.txt debe contener el hash de un commit con el mensaje \"Manual commit\"." } },
-  { type = "git_fails", args = "rev-parse --verify HEAD", fail = { en = "A branch moved: commit-tree must not update any branch.", es = "Se movió una rama: commit-tree no debe actualizar ninguna rama." } },
+  { type = "git_output", args = "log -1 --format=%s {{file:answer.txt}}", equals = "Manual commit" },
+  { type = "git_fails", args = "rev-parse --verify HEAD" },
 ]

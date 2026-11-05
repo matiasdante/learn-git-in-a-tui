@@ -1,0 +1,118 @@
+"log-search.title" = "在历史中搜索：log -S、-G 和过滤选项"
+"log-search.theory" = """
+“这个 API 密钥是谁加的？”`git log` 不仅能搜索提交信息，还能搜索改动的“内容”：
+
+  git log -S"API_KEY"        pickaxe：让该字符串出现次数发生变化的提交
+  git log -G"timeout=\\d+"    差异中有某一行匹配该正则的提交
+  git log --author=Bob       某个作者的提交
+  git log --since=2.weeks    最近的提交
+  git log --format=%h        只输出短哈希，每行一个
+
+可按需加上 --oneline 或 --stat，用 -- <路径> 把搜索限制在某个文件。"""
+"log-search-1.prompt" = "某个提交把文本 API_KEY 加进了 config.txt。用 pickaxe 搜索找到它，把它的短哈希写进 answer.txt。"
+"log-search-1.hint1" = "git log -S\"文本\" 会列出添加或删除了该文本的提交。"
+"log-search-1.hint2" = "加上 --format=%h 只打印哈希，再用 > answer.txt 重定向。"
+"log-search-1.check1.fail" = "answer.txt 必须包含添加了 API_KEY 的那个提交（\"Tweak config\"）的哈希。"
+"log-search-2.prompt" = "Bob 写了多少个提交？把数字写进 answer.txt。"
+"log-search-2.hint1" = "git log --author=Bob --oneline 会列出它们；数一数有几行即可。"
+"log-search-2.hint2" = "git rev-list --count --author=Bob HEAD 会直接输出数字。"
+"log-search-2.check1.fail" = "answer.txt 只能包含 Bob 的提交数量这个数字。"
+"shortlog.title" = "谁在贡献：shortlog"
+"shortlog.theory" = """
+`git shortlog` 按作者对历史分组。发布说明和“致谢”名单就是用它生成的。
+
+  git shortlog              按作者分组的提交标题
+  git shortlog -s           只显示每位作者的提交数量
+  git shortlog -sn          按数量排序，最多的在前
+  git shortlog -sne         同时显示邮箱地址"""
+"shortlog-1.prompt" = "哪位作者的提交最多？把他的名字写进 answer.txt。"
+"shortlog-1.hint1" = "git shortlog -sn 会按提交数量对作者排序。"
+"shortlog-1.check1.fail" = "answer.txt 必须包含贡献最多的人的名字。"
+"blame.title" = "逐行追溯：blame"
+"blame.theory" = """
+文件里有一行很奇怪：是谁写的、什么时候、在哪次提交里？`git blame` 会给每一行标注它最后一次被修改的信息。
+
+  git blame app.txt          每一行附带提交、作者和日期
+  git blame -L 2,4 app.txt   只看第 2 到 4 行
+  git blame -w app.txt       忽略仅涉及空白字符的改动
+
+（`git annotate` 作用相同，只是输出格式略有不同。）找到的提交是起点：再对它用 git show 看原因。"""
+"blame-1.prompt" = "app.txt 的第 2 行是谁写的？把作者的名字写进 answer.txt。"
+"blame-1.hint1" = "git blame -L 2,2 app.txt 只标注第 2 行。"
+"blame-1.check1.fail" = "answer.txt 必须包含写第 2 行的人的名字。"
+"grep.title" = "在代码中搜索：grep"
+"grep.theory" = """
+`git grep` 只在已跟踪的文件中搜索（不包括构建产物，也不包括 node_modules），而且很快。它还能搜索任何旧版本。
+
+  git grep TODO              包含 TODO 的行
+  git grep -n TODO           带行号
+  git grep -c TODO           每个文件的匹配数量
+  git grep -h TODO           不显示文件名
+  git grep TODO v1.0         搜索 v1.0 时代码的样子"""
+"grep-1.prompt" = "把已跟踪文件中所有包含 TODO 的行（不带文件名）保存到 todos.txt。"
+"grep-1.hint1" = "-h 会隐藏文件名。"
+"grep-1.hint2" = "输入：git grep -h TODO > todos.txt"
+"grep-1.check1.fail" = "todos.txt 必须恰好包含 git grep -h TODO 的输出。"
+"bisect.title" = "找出罪魁祸首：bisect"
+"bisect.theory" = """
+今天有个 bug，但 8 个提交之前还是好的。与其逐个提交测试，`git bisect` 用二分查找：你告诉它一个好的提交和一个坏的提交，它会切换到中间的提交，你回答好/坏，大约 log2(n) 步之后，它就能指出第一个坏提交。
+
+  git bisect start
+  git bisect bad                 当前提交有这个 bug
+  git bisect good <旧提交>       这个旧提交是好的
+  （git 会切换到中间的提交：测试后，再 git bisect good / git bisect bad）
+  git bisect reset               结束后回到原来的位置
+
+如果你有一个脚本，好的时候以 0 退出、坏的时候以非 0 退出，git 就能全自动完成：git bisect run ./test.sh"""
+"bisect-1.prompt" = "status.txt 在第一个提交里是 \"ok\"，现在是 \"broken\"。当 status.txt 为 ok 时，脚本 ./test.sh 以 0 退出。用 bisect 找到第一个坏提交，把它的哈希写进 answer.txt。"
+"bisect-1.hint1" = "git bisect start <坏> <好> 会设定两端。然后运行 git bisect run ./test.sh。"
+"bisect-1.hint2" = "结束后，git rev-parse refs/bisect/bad 就是罪魁祸首。最后用 git bisect reset 收尾。"
+"bisect-1.check1.fail" = "answer.txt 必须包含 status.txt 第一次变成 broken 的那个提交（\"Change 5\"）的哈希。"
+"show-branch.title" = "比较分支：show-branch"
+"show-branch.theory" = """
+`git show-branch` 会画出一张紧凑的表：每个分支一列，每个提交一行，让你一眼看出分支是如何分叉的、在哪里共享历史。
+
+  git show-branch main feature
+  git show-branch --all           所有分支
+
+标有 * 的提交在当前分支上，标有 + 的在其他分支上；最后几行是共同的祖先。"""
+"show-branch-1.prompt" = "用 git show-branch 比较 main 和 feature，然后在 answer.txt 中写出 feature 比 main 多了多少个提交。"
+"show-branch-1.hint1" = "运行 git show-branch main feature，数一数只属于 feature 的那些行。"
+"show-branch-1.check1.fail" = "请先用 git show-branch 比较这两个分支。"
+"show-branch-1.check2.fail" = "answer.txt 必须包含数字 2。"
+"name-rev.title" = "给哈希起个易读的名字：name-rev"
+"name-rev.theory" = """
+给你一个来自日志或错误报告的哈希，`git name-rev` 会告诉你它相对于某个分支或标签的位置。
+
+  git name-rev <hash>              例如 3f9a1c2 main~3
+  git name-rev --name-only <hash>  只显示名字
+  git name-rev --tags <hash>       相对于标签"""
+"name-rev-1.prompt" = "把 git name-rev 给提交 HEAD~2 起的名字（只要名字）保存到 answer.txt。"
+"name-rev-1.hint1" = "使用 --name-only，并用 > answer.txt 重定向。"
+"name-rev-1.check1.fail" = "answer.txt 必须恰好包含 git name-rev --name-only HEAD~2 的输出。"
+"merge-base.title" = "找到分叉点：merge-base"
+"merge-base.theory" = """
+`feature` 是从 `main` 的哪里分出去的？`git merge-base A B` 会输出两个提交最近的共同祖先：两条历史共享的那个点。合并和变基在内部都会用到它。
+
+  git merge-base main feature
+  git merge-base --is-ancestor A B    如果 A 包含在 B 中，退出码为 0"""
+"merge-base-1.prompt" = "在 answer.txt 中写出 feature 从 main 分出去的那个提交的哈希。"
+"merge-base-1.hint1" = "git merge-base 接两个分支。"
+"merge-base-1.check1.fail" = "answer.txt 必须包含分叉点（\"Two\"）的哈希。"
+"difftool.title" = "用工具查看改动：difftool"
+"difftool.theory" = """
+`git difftool` 会运行你选择的差异工具，而不是内置的 diff。团队通常使用图形化查看器；这里配置成在控制台输出统一格式的差异。它接受和 git diff 相同的参数：
+
+  git difftool                 工作区 对比 暂存区
+  git difftool HEAD~1 HEAD     两个提交之间
+  git difftool --staged
+
+（git 对每一对文件启动的程序是 `git difftool--helper`，这是一个你永远不会自己调用的内部命令。）"""
+"difftool-1.prompt" = "notes.txt 有尚未提交的改动。用 git difftool 查看它们，并把输出保存到 diff.txt。"
+"difftool-1.hint1" = "difftool 的用法和 git diff 一样；用 > diff.txt 重定向输出。"
+"difftool-1.check1.fail" = "diff.txt 必须包含 notes.txt 的差异（带有新增的那一行）。"
+"difftool-helper.title" = "difftool--helper（内部命令）"
+"difftool-helper.theory" = """
+`git difftool--helper` 不是给你用的命令。当你运行 `git difftool` 时，git 会对每个有改动的文件调用一次这个辅助程序；它读取已配置的工具（diff.tool、difftool.<工具>.cmd），准备好文件的 LOCAL 和 REMOTE 两份副本，然后启动你的工具。
+
+你只会在进程列表里，或者调试出问题的 difftool 配置时见到它。如果 difftool 没有任何反应，请检查 git config diff.tool 和 difftool.<工具>.cmd，而不要直接调用这个辅助程序。"""

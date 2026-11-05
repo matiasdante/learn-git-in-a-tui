@@ -2,30 +2,9 @@ id = "tag"
 level = 2
 order = 8
 
-[title]
-en = "Marking releases: tag"
-es = "Marcar versiones: tag"
-
-[theory]
-en = """
-A branch moves with every commit; a tag stays put. Tags give a permanent name to a commit, typically a release such as v1.0.
-
-  git tag v0.9                    lightweight tag: just a name for the current commit
-  git tag -a v1.0 -m "Release"    annotated tag: also stores author, date and message (use this for releases)
-  git tag v0.8 HEAD~2             tag an older commit
-  git tag -d v0.8                 delete a tag
-  git tag                         list tags"""
-es = """
-Una rama se mueve con cada commit; un tag se queda quieto. Los tags le dan un nombre permanente a un commit, típicamente una versión como v1.0.
-
-  git tag v0.9                    tag liviano: solo un nombre para el commit actual
-  git tag -a v1.0 -m "Release"    tag anotado: guarda también autor, fecha y mensaje (usalo para versiones)
-  git tag v0.8 HEAD~2             etiqueta un commit más viejo
-  git tag -d v0.8                 borra un tag
-  git tag                         lista los tags"""
-
 [[exercise]]
 id = "tag-1"
+hints = 2
 solution = ["git tag -a v1.0 -m \"First release\""]
 setup = [
   { do = "git", args = "init" },
@@ -33,18 +12,14 @@ setup = [
   { do = "git", args = "add app.txt" },
   { do = "git", args = "commit -m \"Add app\"" },
 ]
-prompt = { en = "Release time: mark the current commit with an annotated tag v1.0 and the message \"First release\".", es = "Hora de publicar: marcá el commit actual con un tag anotado v1.0 y el mensaje \"First release\"." }
-hints = [
-  { en = "-a makes the tag annotated and -m gives its message.", es = "-a hace el tag anotado y -m le da el mensaje." },
-  { en = "Type: git tag -a v1.0 -m \"First release\"", es = "Escribí: git tag -a v1.0 -m \"First release\"" },
-]
 checks = [
-  { type = "tag_exists", name = "v1.0", annotated = true, fail = { en = "There is no annotated tag v1.0.", es = "No hay un tag anotado v1.0." } },
-  { type = "git_output", args = "rev-parse v1.0^{commit}", same_as = "rev-parse HEAD", fail = { en = "v1.0 does not point to the current commit.", es = "v1.0 no apunta al commit actual." } },
+  { type = "tag_exists", name = "v1.0", annotated = true },
+  { type = "git_output", args = "rev-parse v1.0^{commit}", same_as = "rev-parse HEAD" },
 ]
 
 [[exercise]]
 id = "tag-2"
+hints = 1
 solution = ["git tag v0.9 HEAD~1"]
 setup = [
   { do = "git", args = "init" },
@@ -56,17 +31,14 @@ setup = [
   { do = "write", path = "a.txt", content = "3\n" },
   { do = "git", args = "commit -am \"Third\"" },
 ]
-prompt = { en = "Version 0.9 was the commit before the latest one. Tag it as v0.9 (a lightweight tag is fine).", es = "La versión 0.9 fue el commit anterior al último. Marcalo como v0.9 (alcanza con un tag liviano)." }
-hints = [
-  { en = "git tag accepts the commit to tag after the tag name.", es = "git tag acepta el commit a marcar después del nombre del tag." },
-]
 checks = [
-  { type = "tag_exists", name = "v0.9", fail = { en = "The tag v0.9 does not exist.", es = "El tag v0.9 no existe." } },
-  { type = "git_output", args = "rev-parse v0.9^{commit}", same_as = "rev-parse HEAD~1", fail = { en = "v0.9 must point to the commit before the latest.", es = "v0.9 tiene que apuntar al commit anterior al último." } },
+  { type = "tag_exists", name = "v0.9" },
+  { type = "git_output", args = "rev-parse v0.9^{commit}", same_as = "rev-parse HEAD~1" },
 ]
 
 [[exercise]]
 id = "tag-3"
+hints = 1
 solution = ["git tag -d wrong-tag"]
 setup = [
   { do = "git", args = "init" },
@@ -75,8 +47,6 @@ setup = [
   { do = "git", args = "commit -m \"Add a\"" },
   { do = "git", args = "tag wrong-tag" },
 ]
-prompt = { en = "The tag wrong-tag was created by mistake. Delete it.", es = "El tag wrong-tag se creó por error. Borralo." }
-hints = [{ en = "git tag has a delete option, -d.", es = "git tag tiene una opción para borrar, -d." }]
 checks = [
-  { type = "git_fails", args = "show-ref --verify --quiet refs/tags/wrong-tag", fail = { en = "wrong-tag still exists.", es = "wrong-tag todavía existe." } },
+  { type = "git_fails", args = "show-ref --verify --quiet refs/tags/wrong-tag" },
 ]

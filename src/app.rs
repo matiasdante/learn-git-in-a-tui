@@ -279,8 +279,14 @@ impl App {
         let chosen = match key.code {
             KeyCode::Char('1') | KeyCode::Char('e') => Some(Lang::En),
             KeyCode::Char('2') | KeyCode::Char('s') => Some(Lang::Es),
-            KeyCode::Up | KeyCode::Down => {
-                self.lang = self.lang.toggle();
+            KeyCode::Char('3') | KeyCode::Char('p') => Some(Lang::Pt),
+            KeyCode::Char('4') | KeyCode::Char('z') => Some(Lang::Zh),
+            KeyCode::Up => {
+                self.lang = self.lang.prev();
+                None
+            }
+            KeyCode::Down => {
+                self.lang = self.lang.next();
                 None
             }
             KeyCode::Enter => Some(self.lang),
@@ -308,7 +314,7 @@ impl App {
         };
         match key.code {
             KeyCode::Up | KeyCode::Down => *selected = 1 - *selected,
-            KeyCode::Char('l') => self.lang = self.lang.toggle(),
+            KeyCode::Char('l') => self.lang = self.lang.next(),
             KeyCode::Char('q') => self.quit = true,
             KeyCode::Enter => {
                 if *selected == 0 && !self.content.exam.is_empty() {
@@ -385,7 +391,7 @@ impl App {
             KeyCode::Char('q') | KeyCode::Esc => self.quit = true,
             KeyCode::Char('c') if ctrl => self.quit = true,
             KeyCode::Char('l') => {
-                self.lang = self.lang.toggle();
+                self.lang = self.lang.next();
                 self.progress.lang = Some(self.lang);
                 self.save_progress();
             }
@@ -410,7 +416,7 @@ impl App {
         let lessons: Vec<usize> = self.content.lessons_of(level).map(|(i, _)| i).collect();
         match key.code {
             KeyCode::Esc | KeyCode::Char('q') => self.screen = Screen::Map,
-            KeyCode::Char('l') => self.lang = self.lang.toggle(),
+            KeyCode::Char('l') => self.lang = self.lang.next(),
             KeyCode::Up => self.level_selected = self.level_selected.saturating_sub(1),
             KeyCode::Down if !lessons.is_empty() => {
                 self.level_selected = (self.level_selected + 1).min(lessons.len() - 1);
@@ -434,7 +440,7 @@ impl App {
             KeyCode::Esc | KeyCode::Char('q') => {
                 self.screen = Screen::Level(self.content.lessons[lesson].level);
             }
-            KeyCode::Char('l') => self.lang = self.lang.toggle(),
+            KeyCode::Char('l') => self.lang = self.lang.next(),
             KeyCode::Up => *scroll = scroll.saturating_sub(1),
             KeyCode::Down => *scroll += 1,
             KeyCode::PageUp => *scroll = scroll.saturating_sub(10),
@@ -480,7 +486,6 @@ impl App {
             Ok(()) => self.output.push_line(tr(
                 self.lang,
                 "Sandbox ready. Work in the console, then press F5 to check.",
-                "Sandbox listo. Trabajá en la consola y apretá F5 para verificar.",
             )),
             Err(e) => self.output.push_line(&format!("error: {e:#}")),
         }
@@ -519,12 +524,8 @@ impl App {
                 let points = self.progress.record_pass(&id, hints as u32, failures);
                 self.output.push_line(&format!(
                     "{} +{points} {}",
-                    tr(
-                        self.lang,
-                        "✓ Correct! Press F6 to continue.",
-                        "✓ ¡Correcto! Apretá F6 para continuar."
-                    ),
-                    tr(self.lang, "points", "puntos")
+                    tr(self.lang, "✓ Correct! Press F6 to continue."),
+                    tr(self.lang, "points")
                 ));
                 self.award_achievements();
                 self.save_progress();
@@ -534,11 +535,7 @@ impl App {
                 self.output.push_line(&format!(
                     "✗ {} {}",
                     why.get(self.lang),
-                    tr(
-                        self.lang,
-                        "(sandbox restored to the start of the exercise)",
-                        "(el sandbox volvió al inicio del ejercicio)"
-                    )
+                    tr(self.lang, "(sandbox restored to the start of the exercise)")
                 ));
                 ExStatus::Failed(why)
             }
@@ -566,7 +563,7 @@ impl App {
         for (id, title) in unlocked {
             self.output.push_line(&format!(
                 "★ {}: {}",
-                tr(self.lang, "Achievement unlocked", "Logro desbloqueado"),
+                tr(self.lang, "Achievement unlocked"),
                 title.get(self.lang)
             ));
             self.progress.achievements.insert(id);
@@ -674,7 +671,6 @@ impl App {
                 self.output.push_line(tr(
                     self.lang,
                     "Free mode: a real git sandbox. Your own git config is never touched.",
-                    "Modo libre: un sandbox de git real. Tu configuración de git nunca se toca.",
                 ));
                 self.output
                     .push_line("git, ls, cat, cd, pwd, mkdir, touch, rm, echo > / >>, edit, clear");

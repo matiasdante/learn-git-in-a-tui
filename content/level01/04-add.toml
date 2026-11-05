@@ -2,57 +2,28 @@ id = "add"
 level = 1
 order = 4
 
-[title]
-en = "Status and staging"
-es = "Estado y área de preparación"
-
-[theory]
-en = """
-You edited several files, but only some belong in the next commit. Git has a middle step, the staging area (index): you choose what goes in with `git add`, and `git status` tells you where everything stands.
-
-  git status            what is untracked, modified or staged
-  git add notes.txt     stage one file
-  git add .             stage everything in this folder
-
-`git stage` is an alias of `git add`: it does the same."""
-es = """
-Editaste varios archivos, pero solo algunos van en el próximo commit. Git tiene un paso intermedio, el área de preparación (index): elegís qué entra con `git add`, y `git status` te dice cómo está todo.
-
-  git status            qué está sin seguimiento, modificado o preparado
-  git add notas.txt     prepara un archivo
-  git add .             prepara todo lo de esta carpeta
-
-`git stage` es un alias de `git add`: hace lo mismo."""
-
 [[exercise]]
 id = "add-1"
+hints = 2
 solution = ["git status", "git add notes.txt"]
 setup = [
   { do = "git", args = "init" },
   { do = "write", path = "notes.txt", content = "ideas\n" },
 ]
-prompt = { en = "Look at git status, then stage notes.txt.", es = "Mirá git status y después preparé notes.txt." }
-hints = [
-  { en = "git status shows notes.txt as untracked.", es = "git status muestra notes.txt como sin seguimiento." },
-  { en = "Type: git add notes.txt", es = "Escribí: git add notes.txt" },
-]
 checks = [
-  { type = "status", path = "notes.txt", xy = "A.", fail = { en = "notes.txt is not staged yet. Use git add notes.txt.", es = "notes.txt todavía no está preparado. Usá git add notes.txt." } },
+  { type = "status", path = "notes.txt", xy = "A." },
 ]
 
 [[exercise]]
 id = "add-2"
+hints = 1
 solution = ["git add a.txt"]
 setup = [
   { do = "git", args = "init" },
   { do = "write", path = "a.txt", content = "ready\n" },
   { do = "write", path = "b.txt", content = "not ready\n" },
 ]
-prompt = { en = "Stage only a.txt. b.txt must stay untracked.", es = "Prepará solo a.txt. b.txt tiene que seguir sin seguimiento." }
-hints = [
-  { en = "Name the file you want instead of using a dot.", es = "Nombrá el archivo que querés en vez de usar un punto." },
-]
 checks = [
-  { type = "status", path = "a.txt", xy = "A.", fail = { en = "a.txt is not staged yet.", es = "a.txt todavía no está preparado." } },
-  { type = "status", path = "b.txt", xy = "??", fail = { en = "b.txt should stay untracked, but it was staged. The state was restored: stage only a.txt.", es = "b.txt debía seguir sin seguimiento, pero se preparó. Se restauró el estado: preparé solo a.txt." } },
+  { type = "status", path = "a.txt", xy = "A." },
+  { type = "status", path = "b.txt", xy = "??" },
 ]

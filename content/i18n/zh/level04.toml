@@ -1,0 +1,160 @@
+"reset.title" = "回退：reset"
+"reset.theory" = """
+你提交得太早了。`git reset` 会把当前分支移到另一个提交上，而模式决定你的改动怎么处理：
+
+  git reset --soft HEAD~1    分支回退一个提交；改动保持为“已暂存”
+  git reset HEAD~1           （mixed，默认）改动留在文件里，但“未暂存”
+  git reset --hard HEAD~1    分支回退，改动被“丢弃”
+
+只对还没有发布的提交使用 reset：它会重写历史。--hard 会毁掉工作（不过 git reflog 常常能救回来）。"""
+"reset-1.prompt" = "最后一个提交（Add c）太仓促了。撤销它，但保持改动处于暂存状态，随时可以重新提交。"
+"reset-1.hint1" = "选择那个保留索引的 reset 模式。"
+"reset-1.hint2" = "输入：git reset --soft HEAD~1"
+"reset-1.check1.fail" = "最后一个提交还在。"
+"reset-1.check2.fail" = "reset 之后 c.txt 应该处于已暂存状态。"
+"reset-2.prompt" = "撤销最后一个提交并取消暂存，但在磁盘上保留 c.txt 文件。"
+"reset-2.hint1" = "reset 的默认模式正是你需要的。"
+"reset-2.check1.fail" = "最后一个提交还在。"
+"reset-2.check2.fail" = "c.txt 应该存在，但处于未跟踪状态。"
+"reset-3.prompt" = "丢掉最后一个提交以及它改动的所有内容。"
+"reset-3.hint1" = "这就是具有破坏性的那个模式。"
+"reset-3.check1.fail" = "最后一个提交还在。"
+"reset-3.check2.fail" = "c.txt 仍在文件夹里。--hard 会把它删掉。"
+"revert.title" = "安全地撤销：revert"
+"revert.theory" = """
+一个搞坏生产环境的提交已经发布，同事们也都拿到了。你不能重写共享的历史。`git revert` 会创建一个“新”提交，做与旧提交相反的事，所以历史只会不断增长。
+
+  git revert HEAD              撤销最新的提交
+  git revert <commit>          撤销任意提交，即使是很旧的
+  git revert --no-edit HEAD    跳过信息编辑器"""
+"revert-1.prompt" = "最后一个提交搞坏了生产环境，而且已经发布。在不重写历史的前提下撤销它。"
+"revert-1.hint1" = "不要在共享历史上用 reset。使用会新增一个提交的那个命令。"
+"revert-1.hint2" = "输入：git revert HEAD  （按 Ctrl+S 保存信息）"
+"revert-1.check1.fail" = "历史应该有 4 个提交：原来的 3 个加上这次 revert。"
+"revert-1.check2.fail" = "c.txt 还在：这次改动没有被撤销。"
+"revert-1.check3.fail" = "最新的提交应该是一个 revert 提交。"
+"revert-2.prompt" = "提交 \"Add b\"（从上往下数第二个）是个错误。只撤销这一个提交，不要动 a.txt 和 c.txt。"
+"revert-2.hint1" = "revert 可以接任意提交，比如 HEAD~1。"
+"revert-2.hint2" = "输入：git revert HEAD~1"
+"revert-2.check1.fail" = "历史应该有 4 个提交：原来的 3 个加上这次 revert。"
+"revert-2.check2.fail" = "b.txt 还在。"
+"revert-2.check3.fail" = "a.txt 必须保留。"
+"revert-2.check4.fail" = "c.txt 必须保留。"
+"amend.title" = "修正最后一次提交：amend"
+"amend.theory" = """
+提交信息里有错别字，或者漏加了一个文件。与其再叠一个“修复”提交，不如替换最后一个提交：
+
+  git commit --amend -m "新的信息"   修改提交信息
+  git commit --amend --no-edit       保留原信息，并加入已暂存的内容
+
+amend 会创建一个哈希不同的新提交，所以只修正尚未发布的提交。"""
+"amend-1.prompt" = "最后一个提交的信息里有错别字（\"logn\"）。把它改成 \"Add login page\"，不要新建提交。"
+"amend-1.hint1" = "commit 有一个 --amend 选项。"
+"amend-1.hint2" = "输入：git commit --amend -m \"Add login page\""
+"amend-1.check1.fail" = "提交信息还不是 \"Add login page\"。"
+"amend-1.check2.fail" = "仍然应该只有一个提交：amend 是替换它。"
+"amend-2.prompt" = "你忘了把 b.txt（已暂存）放进最后一个提交。把它加到那个提交里，并保留原来的信息。"
+"amend-2.hint1" = "--no-edit 会保留原来的信息。"
+"amend-2.check1.fail" = "b.txt 还没有成为最后一个提交的一部分。"
+"amend-2.check2.fail" = "仍然应该只有一个提交。"
+"rebase.title" = "重写历史：rebase"
+"rebase.theory" = """
+`git rebase` 会把你的提交重放到另一个基点之上。两种经典用法：
+
+1) 让功能分支保持最新，同时不产生合并提交：
+  git switch feature
+  git rebase main            你的提交会被重放到最新的 main 之后
+
+2) 分享之前整理历史，使用交互模式：
+  git rebase -i HEAD~3       打开最近 3 个提交的列表
+  pick   保留    squash   并入上一个提交    drop   删除    reword   修改提交信息
+
+在编辑器里修改列表，按 Ctrl+S 保存，剩下的 git 会替你完成。永远不要对别人已经拿到的提交做变基。"""
+"rebase-1.prompt" = "你在 feature 上，而 main 已经往前走了。把你的提交重放到最新的 main 之上，保持历史线性。"
+"rebase-1.hint1" = "在 feature 上运行 rebase，并指明要变基到哪个分支之上。"
+"rebase-1.hint2" = "输入：git rebase main"
+"rebase-1.check1.fail" = "你应该继续留在 feature 上。"
+"rebase-1.check2.fail" = "feature 还没有基于最新的 main。"
+"rebase-1.check3.fail" = "历史应该是线性的，共 3 个提交：基础提交、main 上的工作和你的功能。"
+"rebase-1.check4.fail" = "出现了合并提交；rebase 本应避免它。"
+"rebase-2.prompt" = "最后三个提交（WIP part 1、WIP part 2、Finish feature）只是杂音。用交互式变基把它们合并成一个提交。"
+"rebase-2.hint1" = "git rebase -i HEAD~3 会显示最近三个提交。"
+"rebase-2.hint2" = "第一个保持 pick，把另外两个从 pick 改成 squash。按 Ctrl+S 保存；第二个编辑器会让你写最终的提交信息。"
+"rebase-2.check1.fail" = "历史应该有 2 个提交：基础提交和合并后的提交。"
+"rebase-2.check2.fail" = "合并后的提交丢了它的改动（d.txt）。"
+"rebase-3.prompt" = "提交 \"Add debug logging\" 绝不能到达团队手里。用交互式变基把它从历史里去掉，同时保留 \"Add b\"。"
+"rebase-3.hint1" = "在列表里，把该提交那一行的 pick 改成 drop。"
+"rebase-3.hint2" = "先运行：git rebase -i HEAD~2"
+"rebase-3.check1.fail" = "debug.txt 仍在项目里：那个提交没有被删除。"
+"rebase-3.check2.fail" = "历史应该有 2 个提交。"
+"rebase-3.check3.fail" = "b.txt 必须保留。"
+"cherry-pick.title" = "摘取一个提交：cherry-pick"
+"cherry-pick.theory" = """
+一个修复存在于一个满是未完成工作的分支里，而你只想把这一个修复放到 main。`git cherry-pick` 会把一个提交作为新提交复制到当前分支。
+
+  git cherry-pick <commit>      复制该提交
+  git cherry-pick feature       复制某个分支的最新提交
+  git cherry-pick A B           复制多个提交"""
+"cherry-pick-1.prompt" = "feature 有两个提交：\"Add b\"（未完成）和 \"Fix c\"。只把最新的那个（Fix c）带到 main。"
+"cherry-pick-1.hint1" = "写出分支名就会选中它的最新提交。"
+"cherry-pick-1.hint2" = "输入：git cherry-pick feature"
+"cherry-pick-1.check1.fail" = "你应该在 main 上。"
+"cherry-pick-1.check2.fail" = "修复（c.txt）还没有进入 main。"
+"cherry-pick-1.check3.fail" = "b.txt 也一起来了：只应该复制最新的那个提交。"
+"cherry-pick-1.check4.fail" = "main 应该有 2 个提交：基础提交和摘取过来的修复。"
+"cherry.title" = "还缺什么：cherry"
+"cherry.theory" = """
+摘取（cherry-pick）之后，怎么知道一个分支上的哪些提交已经在另一个分支里了？`git cherry <upstream> <分支>` 按补丁内容而不是按哈希来比较：
+
+  + 上游还没有的提交
+  - 上游已经有的提交（存在等价的补丁）
+
+  git cherry main feature
+  git cherry -v main feature     同时显示提交标题"""
+"cherry-1.prompt" = "feature 的修复已用 cherry-pick 复制到 main，但 \"Add b\" 没有。把 git cherry main feature 的输出保存到 answer.txt。"
+"cherry-1.hint1" = "用 > answer.txt 重定向输出。"
+"cherry-1.check1.fail" = "answer.txt 必须恰好包含 git cherry main feature 的输出。"
+"range-diff.title" = "比较分支的不同版本：range-diff"
+"range-diff.theory" = """
+你对一个分支做了变基或 amend，评审的人问：“和上一个版本相比改了什么？”直接比较最终的文件树会很嘈杂。`git range-diff` 会把旧版本和新版本的提交一一配对，只显示每一对之间变化的部分。
+
+  git range-diff main v1 v2
+
+`=` 提交相同，`!` 提交有变化，`<` 只存在于旧版本，`>` 只存在于新版本。"""
+"range-diff-1.prompt" = "v2 是分支 v1 修改后的版本（两者都从 main 出发）。把 git range-diff main v1 v2 的输出保存到 answer.txt。"
+"range-diff-1.hint1" = "range-diff 接基点和两个分支。"
+"range-diff-1.check1.fail" = "answer.txt 必须恰好包含 git range-diff main v1 v2 的输出。"
+"reflog.title" = "安全网：reflog"
+"reflog.theory" = """
+你执行了 `git reset --hard`，提交从 `git log` 里消失了。它们并没有真的消失：git 会在几周之内保存一份私人日志，记录 HEAD（以及每个分支）曾经指向哪里，这就是 reflog。
+
+  git reflog                    列出 HEAD 去过的位置，最新的在前
+  HEAD@{1}                      HEAD 前一步所在的位置
+  git reset --hard HEAD@{1}     回到那个状态
+  git branch rescued HEAD@{3}   用一个旧位置创建分支
+
+在 git log 里找不到东西时，先看看 git reflog，别慌。"""
+"reflog-1.prompt" = "你误执行了 git reset --hard HEAD~2，丢了 \"Add b\" 和 \"Add c\"。把它们找回来。"
+"reflog-1.hint1" = "git reflog 会显示 reset 之前 HEAD 所在的位置。"
+"reflog-1.hint2" = "输入：git reset --hard HEAD@{1}"
+"reflog-1.check1.fail" = "那 3 个提交还没有回来。"
+"reflog-1.check2.fail" = "c.txt 仍然缺失。"
+"reflog-2.prompt" = "你在合并之前用 -D 删除了 feature 分支。把它重新创建出来，并带上提交 \"Add f\"。"
+"reflog-2.hint1" = "这个提交还在 reflog 里，就在前一步。"
+"reflog-2.hint2" = "输入：git branch feature HEAD@{1}"
+"reflog-2.check1.fail" = "分支 feature 还不存在。"
+"reflog-2.check2.fail" = "feature 上没有提交 \"Add f\"。"
+"rerere.title" = "记住解决方案：rerere"
+"rerere.theory" = """
+如果你反复对同一个分支做变基，就会一遍又一遍地解决同一个冲突。`rerere`（“reuse recorded resolution”，重用已记录的解决方案）会记录你是怎么解决冲突的，下次遇到相同的冲突时自动应用同样的解决方案。
+
+  git config rerere.enabled true    开启
+  （像平常一样解决冲突）           git 把前后的内容记录在 .git/rr-cache
+  下一次相同的冲突                 自动解决（git rerere status/diff 可以查看）"""
+"rerere-1.prompt" = "开启 rerere，然后合并 feature（会冲突），随便怎么解决 greeting.txt，再提交。git 会记录你的解决方案。"
+"rerere-1.hint1" = "要在合并“之前”开启：git config rerere.enabled true"
+"rerere-1.hint2" = "然后像合并那一课里那样解决冲突。"
+"rerere-1.check1.fail" = "rerere 没有开启。"
+"rerere-1.check2.fail" = "合并还没有提交。"
+"rerere-1.check3.fail" = "greeting.txt 里仍有冲突标记。"
+"rerere-1.check4.fail" = "git 没有记录解决方案。合并之前开启 rerere 了吗？"

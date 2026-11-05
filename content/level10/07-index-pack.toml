@@ -2,24 +2,9 @@ id = "index-pack"
 level = 10
 order = 7
 
-[title]
-en = "Indexing a pack: index-pack"
-es = "Indexar un pack: index-pack"
-
-[theory]
-en = """
-A pack file alone is a long stream; git needs a companion index (.idx) to find an object quickly. `git index-pack` builds the index of a pack that arrived without one.
-
-  git index-pack my.pack         writes my.idx
-  git index-pack --stdin         receive a pack from the input and store it in the repository"""
-es = """
-Un archivo pack solo es un flujo largo; git necesita un índice acompañante (.idx) para encontrar un objeto rápido. `git index-pack` arma el índice de un pack que llegó sin uno.
-
-  git index-pack mi.pack         escribe mi.idx
-  git index-pack --stdin         recibe un pack de la entrada y lo guarda en el repositorio"""
-
 [[exercise]]
 id = "index-pack-1"
+hints = 1
 solution = ["git pack-objects --revs --stdout < revs.txt > my.pack", "git index-pack my.pack"]
 setup = [
   { do = "git", args = "init" },
@@ -34,11 +19,7 @@ setup = [
   { do = "git", args = "commit -m \"Add c\"" },
   { do = "write", path = "revs.txt", content = "HEAD\n" },
 ]
-prompt = { en = "Create my.pack from HEAD (the revisions in revs.txt) as a single stream and build its index.", es = "Creá my.pack a partir de HEAD (las revisiones de revs.txt) como un único flujo y armá su índice." }
-hints = [
-  { en = "First: git pack-objects --revs --stdout < revs.txt > my.pack. Then: git index-pack my.pack.", es = "Primero: git pack-objects --revs --stdout < revs.txt > my.pack. Después: git index-pack my.pack." },
-]
 checks = [
-  { type = "file_exists", path = "my.idx", fail = { en = "my.idx does not exist yet.", es = "my.idx todavía no existe." } },
-  { type = "git_ok", args = "verify-pack my.idx", fail = { en = "my.idx is not a valid index of my.pack.", es = "my.idx no es un índice válido de my.pack." } },
+  { type = "file_exists", path = "my.idx" },
+  { type = "git_ok", args = "verify-pack my.idx" },
 ]

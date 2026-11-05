@@ -2,32 +2,13 @@ id = "stripspace"
 level = 6
 order = 7
 
-[title]
-en = "Cleaning text: stripspace"
-es = "Limpiar texto: stripspace"
-
-[theory]
-en = """
-Git cleans commit messages with the rules of `git stripspace`: it removes trailing spaces, collapses runs of blank lines into one and drops blank lines at the start and the end. You can use it on any text:
-
-  git stripspace < messy.txt > clean.txt
-  git stripspace -s < msg.txt        also remove comment lines (starting with #)"""
-es = """
-Git limpia los mensajes de commit con las reglas de `git stripspace`: quita los espacios al final de línea, junta varias líneas en blanco en una y elimina las líneas en blanco del principio y del final. Podés usarlo con cualquier texto:
-
-  git stripspace < sucio.txt > limpio.txt
-  git stripspace -s < msg.txt        quita también las líneas de comentario (que empiezan con #)"""
-
 [[exercise]]
 id = "stripspace-1"
+hints = 1
 solution = ["git stripspace < messy.txt > clean.txt"]
 setup = [
   { do = "write", path = "messy.txt", content = "  \n\nLine one   \n\n\n\nLine two  \n\n\n" },
 ]
-prompt = { en = "Clean messy.txt with git stripspace and save the result into clean.txt.", es = "Limpiá messy.txt con git stripspace y guardá el resultado en clean.txt." }
-hints = [
-  { en = "stripspace reads standard input: use < messy.txt and > clean.txt.", es = "stripspace lee la entrada estándar: usá < messy.txt y > clean.txt." },
-]
 checks = [
-  { type = "file_content", path = "clean.txt", equals = "Line one\n\nLine two", fail = { en = "clean.txt should be \"Line one\", one blank line, \"Line two\", with no trailing spaces.", es = "clean.txt debería ser \"Line one\", una línea en blanco, \"Line two\", sin espacios al final." } },
+  { type = "file_content", path = "clean.txt", equals = "Line one\n\nLine two" },
 ]

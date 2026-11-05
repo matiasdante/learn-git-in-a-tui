@@ -2,24 +2,9 @@ id = "diff-index"
 level = 9
 order = 17
 
-[title]
-en = "Against a commit: diff-index"
-es = "Contra un commit: diff-index"
-
-[theory]
-en = """
-`git diff-index <commit>` compares a commit with the index and the working tree. With --cached it only compares the commit with the index (what you are about to commit).
-
-  git diff-index --name-only HEAD          every file differing from HEAD
-  git diff-index --cached --name-only HEAD only the staged ones"""
-es = """
-`git diff-index <commit>` compara un commit con el índice y el árbol de trabajo. Con --cached compara solo el commit con el índice (lo que estás por commitear).
-
-  git diff-index --name-only HEAD          cada archivo que difiere de HEAD
-  git diff-index --cached --name-only HEAD solo los preparados"""
-
 [[exercise]]
 id = "diff-index-1"
+hints = 1
 solution = ["git diff-index --cached --name-only HEAD > answer.txt"]
 setup = [
   { do = "git", args = "init" },
@@ -33,10 +18,6 @@ setup = [
   { do = "git", args = "add a.txt" },
   { do = "write", path = "b.txt", content = "b unstaged\n" },
 ]
-prompt = { en = "Save into answer.txt only the names of the files that are STAGED (differ between HEAD and the index).", es = "Guardá en answer.txt solo los nombres de los archivos PREPARADOS (los que difieren entre HEAD y el índice)." }
-hints = [
-  { en = "Add --cached to compare only the index.", es = "Sumá --cached para comparar solo el índice." },
-]
 checks = [
-  { type = "file_equals_git", path = "answer.txt", args = "diff-index --cached --name-only HEAD", fail = { en = "answer.txt must contain exactly the output of git diff-index --cached --name-only HEAD.", es = "answer.txt debe contener exactamente la salida de git diff-index --cached --name-only HEAD." } },
+  { type = "file_equals_git", path = "answer.txt", args = "diff-index --cached --name-only HEAD" },
 ]

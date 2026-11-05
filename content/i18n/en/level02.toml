@@ -1,0 +1,196 @@
+"branch.title" = "Branches: create, rename, delete"
+"branch.theory" = """
+You must try a risky refactor without breaking the code your team uses. A branch is a movable pointer to a commit: creating one is instant and cheap, so you can experiment freely and throw it away.
+
+  git branch                list local branches (* marks the current one)
+  git branch refactor       create a branch at the current commit (you stay where you are)
+  git branch -m old new     rename a branch
+  git branch -d name        delete a branch that is already merged
+  git branch -D name        delete it even if it is not merged (careful)"""
+"branch-1.prompt" = "Create a branch called refactor. You must stay on main."
+"branch-1.hint1" = "git branch followed by a name creates it without switching."
+"branch-1.check1.fail" = "The branch refactor does not exist yet."
+"branch-1.check2.fail" = "You should still be on main."
+"branch-2.prompt" = "The branch old-experiment is already merged and no longer needed. Delete it."
+"branch-2.hint1" = "Use git branch with the delete option."
+"branch-2.hint2" = "Type: git branch -d old-experiment"
+"branch-2.check1.fail" = "old-experiment still exists."
+"branch-2.check2.fail" = "main must not be deleted."
+"branch-3.prompt" = "The branch featur has a typo. Rename it to feature."
+"branch-3.hint1" = "git branch -m takes the old name and then the new one."
+"branch-3.check1.fail" = "The branch feature does not exist yet."
+"branch-3.check2.fail" = "The old name featur still exists."
+"switch.title" = "Moving between branches: switch"
+"switch.theory" = """
+A teammate reports a bug on `develop` while you are on another branch. `git switch` moves your working folder to another branch, replacing the files with that branch's version.
+
+  git switch develop        go to an existing branch
+  git switch -c hotfix      create a branch and go to it
+  git switch -             go back to the previous branch
+
+Commits you make now belong to the branch you are on, so other branches stay untouched."""
+"switch-1.prompt" = "Move to the develop branch."
+"switch-1.hint1" = "Type: git switch develop"
+"switch-1.check1.fail" = "You are not on develop yet."
+"switch-2.prompt" = "Create the branch hotfix and move to it with a single command."
+"switch-2.hint1" = "The -c option of switch means create."
+"switch-2.hint2" = "Type: git switch -c hotfix"
+"switch-2.check1.fail" = "You are not on hotfix yet."
+"switch-3.prompt" = "Work on a feature without touching main: create the branch login, move to it and commit a new file login.txt there."
+"switch-3.hint1" = "Create the branch first, then create and commit the file while you are on it."
+"switch-3.hint2" = "git switch -c login, then echo login > login.txt, git add and git commit."
+"switch-3.check1.fail" = "You should be on the branch login."
+"switch-3.check2.fail" = "login.txt is not committed on the branch login."
+"switch-3.check3.fail" = "login.txt ended up on main. The work belongs on the branch login."
+"checkout.title" = "checkout: the older Swiss army knife"
+"checkout.theory" = """
+Before git 2.23, `git checkout` did everything: switching branches, restoring files and inspecting old commits. It still works and you will meet it in old tutorials and scripts.
+
+  git checkout main                   same as git switch main
+  git checkout main -- config.txt     take ONE file from main into your working folder (and stage it)
+  git checkout HEAD~1                 detached HEAD: look around at an older commit
+
+In a detached HEAD you are not on any branch. You can look and experiment, but new commits are easy to lose: create a branch (git switch -c name) if you want to keep them."""
+"checkout-1.prompt" = "You are on the branch old, where config.txt is v1. Bring config.txt as it is on main (v2) without leaving old."
+"checkout-1.hint1" = "checkout accepts a branch followed by -- and a file name."
+"checkout-1.hint2" = "Type: git checkout main -- config.txt"
+"checkout-1.check1.fail" = "You should stay on the branch old."
+"checkout-1.check2.fail" = "config.txt is still v1."
+"checkout-1.check3.fail" = "The change should be staged (checkout with a file stages it)."
+"checkout-2.prompt" = "Look at the project as it was one commit before the latest, without using a branch (detached HEAD)."
+"checkout-2.hint1" = "HEAD~1 means the parent of the current commit."
+"checkout-2.hint2" = "Type: git checkout HEAD~1  (git switch --detach HEAD~1 also works)"
+"checkout-2.check1.fail" = "HEAD still points to a branch. It should be detached."
+"checkout-2.check2.fail" = "HEAD is detached but not at the commit before the latest."
+"merge-ff.title" = "Merging: fast-forward"
+"merge-ff.theory" = """
+Your feature branch is finished and nobody touched main meanwhile. `git merge` brings the work into the branch you are on. When main has not moved, git just slides the main pointer forward: this is a fast-forward and no new commit is created.
+
+  git switch main
+  git merge feature            fast-forward when possible
+  git merge --no-ff feature    always create a merge commit, which keeps the history of the feature visible"""
+"merge-ff-1.prompt" = "You are on main. Bring the work of the branch feature into main."
+"merge-ff-1.hint1" = "Merge goes in the direction of the branch you are on."
+"merge-ff-1.hint2" = "Type: git merge feature"
+"merge-ff-1.check1.fail" = "You should be on main."
+"merge-ff-1.check2.fail" = "main does not include the work of feature yet."
+"merge-ff-1.check3.fail" = "A fast-forward should not create an extra commit."
+"merge-ff-2.prompt" = "Merge feature into main, but force a merge commit even though a fast-forward is possible."
+"merge-ff-2.hint1" = "There is an option that means no fast-forward."
+"merge-ff-2.hint2" = "Type: git merge --no-ff feature  (an editor opens for the message: save with Ctrl+S)"
+"merge-ff-2.check1.fail" = "There is no merge commit. Use the --no-ff option."
+"merge-ff-2.check2.fail" = "The work of feature is missing."
+"merge-3way.title" = "Merging: three-way"
+"merge-3way.theory" = """
+While you worked on feature, someone added commits to main. The branches diverged, so git cannot just slide a pointer. It compares both tips with their common ancestor (a three-way merge) and creates a new merge commit with two parents.
+
+  git switch main
+  git merge feature        creates the merge commit (an editor opens for the message)
+  git merge feature -m "Merge feature"   give the message directly
+
+If both sides changed different things, git combines them automatically."""
+"merge-3way-1.prompt" = "main and feature diverged. Merge feature into main."
+"merge-3way-1.hint1" = "Same command as before. Git will create the merge commit for you."
+"merge-3way-1.hint2" = "Type: git merge feature  (save the message in the editor with Ctrl+S)"
+"merge-3way-1.check1.fail" = "The merge commit does not exist yet."
+"merge-3way-1.check2.fail" = "feature.txt is missing after the merge."
+"merge-3way-1.check3.fail" = "main.txt is missing after the merge."
+"merge-conflict.title" = "Merge conflicts"
+"merge-conflict.theory" = """
+Two branches changed the same line of the same file. Git cannot decide which version is right, so it stops and marks the file:
+
+  <<<<<<< HEAD
+  Hello from main
+  =======
+  Hello from feature
+  >>>>>>> feature
+
+Everything between `<<<<<<<` and `=======` is your side, the rest is the other branch. To resolve it:
+
+  1. edit the file so it has the final content (and delete the three marker lines)
+  2. git add <file>
+  3. git commit        (or git merge --continue)
+
+If you get scared, `git merge --abort` brings everything back to how it was before the merge."""
+"merge-conflict-1.prompt" = "Merge feature into main. The merge will conflict in greeting.txt: resolve it keeping both lines (main first), and finish the merge with a commit."
+"merge-conflict-1.hint1" = "git merge feature stops with a conflict. Open the file with: edit greeting.txt"
+"merge-conflict-1.hint2" = "Leave only the two lines, with no <<<<<<<, ======= or >>>>>>> markers. Save with Ctrl+S."
+"merge-conflict-1.hint3" = "Then: git add greeting.txt and git commit -m \"Merge feature\""
+"merge-conflict-1.check1.fail" = "The merge is not finished: there is no merge commit yet."
+"merge-conflict-1.check2.fail" = "greeting.txt still has conflict markers."
+"merge-conflict-1.check3.fail" = "The line from main is missing."
+"merge-conflict-1.check4.fail" = "The line from feature is missing."
+"merge-conflict-2.prompt" = "Try to merge feature (it will conflict), then change your mind: abort the merge so main is exactly as before."
+"merge-conflict-2.hint1" = "git merge feature first. The abort option is on the same command."
+"merge-conflict-2.hint2" = "Type: git merge --abort"
+"merge-conflict-2.check1.fail" = "First try the merge with git merge feature."
+"merge-conflict-2.check2.fail" = "The merge is still in progress. Abort it."
+"merge-conflict-2.check3.fail" = "greeting.txt should be back to the version from main."
+"mergetool.title" = "Resolving with mergetool"
+"mergetool.theory" = """
+`git mergetool` walks through every conflicted file and opens your configured tool on it, so you do not have to hunt for the files yourself. Real projects use graphical tools; here the built-in editor opens on the conflicted file.
+
+  git mergetool         open each conflicted file in turn
+  git commit            finish the merge once everything is resolved
+
+When you save and close the tool, git marks the file as resolved (it runs git add for you)."""
+"mergetool-1.prompt" = "A merge with feature is in progress and greeting.txt has a conflict. Run git mergetool, keep both lines in the editor (save with Ctrl+S), then commit."
+"mergetool-1.hint1" = "Run git mergetool: the editor opens on greeting.txt. Delete the marker lines."
+"mergetool-1.hint2" = "After saving, finish with: git commit -m \"Merge feature\""
+"mergetool-1.check1.fail" = "The merge is not committed yet."
+"mergetool-1.check2.fail" = "greeting.txt still has conflict markers."
+"mergetool-1.check3.fail" = "The line from feature is missing."
+"tag.title" = "Marking releases: tag"
+"tag.theory" = """
+A branch moves with every commit; a tag stays put. Tags give a permanent name to a commit, typically a release such as v1.0.
+
+  git tag v0.9                    lightweight tag: just a name for the current commit
+  git tag -a v1.0 -m "Release"    annotated tag: also stores author, date and message (use this for releases)
+  git tag v0.8 HEAD~2             tag an older commit
+  git tag -d v0.8                 delete a tag
+  git tag                         list tags"""
+"tag-1.prompt" = "Release time: mark the current commit with an annotated tag v1.0 and the message \"First release\"."
+"tag-1.hint1" = "-a makes the tag annotated and -m gives its message."
+"tag-1.hint2" = "Type: git tag -a v1.0 -m \"First release\""
+"tag-1.check1.fail" = "There is no annotated tag v1.0."
+"tag-1.check2.fail" = "v1.0 does not point to the current commit."
+"tag-2.prompt" = "Version 0.9 was the commit before the latest one. Tag it as v0.9 (a lightweight tag is fine)."
+"tag-2.hint1" = "git tag accepts the commit to tag after the tag name."
+"tag-2.check1.fail" = "The tag v0.9 does not exist."
+"tag-2.check2.fail" = "v0.9 must point to the commit before the latest."
+"tag-3.prompt" = "The tag wrong-tag was created by mistake. Delete it."
+"tag-3.hint1" = "git tag has a delete option, -d."
+"tag-3.check1.fail" = "wrong-tag still exists."
+"describe.title" = "Naming a commit: describe"
+"describe.theory" = """
+A build needs a version string, but commits only have hashes. `git describe` finds the closest tag behind the current commit and builds a readable name:
+
+  v1.0-2-g3f9a1c2
+
+That reads: 2 commits after v1.0, at commit 3f9a1c2 (the g stands for git). If you are exactly on the tag, you just get v1.0. Handy for build numbers and "About" screens. By default only annotated tags are considered (add --tags to use lightweight ones too)."""
+"describe-1.prompt" = "Save the git describe name of the current commit into a file called version.txt."
+"describe-1.hint1" = "You can send the output of a git command to a file with > ."
+"describe-1.hint2" = "Type: git describe > version.txt"
+"describe-1.check1.fail" = "version.txt must contain exactly the output of git describe."
+"stash.title" = "Parking work: stash"
+"stash.theory" = """
+You are halfway through a change when an urgent bug arrives. You cannot commit half-done work, and you cannot switch branches with a dirty tree. `git stash` puts your uncommitted changes in a drawer and leaves the folder clean.
+
+  git stash             save tracked changes and clean the tree
+  git stash -u          also save untracked files
+  git stash list        what is in the drawer
+  git stash pop         bring the latest stash back and remove it from the list
+  git stash apply       bring it back but keep it in the list"""
+"stash-1.prompt" = "f.txt has half-done changes and an urgent bug arrived. Park your changes so the working tree is clean."
+"stash-1.hint1" = "Type: git stash"
+"stash-1.check1.fail" = "f.txt still has your changes."
+"stash-1.check2.fail" = "Nothing was saved in the stash."
+"stash-2.prompt" = "The urgent bug is fixed. Bring your parked changes back and remove them from the stash list."
+"stash-2.hint1" = "pop brings it back and drops it from the list."
+"stash-2.check1.fail" = "Your changes are not back in f.txt yet."
+"stash-2.check2.fail" = "The stash still has the entry. Use pop (or drop it)."
+"stash-3.prompt" = "You created a brand new file, new.txt, that git does not track yet. Stash it too, so it disappears from the folder."
+"stash-3.hint1" = "A plain git stash ignores untracked files. Look for the option that includes them."
+"stash-3.hint2" = "Type: git stash -u"
+"stash-3.check1.fail" = "new.txt is still in the folder."
+"stash-3.check2.fail" = "Nothing was saved in the stash."

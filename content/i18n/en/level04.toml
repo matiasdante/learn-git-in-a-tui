@@ -1,0 +1,160 @@
+"reset.title" = "Moving back: reset"
+"reset.theory" = """
+You committed too early. `git reset` moves the current branch to another commit, and its mode decides what happens to your changes:
+
+  git reset --soft HEAD~1    branch goes back one commit; the changes stay STAGED
+  git reset HEAD~1           (mixed, the default) changes stay in your files but UNSTAGED
+  git reset --hard HEAD~1    branch goes back and the changes are DISCARDED
+
+Only use reset on commits you have not pushed: it rewrites history. --hard destroys work (though git reflog can often rescue it)."""
+"reset-1.prompt" = "The last commit (Add c) was premature. Undo it but keep its changes staged, ready to commit again."
+"reset-1.hint1" = "Choose the reset mode that keeps the index."
+"reset-1.hint2" = "Type: git reset --soft HEAD~1"
+"reset-1.check1.fail" = "The last commit is still there."
+"reset-1.check2.fail" = "c.txt should be staged after the reset."
+"reset-2.prompt" = "Undo the last commit and unstage its changes, but keep the file c.txt on disk."
+"reset-2.hint1" = "The default reset mode is the one you need."
+"reset-2.check1.fail" = "The last commit is still there."
+"reset-2.check2.fail" = "c.txt should exist but be untracked."
+"reset-3.prompt" = "Throw away the last commit and everything it changed."
+"reset-3.hint1" = "This is the destructive mode."
+"reset-3.check1.fail" = "The last commit is still there."
+"reset-3.check2.fail" = "c.txt is still in the folder. --hard removes it."
+"revert.title" = "Undoing safely: revert"
+"revert.theory" = """
+A commit that broke production is already pushed and teammates have it. You must not rewrite shared history. `git revert` creates a NEW commit that does the opposite of an old one, so history only grows.
+
+  git revert HEAD              undo the latest commit
+  git revert <commit>          undo any commit, even an old one
+  git revert --no-edit HEAD    skip the message editor"""
+"revert-1.prompt" = "The last commit broke production and was already pushed. Undo it without rewriting history."
+"revert-1.hint1" = "Do not use reset on shared history. Use the command that adds a new commit."
+"revert-1.hint2" = "Type: git revert HEAD  (save the message with Ctrl+S)"
+"revert-1.check1.fail" = "History should have 4 commits: the 3 old ones plus the revert."
+"revert-1.check2.fail" = "c.txt is still there: the change was not reverted."
+"revert-1.check3.fail" = "The latest commit should be a revert commit."
+"revert-2.prompt" = "The commit \"Add b\" (the second one from the top) was a mistake. Revert only that commit, leaving a.txt and c.txt alone."
+"revert-2.hint1" = "revert accepts any commit, for example HEAD~1."
+"revert-2.hint2" = "Type: git revert HEAD~1"
+"revert-2.check1.fail" = "History should have 4 commits: the 3 old ones plus the revert."
+"revert-2.check2.fail" = "b.txt is still there."
+"revert-2.check3.fail" = "a.txt must remain."
+"revert-2.check4.fail" = "c.txt must remain."
+"amend.title" = "Fixing the last commit: amend"
+"amend.theory" = """
+A typo in the message, or a file you forgot to add. Instead of stacking a "fix" commit, replace the last one:
+
+  git commit --amend -m "New message"   change the message
+  git commit --amend --no-edit          keep the message, add whatever is staged
+
+Amending creates a new commit with a new hash, so only amend commits you have not pushed."""
+"amend-1.prompt" = "The last commit message has a typo (\"logn\"). Change it to \"Add login page\" without creating another commit."
+"amend-1.hint1" = "commit has an --amend option."
+"amend-1.hint2" = "Type: git commit --amend -m \"Add login page\""
+"amend-1.check1.fail" = "The message is not \"Add login page\" yet."
+"amend-1.check2.fail" = "There should still be one commit: amend replaces it."
+"amend-2.prompt" = "You forgot to include b.txt (already staged) in the last commit. Add it to that commit, keeping the message."
+"amend-2.hint1" = "--no-edit keeps the message."
+"amend-2.check1.fail" = "b.txt is not part of the last commit yet."
+"amend-2.check2.fail" = "There should still be one commit."
+"rebase.title" = "Rewriting history: rebase"
+"rebase.theory" = """
+`git rebase` replays your commits on top of another base. Two classic uses:
+
+1) Keep a feature branch up to date without merge commits:
+  git switch feature
+  git rebase main            your commits are replayed after the latest main
+
+2) Clean up before sharing, with the interactive mode:
+  git rebase -i HEAD~3       opens a list of the last 3 commits
+  pick   keep it    squash   merge it into the previous one    drop   delete it    reword   change its message
+
+Edit the list in the editor, save with Ctrl+S, and git does the rest. Never rebase commits that others already have."""
+"rebase-1.prompt" = "You are on feature and main moved ahead. Replay your commit on top of the latest main, keeping the history linear."
+"rebase-1.hint1" = "Run rebase from feature, naming the branch to rebase onto."
+"rebase-1.hint2" = "Type: git rebase main"
+"rebase-1.check1.fail" = "You should stay on feature."
+"rebase-1.check2.fail" = "feature is not based on the latest main yet."
+"rebase-1.check3.fail" = "History should be linear with 3 commits: base, main work and your feature."
+"rebase-1.check4.fail" = "There is a merge commit; rebase should avoid it."
+"rebase-2.prompt" = "The last three commits (WIP part 1, WIP part 2, Finish feature) are noise. Squash them into a single commit with an interactive rebase."
+"rebase-2.hint1" = "git rebase -i HEAD~3 shows the last three commits."
+"rebase-2.hint2" = "Keep the first as pick and change the other two from pick to squash. Save with Ctrl+S; a second editor asks for the final message."
+"rebase-2.check1.fail" = "History should have 2 commits: the base and the squashed one."
+"rebase-2.check2.fail" = "The squashed commit lost its changes (d.txt)."
+"rebase-3.prompt" = "The commit \"Add debug logging\" should never reach the team. Remove it from the history with an interactive rebase, keeping \"Add b\"."
+"rebase-3.hint1" = "In the list, replace pick by drop on that commit's line."
+"rebase-3.hint2" = "Start with: git rebase -i HEAD~2"
+"rebase-3.check1.fail" = "debug.txt is still in the project: the commit was not dropped."
+"rebase-3.check2.fail" = "History should have 2 commits."
+"rebase-3.check3.fail" = "b.txt must remain."
+"cherry-pick.title" = "Taking one commit: cherry-pick"
+"cherry-pick.theory" = """
+A fix lives on a branch full of unfinished work. You only want that single fix on main. `git cherry-pick` copies one commit onto the current branch as a new commit.
+
+  git cherry-pick <commit>      copy it
+  git cherry-pick feature       copy the latest commit of a branch
+  git cherry-pick A B           copy several"""
+"cherry-pick-1.prompt" = "feature has two commits: \"Add b\" (unfinished) and \"Fix c\". Bring only the latest one (Fix c) into main."
+"cherry-pick-1.hint1" = "Naming the branch picks its latest commit."
+"cherry-pick-1.hint2" = "Type: git cherry-pick feature"
+"cherry-pick-1.check1.fail" = "You should be on main."
+"cherry-pick-1.check2.fail" = "The fix (c.txt) is not in main yet."
+"cherry-pick-1.check3.fail" = "b.txt came along: only the latest commit should be copied."
+"cherry-pick-1.check4.fail" = "main should have 2 commits: base and the cherry-picked fix."
+"cherry.title" = "What is still missing: cherry"
+"cherry.theory" = """
+After cherry-picking, how do you know which commits of a branch are already in another one? `git cherry <upstream> <branch>` compares by patch content, not by hash:
+
+  + commit still missing in upstream
+  - commit that upstream already has (an equivalent patch)
+
+  git cherry main feature
+  git cherry -v main feature     also shows the subjects"""
+"cherry-1.prompt" = "The fix of feature was cherry-picked into main, but \"Add b\" was not. Save the output of git cherry main feature into answer.txt."
+"cherry-1.hint1" = "Redirect the output with > answer.txt."
+"cherry-1.check1.fail" = "answer.txt must contain exactly the output of git cherry main feature."
+"range-diff.title" = "Comparing versions of a branch: range-diff"
+"range-diff.theory" = """
+You rebased or amended a branch and the reviewer asks "what changed since the previous version?". Comparing the final trees is noisy. `git range-diff` pairs up the commits of the old and the new version and shows only what changed between each pair.
+
+  git range-diff main v1 v2
+
+`=` the commit is the same, `!` it changed, `<` it only exists in the old version, `>` only in the new one."""
+"range-diff-1.prompt" = "v2 is a reworked version of the branch v1 (both start at main). Save the output of git range-diff main v1 v2 into answer.txt."
+"range-diff-1.hint1" = "range-diff takes the base and the two branches."
+"range-diff-1.check1.fail" = "answer.txt must contain exactly the output of git range-diff main v1 v2."
+"reflog.title" = "The safety net: reflog"
+"reflog.theory" = """
+You ran `git reset --hard` and your commits vanished from `git log`. They are not gone: git keeps a private journal of where HEAD (and each branch) pointed, the reflog, for weeks.
+
+  git reflog                    list where HEAD has been, newest first
+  HEAD@{1}                      where HEAD was one move ago
+  git reset --hard HEAD@{1}     go back to that state
+  git branch rescued HEAD@{3}   make a branch out of an old position
+
+If you cannot find something in git log, look in git reflog before panicking."""
+"reflog-1.prompt" = "You ran git reset --hard HEAD~2 by mistake and lost \"Add b\" and \"Add c\". Get them back."
+"reflog-1.hint1" = "git reflog shows where HEAD was before the reset."
+"reflog-1.hint2" = "Type: git reset --hard HEAD@{1}"
+"reflog-1.check1.fail" = "The 3 commits are not back yet."
+"reflog-1.check2.fail" = "c.txt is still missing."
+"reflog-2.prompt" = "You deleted the branch feature with -D before merging it. Recreate it with its commit \"Add f\"."
+"reflog-2.hint1" = "The commit is still in the reflog, one move ago."
+"reflog-2.hint2" = "Type: git branch feature HEAD@{1}"
+"reflog-2.check1.fail" = "The branch feature does not exist yet."
+"reflog-2.check2.fail" = "feature does not have the commit \"Add f\"."
+"rerere.title" = "Remembering resolutions: rerere"
+"rerere.theory" = """
+If you rebase the same branch many times, you resolve the same conflict again and again. `rerere` ("reuse recorded resolution") records how you resolved a conflict and applies the same resolution automatically next time.
+
+  git config rerere.enabled true    turn it on
+  (resolve a conflict as usual)     git records the before/after in .git/rr-cache
+  next identical conflict           resolved automatically (git rerere status/diff show it)"""
+"rerere-1.prompt" = "Turn on rerere, then merge feature (it conflicts), resolve greeting.txt however you like and commit. Git will record your resolution."
+"rerere-1.hint1" = "Enable it BEFORE the merge: git config rerere.enabled true"
+"rerere-1.hint2" = "Then resolve the conflict as in the merge lesson."
+"rerere-1.check1.fail" = "rerere is not enabled."
+"rerere-1.check2.fail" = "The merge is not committed yet."
+"rerere-1.check3.fail" = "greeting.txt still has conflict markers."
+"rerere-1.check4.fail" = "git did not record the resolution. Was rerere enabled before the merge?"

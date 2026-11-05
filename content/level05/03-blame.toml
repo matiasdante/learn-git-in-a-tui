@@ -2,30 +2,9 @@ id = "blame"
 level = 5
 order = 3
 
-[title]
-en = "Line by line: blame"
-es = "Línea por línea: blame"
-
-[theory]
-en = """
-A strange line in a file: who wrote it, when, and in which commit? `git blame` annotates each line with its last change.
-
-  git blame app.txt          every line with commit, author and date
-  git blame -L 2,4 app.txt   only lines 2 to 4
-  git blame -w app.txt       ignore whitespace-only changes
-
-(`git annotate` does the same with a slightly different output format.) The commit found is the starting point: use git show on it to read the reason."""
-es = """
-Una línea rara en un archivo: ¿quién la escribió, cuándo y en qué commit? `git blame` anota cada línea con su último cambio.
-
-  git blame app.txt          cada línea con commit, autor y fecha
-  git blame -L 2,4 app.txt   solo las líneas 2 a 4
-  git blame -w app.txt       ignora cambios que son solo de espacios
-
-(`git annotate` hace lo mismo con un formato de salida apenas distinto.) El commit encontrado es el punto de partida: usá git show sobre él para leer el motivo."""
-
 [[exercise]]
 id = "blame-1"
+hints = 1
 solution = ["git blame -L 2,2 app.txt", "echo Bob > answer.txt"]
 setup = [
   { do = "git", args = "init" },
@@ -37,10 +16,6 @@ setup = [
   { do = "write", path = "app.txt", content = "line one\nline two\nline three\n" },
   { do = "git", args = "-c user.name=Carol -c user.email=carol@example.com commit -am \"Add line three\"" },
 ]
-prompt = { en = "Who wrote line 2 of app.txt? Write the author's name into answer.txt.", es = "¿Quién escribió la línea 2 de app.txt? Escribí el nombre del autor en answer.txt." }
-hints = [
-  { en = "git blame -L 2,2 app.txt annotates only line 2.", es = "git blame -L 2,2 app.txt anota solo la línea 2." },
-]
 checks = [
-  { type = "file_content", path = "answer.txt", equals = "Bob", fail = { en = "answer.txt must contain the name of whoever wrote line 2.", es = "answer.txt debe contener el nombre de quien escribió la línea 2." } },
+  { type = "file_content", path = "answer.txt", equals = "Bob" },
 ]

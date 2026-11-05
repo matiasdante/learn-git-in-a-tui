@@ -1,0 +1,191 @@
+"gc.title" = "Housekeeping: gc"
+"gc.theory" = """
+Every commit, tree and file version git creates starts as a separate small LOOSE object. Thousands of them make the repository slow and big. `git gc` ("garbage collection") packs loose objects into compressed packfiles, packs refs and removes unreachable leftovers.
+
+  git gc                  do the cleanup
+  git count-objects -v    "count" = loose objects, "packs" = number of packfiles
+
+Git runs `gc --auto` by itself now and then; running it by hand is for after big operations."""
+"gc-1.prompt" = "Your repository has only loose objects. Run the garbage collection so they end up in a packfile."
+"gc-1.hint1" = "Type: git gc"
+"gc-1.hint2" = "Check with git count-objects -v."
+"gc-1.check1.fail" = "There are still loose objects."
+"gc-1.check2.fail" = "There should be one packfile."
+"prune.title" = "Deleting unreachable objects: prune"
+"prune.theory" = """
+After `git reset --hard` or deleting a branch, some commits become UNREACHABLE: no branch, tag or reflog entry points to them. They stay on disk until pruned. `git prune` deletes them, but only if they are older than an expiry (2 weeks by default) so that nothing in use is lost.
+
+  git fsck --unreachable --no-reflogs     list them
+  git prune --expire=now                  delete them right away (irreversible!)"""
+"prune-1.prompt" = "The commit \"Lost work\" is unreachable and you do not want it anymore. Delete every unreachable object right now."
+"prune-1.hint1" = "A plain git prune keeps recent objects. Add --expire=now."
+"prune-1.check1.fail" = "There are still unreachable objects."
+"prune-packed.title" = "Duplicates: prune-packed"
+"prune-packed.theory" = """
+Packing with `git repack` (without -d) copies loose objects into a pack but leaves the loose originals. `git prune-packed` deletes the loose objects that are already inside a pack.
+
+  git repack -a
+  git prune-packed
+
+`git repack -a -d` does both steps at once."""
+"prune-packed-1.prompt" = "The objects were packed but the loose copies are still there. Remove the loose objects that are already in a pack."
+"prune-packed-1.hint1" = "Type: git prune-packed"
+"prune-packed-1.check1.fail" = "There are still loose objects that are already packed."
+"prune-packed-1.check2.fail" = "The pack must stay."
+"repack.title" = "Repacking: repack"
+"repack.theory" = """
+`git repack` is the packing step of gc. The useful options:
+
+  git repack -a        put EVERYTHING in one pack (not only the new loose objects)
+  git repack -d        delete the redundant packs and loose objects afterwards
+  git repack -a -d     the classic combination
+  git repack -a -d -f  recompute deltas from scratch (slow, best compression)"""
+"repack-1.prompt" = "Put all the objects in a single pack and delete the loose objects in one command."
+"repack-1.hint1" = "You need -a (all) and -d (delete redundant)."
+"repack-1.check1.fail" = "There are still loose objects."
+"repack-1.check2.fail" = "There should be exactly one pack."
+"pack-objects.title" = "Building a pack: pack-objects"
+"pack-objects.theory" = """
+`git pack-objects` is what runs behind every push, fetch and repack: it receives a list of objects (or revisions with --revs) on its standard input and writes a pack.
+
+  git pack-objects --revs mypack < revs.txt     writes mypack-<hash>.pack and .idx; prints <hash>
+  git pack-objects --revs --stdout < revs.txt > my.pack    one stream to a file
+
+Here revs.txt holds revisions, one per line (HEAD)."""
+"pack-objects-1.prompt" = "Pack everything reachable from HEAD (the revisions listed in revs.txt) into files that start with mypack, and save the hash that pack-objects prints into hash.txt."
+"pack-objects-1.hint1" = "Use --revs, the prefix mypack, < revs.txt and > hash.txt."
+"pack-objects-1.check1.fail" = "No valid pack named mypack-<hash> was found. Did you save the hash into hash.txt?"
+"unpack-objects.title" = "From a pack to loose objects: unpack-objects"
+"unpack-objects.theory" = """
+`git unpack-objects` is the opposite of pack-objects: it reads a pack from the standard input and writes every object as a loose file. It is how a repository receives a small push.
+
+  git unpack-objects < my.pack
+
+Run it INSIDE the repository that must receive the objects."""
+"unpack-objects-1.prompt" = "Make a pack of HEAD (my.pack), create an empty repository ../copy and unpack the pack inside it, so ../copy receives the 9 objects."
+"unpack-objects-1.hint1" = "git pack-objects --revs --stdout < revs.txt > my.pack, then git init ../copy and cd ../copy."
+"unpack-objects-1.hint2" = "Finally: git unpack-objects < ../project/my.pack"
+"unpack-objects-1.check1.fail" = "../copy does not have the 9 loose objects yet."
+"index-pack.title" = "Indexing a pack: index-pack"
+"index-pack.theory" = """
+A pack file alone is a long stream; git needs a companion index (.idx) to find an object quickly. `git index-pack` builds the index of a pack that arrived without one.
+
+  git index-pack my.pack         writes my.idx
+  git index-pack --stdin         receive a pack from the input and store it in the repository"""
+"index-pack-1.prompt" = "Create my.pack from HEAD (the revisions in revs.txt) as a single stream and build its index."
+"index-pack-1.hint1" = "First: git pack-objects --revs --stdout < revs.txt > my.pack. Then: git index-pack my.pack."
+"index-pack-1.check1.fail" = "my.idx does not exist yet."
+"index-pack-1.check2.fail" = "my.idx is not a valid index of my.pack."
+"verify-pack.title" = "Checking a pack: verify-pack"
+"verify-pack.theory" = """
+`git verify-pack` checks that a pack and its index are consistent, and with -v it lists every object with its type, size and how it is stored (delta chains).
+
+  git verify-pack -v .git/objects/pack/pack-<hash>.idx
+
+Use `ls .git/objects/pack` to find the name of the pack."""
+"verify-pack-1.prompt" = "The repository has one pack in .git/objects/pack. Verify it in verbose mode and save the report into report.txt."
+"verify-pack-1.hint1" = "ls .git/objects/pack shows the file names. Use the .idx one."
+"verify-pack-1.hint2" = "git verify-pack -v <that path> > report.txt"
+"verify-pack-1.check1.fail" = "report.txt does not look like the output of verify-pack -v."
+"show-index.title" = "Reading an index: show-index"
+"show-index.theory" = """
+`git show-index` reads a pack index (.idx) from the standard input and prints one line per object: its offset in the pack, its hash and a checksum.
+
+  git show-index < .git/objects/pack/pack-<hash>.idx"""
+"show-index-1.prompt" = "Save the content of the pack index into objects.txt (one line per object)."
+"show-index-1.hint1" = "show-index reads the .idx from the standard input: use < path."
+"show-index-1.check1.fail" = "objects.txt should have 9 lines, one per object."
+"pack-refs.title" = "Packing references: pack-refs"
+"pack-refs.theory" = """
+Every branch and tag is normally a tiny file under .git/refs/. With thousands of refs that is slow. `git pack-refs` moves them into a single file, .git/packed-refs.
+
+  git pack-refs --all     branches and tags (default is tags only)"""
+"pack-refs-1.prompt" = "Move all the branches and tags into .git/packed-refs."
+"pack-refs-1.hint1" = "Without --all only tags are packed."
+"pack-refs-1.check1.fail" = "The branch dev is not in packed-refs yet. Use --all."
+"pack-refs-1.check2.fail" = "The loose file of dev still exists."
+"count-objects.title" = "Measuring the repository: count-objects"
+"count-objects.theory" = """
+`git count-objects` reports how many loose objects there are and how much disk they use. With -v it also reports packs, and "garbage".
+
+  git count-objects         e.g. 9 objects, 36 kilobytes
+  git count-objects -v      count, size, in-pack, packs, size-pack, garbage"""
+"count-objects-1.prompt" = "Save the detailed object statistics of this repository into answer.txt."
+"count-objects-1.hint1" = "-v gives the detailed version."
+"count-objects-1.check1.fail" = "answer.txt must contain exactly the output of git count-objects -v."
+"fsck.title" = "Checking integrity: fsck"
+"fsck.theory" = """
+`git fsck` ("file system check", also called fsck-objects in old scripts) verifies that every object is valid and reachable. It also finds DANGLING objects: commits nobody points to, useful to recover lost work.
+
+  git fsck                      check everything
+  git fsck --lost-found         also copy dangling objects to .git/lost-found/
+  git fsck --no-reflogs         ignore the reflog (lists what reflog still protects)
+
+When you lose a commit, git reflog is faster; fsck is the last resort."""
+"fsck-1.prompt" = "The commit \"Lost work\" was lost and the reflog no longer remembers it. Find it with fsck and write its hash into answer.txt."
+"fsck-1.hint1" = "Look for lines that say dangling commit."
+"fsck-1.hint2" = "git fsck --no-reflogs prints dangling commit <hash>."
+"fsck-1.check1.fail" = "answer.txt must contain the hash of the commit \"Lost work\"."
+"commit-graph.title" = "Faster history: commit-graph"
+"commit-graph.theory" = """
+In a repository with hundreds of thousands of commits, git log and merge-base spend most of their time reading commit objects. A commit-graph file stores the parents and dates of all commits in a compact form so they are answered in memory.
+
+  git commit-graph write --reachable    build it (.git/objects/info/commit-graph)
+  git commit-graph verify               check it"""
+"commit-graph-1.prompt" = "Build the commit-graph file for all the reachable commits."
+"commit-graph-1.hint1" = "Type: git commit-graph write --reachable"
+"commit-graph-1.check1.fail" = "The commit-graph file does not exist yet."
+"commit-graph-1.check2.fail" = "The commit-graph is not valid."
+"multi-pack-index.title" = "Many packs, one index: multi-pack-index"
+"multi-pack-index.theory" = """
+A big repository ends up with many packfiles; looking an object up means checking each .idx. A multi-pack-index is a single index over all the packs of the repository.
+
+  git multi-pack-index write      build it (.git/objects/pack/multi-pack-index)
+  git multi-pack-index verify"""
+"multi-pack-index-1.prompt" = "Write a multi-pack-index for the packs of this repository."
+"multi-pack-index-1.hint1" = "Type: git multi-pack-index write"
+"multi-pack-index-1.check1.fail" = "The multi-pack-index does not exist yet."
+"multi-pack-index-1.check2.fail" = "The multi-pack-index is not valid."
+"maintenance.title" = "Scheduled care: maintenance run"
+"maintenance.theory" = """
+`git maintenance` bundles the housekeeping tasks (gc, commit-graph, prefetch, loose-objects, incremental-repack) and can schedule them.
+
+  git maintenance run                            run the default tasks now
+  git maintenance run --task=commit-graph        only one task
+  git maintenance start / register               SCHEDULE tasks in your operating system (cron, launchd, Task Scheduler)
+
+In this practice only `maintenance run` is practiced: start and register would change the scheduler of your real computer."""
+"maintenance-1.prompt" = "Run only the commit-graph maintenance task, once."
+"maintenance-1.hint1" = "run accepts --task=<name>."
+"maintenance-1.check1.fail" = "Use git maintenance run."
+"maintenance-1.check2.fail" = "The commit-graph task did not leave its files."
+"for-each-repo.title" = "The same command in many repos: for-each-repo"
+"for-each-repo.theory" = """
+`git for-each-repo` runs a git command in every repository listed in a multi-valued config key. It is how `maintenance` takes care of all your registered repositories.
+
+  git config --global --add maintenance.repo /path/to/repo1
+  git config --global --add maintenance.repo /path/to/repo2
+  git for-each-repo --config=maintenance.repo gc"""
+"for-each-repo-1.prompt" = "The folders r1 and r2 are listed in the config key maintenance.repo. Run gc in both with a single command."
+"for-each-repo-1.hint1" = "for-each-repo takes --config=<key> and then the git command."
+"for-each-repo-1.check1.fail" = "r1 still has loose objects."
+"for-each-repo-1.check2.fail" = "r2 still has loose objects."
+"fast-export.title" = "Exporting history: fast-export"
+"fast-export.theory" = """
+`git fast-export` writes the whole history as a text stream of simple commands (blobs, commits, resets). It is the standard way to convert a repository to or from other systems, or to rewrite history with a script.
+
+  git fast-export --all > history.txt"""
+"fast-export-1.prompt" = "Export the whole history of all branches into history.txt."
+"fast-export-1.hint1" = "Type: git fast-export --all > history.txt"
+"fast-export-1.check1.fail" = "history.txt must contain the output of git fast-export --all."
+"fast-import.title" = "Importing history: fast-import"
+"fast-import.theory" = """
+`git fast-import` reads the stream format that fast-export writes (or that a conversion script generates) and creates the objects and refs directly. It is very fast and works inside an existing or empty repository.
+
+  git fast-import < stream.txt
+
+Each commit gives a ref, a committer, a message (`data <bytes>`) and file changes (`M <mode> inline <path>`)."""
+"fast-import-1.prompt" = "stream.txt describes one commit in fast-import format. Import it into this empty repository."
+"fast-import-1.hint1" = "fast-import reads the stream from standard input: use < stream.txt."
+"fast-import-1.check1.fail" = "The commit \"Hello import\" is not on main yet."
+"fast-import-1.check2.fail" = "hello.txt does not have the imported content."

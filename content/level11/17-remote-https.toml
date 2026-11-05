@@ -1,17 +1,3 @@
 id = "remote-https"
 level = 11
 order = 17
-
-[title]
-en = "git remote-https"
-es = "git remote-https"
-
-[theory]
-en = """
-`git remote-https` is the same helper as `remote-http` but for URLs that start with `https://`: the connection is encrypted with TLS and the server certificate is verified.
-
-If git complains about certificates, do NOT disable verification (http.sslVerify=false) for good: install the certificate authority or fix the server certificate."""
-es = """
-`git remote-https` es el mismo ayudante que `remote-http` pero para URL que empiezan con `https://`: la conexión va cifrada con TLS y se verifica el certificado del servidor.
-
-Si git se queja de certificados, NO desactives la verificación (http.sslVerify=false) para siempre: instalá la autoridad certificadora o arreglá el certificado del servidor."""

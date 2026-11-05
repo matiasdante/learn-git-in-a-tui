@@ -1,0 +1,106 @@
+"daemon.title" = "git daemon"
+"daemon.theory" = """
+`git daemon` is a tiny server for the git:// protocol (port 9418). It lets anyone on your network clone a repository without accounts or passwords, read-only by default.
+
+  git daemon --base-path=/srv/git --export-all
+  git clone git://myserver/project.git
+
+There is no authentication or encryption, so it is only suitable for public or private-network read access. For writing use SSH or HTTP."""
+"http-backend.title" = "git http-backend"
+"http-backend.theory" = """
+`git http-backend` is a CGI program: a web server (Apache, nginx...) runs it for each request so that clone, fetch and push work over http:// and https:// with the smart protocol. Authentication and TLS are handled by the web server.
+
+It is the building block behind self-hosted git over HTTP. You configure the web server to call it; you never type the command."""
+"http-fetch.title" = "git http-fetch"
+"http-fetch.theory" = """
+`git http-fetch` downloads objects over the old "dumb" HTTP protocol, where the server is just a folder of static files. It is an internal helper of `git fetch`/`clone` for such servers.
+
+A dumb server needs `git update-server-info` to publish the index files. Modern servers speak the smart protocol and do not need it."""
+"http-push.title" = "git http-push"
+"http-push.theory" = """
+`git http-push` pushes over WebDAV to a dumb HTTP server. It is rarely used today and was removed in recent git versions: smart HTTP (git http-backend) replaced it.
+
+You may meet it in old documentation. If a tutorial tells you to use it, prefer pushing over SSH or smart HTTP."""
+"instaweb.title" = "git instaweb"
+"instaweb.theory" = """
+`git instaweb` starts a local web server with gitweb, a web viewer for your repository (commits, diffs, branches), and opens your browser.
+
+  git instaweb --httpd=lighttpd
+  git instaweb --stop
+
+It needs a web server and Perl installed, and launches a process that stays running, so it is not run in this practice."""
+"update-server-info.title" = "git update-server-info"
+"update-server-info.theory" = """
+A "dumb" HTTP server cannot answer "what branches do you have?", so git writes that information in static files (info/refs, objects/info/packs). `git update-server-info` regenerates them. It is usually run from a post-update hook on the server.
+
+  git update-server-info"""
+"upload-pack.title" = "git upload-pack"
+"upload-pack.theory" = """
+`git upload-pack` is the SERVER half of fetch and clone. When you run `git fetch origin`, your git starts upload-pack on the other side (through SSH, a local path or the daemon). The two talk: the server announces its refs, the client says what it has and wants, and the server sends a pack.
+
+You do not run it yourself; it appears in process lists on servers."""
+"receive-pack.title" = "git receive-pack"
+"receive-pack.theory" = """
+`git receive-pack` is the SERVER half of push: it receives the pack your `git push` sends, checks it, runs the server hooks (pre-receive, update, post-receive) and updates the refs.
+
+The server hooks are where policies live: reject pushes without tests, notify a chat, deploy. Configure the behavior with receive.denyCurrentBranch, receive.fsckObjects, and so on."""
+"send-pack.title" = "git send-pack"
+"send-pack.theory" = """
+`git send-pack` is the CLIENT half of push: it computes what the server lacks, builds a pack and sends it to a `receive-pack`. `git push` calls it for you.
+
+  git send-pack ../server.git main
+
+Useful to understand what push does; in daily work use git push."""
+"fetch-pack.title" = "git fetch-pack"
+"fetch-pack.theory" = """
+`git fetch-pack` is the CLIENT half of fetch: it talks to an `upload-pack`, negotiates which commits you already have and receives the pack. `git fetch` and `git clone` use it internally.
+
+  git fetch-pack ../server.git main
+
+It only downloads objects and prints the hashes; it does not update branches. For daily work use git fetch."""
+"upload-archive.title" = "git upload-archive"
+"upload-archive.theory" = """
+`git upload-archive` is the server side of `git archive --remote=<url>`: it lets you download a tarball of a commit without cloning the whole repository.
+
+  git archive --remote=git@server:project.git HEAD -o snapshot.tar
+
+Many hosting services disable it; if you control the server you enable it with uploadarchive.allowUnreachable and by allowing the command."""
+"upload-archive-writer.title" = "git upload-archive--writer"
+"upload-archive-writer.theory" = """
+`git upload-archive--writer` is a helper process that `git upload-archive` starts to create the archive and write it to the connection, while the parent process relays the progress messages. It exists only inside that exchange.
+
+It never runs on its own and has no options for you."""
+"shell.title" = "git shell"
+"shell.theory" = """
+`git shell` is a restricted login shell for a server account used only for git over SSH. If the `git` user has it as shell, an SSH connection can run git-receive-pack, git-upload-pack and git-upload-archive, and nothing else: no interactive session, no arbitrary commands.
+
+  sudo usermod -s $(which git-shell) git
+
+This is the simplest safe way to host private repositories on your own machine."""
+"remote-ext.title" = "git remote-ext"
+"remote-ext.theory" = """
+A "remote helper" is a program named git-remote-<scheme> that teaches git a new URL scheme. `remote-ext` handles URLs like `ext::ssh -p 2222 server git-upload-pack project.git`: git runs the command you give and talks to it over its input and output.
+
+Because it executes arbitrary commands it is DISABLED by default (protocol.ext.allow). Never enable it for URLs you do not control."""
+"remote-fd.title" = "git remote-fd"
+"remote-fd.theory" = """
+`remote-fd` handles URLs like `fd::3,4`: git talks to the server through file descriptors that the calling program already opened (here 3 for reading, 4 for writing). A program that creates its own connection (a tunnel, a custom transport) starts git with those descriptors ready.
+
+It is a tool for people who embed git in other software, not for daily use."""
+"remote-http.title" = "git remote-http"
+"remote-http.theory" = """
+`git remote-http` is the helper git starts when a URL begins with `http://`. It speaks the smart HTTP protocol (and the old dumb one) using libcurl, and it is where proxy settings (http.proxy), certificate settings and credentials come in.
+
+It shows up in process lists during a clone; the useful part is knowing the http.* settings in git config."""
+"remote-https.title" = "git remote-https"
+"remote-https.theory" = """
+`git remote-https` is the same helper as `remote-http` but for URLs that start with `https://`: the connection is encrypted with TLS and the server certificate is verified.
+
+If git complains about certificates, do NOT disable verification (http.sslVerify=false) for good: install the certificate authority or fix the server certificate."""
+"web-browse.title" = "git web--browse"
+"web-browse.theory" = """
+`git web--browse` opens a URL or a file in your web browser, choosing the right program for your system (xdg-open, open, start, www-browser...). Other commands use it: `git help --web`, `git instaweb`, `git request-pull` helpers.
+
+  git web--browse https://git-scm.com
+
+You can force a browser with `git config web.browser firefox`. In a terminal-only session or this sandbox there is no browser to open."""

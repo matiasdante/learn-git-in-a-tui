@@ -1,21 +1,3 @@
 id = "merge-octopus"
 level = 9
 order = 35
-
-[title]
-en = "Strategy: octopus"
-es = "Estrategia: octopus"
-
-[theory]
-en = """
-`octopus` merges MORE than two branches in a single commit with many parents. It is the default when you pass several branches to git merge, and it refuses to start if there would be a conflict to resolve by hand.
-
-  git merge feature-a feature-b feature-c
-
-Good for joining independent topic branches that do not touch the same lines."""
-es = """
-`octopus` fusiona MÁS de dos ramas en un solo commit con muchos padres. Es la estrategia por defecto cuando le pasás varias ramas a git merge, y se niega a empezar si habría un conflicto para resolver a mano.
-
-  git merge feature-a feature-b feature-c
-
-Sirve para unir ramas temáticas independientes que no tocan las mismas líneas."""

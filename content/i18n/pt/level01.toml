@@ -1,0 +1,184 @@
+"first-steps.title" = "Primeiros passos: versão e ajuda"
+"first-steps.theory" = """
+Um colega escreve: "o git não faz o que a documentação diz na minha máquina". Antes de tudo, pergunte qual versão do git está instalada: comandos como `git switch` ou `git restore` só existem a partir do git 2.23.
+
+  git --version        mostra a versão instalada
+  git help -a          lista todos os subcomandos disponíveis
+  git <comando> -h     uso resumido de um subcomando (funciona offline)
+  git help <comando>   página completa do manual (precisa das man pages instaladas)
+
+Use o console abaixo. Aperte F1 para uma dica e F5 quando achar que terminou."""
+"version-1.prompt" = "Descubra qual versão do git esta máquina tem."
+"version-1.hint1" = "A versão é mostrada por uma opção que começa com dois hifens."
+"version-1.hint2" = "Digite: git --version"
+"version-1.check1.fail" = "Você ainda não perguntou a versão ao git. Execute git --version no console."
+"help-1.prompt" = "Liste todos os subcomandos do git disponíveis."
+"help-1.hint1" = "O comando de ajuda tem uma opção que significa todos."
+"help-1.hint2" = "Digite: git help -a"
+"help-1.check1.fail" = "Execute git help -a para listar todos os subcomandos."
+"config.title" = "Configurando sua identidade"
+"config.theory" = """
+Cada commit registra quem o fez. Se você entra em um projeto novo e seus commits mostram um nome errado, o histórico perde credibilidade. Configure sua identidade uma vez com `git config`:
+
+  git config --global user.name "Ada Lovelace"
+  git config --global user.email ada@example.com
+  git config --get user.name        lê um valor
+
+`--global` guarda para o seu usuário. Fique tranquilo: este sandbox de prática tem sua própria configuração, a sua real nunca é tocada."""
+"config-1.prompt" = "Defina seu nome como \"Ada Lovelace\" e seu e-mail como ada@example.com."
+"config-1.hint1" = "Use git config com as chaves user.name e user.email."
+"config-1.hint2" = "Coloque o nome entre aspas porque tem um espaço: git config --global user.name \"Ada Lovelace\""
+"config-1.check1.fail" = "user.name ainda não é \"Ada Lovelace\"."
+"config-1.check2.fail" = "user.email ainda não é ada@example.com."
+"init.title" = "Criando um repositório"
+"init.theory" = """
+Você começa um projeto pequeno em uma pasta vazia e quer acompanhar seu histórico. `git init` transforma a pasta atual em um repositório criando um diretório oculto `.git` onde o git guarda tudo.
+
+  git init
+
+O primeiro branch aqui se chama `main`. (`git init-db` é um sinônimo antigo que você ainda pode ver em scripts velhos.)"""
+"init-1.prompt" = "Transforme a pasta vazia em um repositório git."
+"init-1.hint1" = "O comando é o nome da ação: inicializar."
+"init-1.hint2" = "Digite: git init"
+"init-1.check1.fail" = "Ainda não há um repositório aqui. Execute git init."
+"init-1.check2.fail" = "O repositório existe, mas o branch dele não é main."
+"add.title" = "Estado e área de preparação"
+"add.theory" = """
+Você editou vários arquivos, mas só alguns entram no próximo commit. O git tem uma etapa intermediária, a área de preparação (index): você escolhe o que entra com `git add`, e `git status` mostra a situação de tudo.
+
+  git status            o que está sem rastreamento, modificado ou preparado
+  git add notes.txt     prepara um arquivo
+  git add .             prepara tudo desta pasta
+
+`git stage` é um alias de `git add`: faz o mesmo."""
+"add-1.prompt" = "Veja o git status e depois prepare o notes.txt."
+"add-1.hint1" = "O git status mostra o notes.txt como sem rastreamento."
+"add-1.hint2" = "Digite: git add notes.txt"
+"add-1.check1.fail" = "O notes.txt ainda não está preparado. Use git add notes.txt."
+"add-2.prompt" = "Prepare apenas o a.txt. O b.txt deve continuar sem rastreamento."
+"add-2.hint1" = "Indique o nome do arquivo que você quer em vez de usar um ponto."
+"add-2.check1.fail" = "O a.txt ainda não está preparado."
+"add-2.check2.fail" = "O b.txt devia continuar sem rastreamento, mas foi preparado. O estado foi restaurado: prepare só o a.txt."
+"commit.title" = "Salvando um instantâneo: commit"
+"commit.theory" = """
+Um commit é um instantâneo do que você preparou, com uma mensagem que explica o porquê. Uma boa mensagem permite que você mesmo no futuro (ou quem revisa) entenda a mudança sem ler o diff.
+
+  git commit -m "Add login page"     faz commit do que está preparado
+  git commit -am "Fix typo"          prepara tudo o que já é rastreado e faz commit
+
+`-a` só pega arquivos que o git já rastreia; arquivos novos ainda precisam de `git add`."""
+"commit-1.prompt" = "Faça commit do arquivo preparado com uma mensagem."
+"commit-1.hint1" = "Use -m para dar a mensagem na mesma linha."
+"commit-1.hint2" = "Digite: git commit -m \"Add hello\""
+"commit-1.check1.fail" = "Ainda não há nenhum commit. Execute git commit -m \"sua mensagem\"."
+"commit-1.check2.fail" = "O hello.txt ainda tem mudanças pendentes."
+"commit-2.prompt" = "O app.txt foi modificado. Prepare e faça commit dessa mudança com um único comando."
+"commit-2.hint1" = "Existe uma opção que prepara os arquivos rastreados ao fazer o commit."
+"commit-2.hint2" = "Digite: git commit -am \"Update app\""
+"commit-2.check1.fail" = "A mudança ainda não foi commitada."
+"commit-2.check2.fail" = "O app.txt ainda tem mudanças pendentes."
+"log.title" = "Lendo o histórico: log"
+"log.theory" = """
+Apareceu um bug e você precisa achar o commit que introduziu uma funcionalidade. `git log` lista os commits do mais novo para o mais antigo. Opções úteis:
+
+  git log --oneline          uma linha por commit
+  git log --graph --oneline  desenha os branches
+  git log -3                 só os três últimos
+
+Todo commit tem um hash (sua identidade). Os primeiros 7 caracteres costumam bastar para se referir a ele."""
+"log-1.prompt" = "Encontre o commit \"Add search bar\" e escreva seu hash curto (7 caracteres) em um arquivo chamado answer.txt."
+"log-1.hint1" = "git log --oneline mostra o hash curto ao lado de cada mensagem."
+"log-1.hint2" = "Escreva com: echo <hash> > answer.txt"
+"log-1.check1.fail" = "O answer.txt não existe ou não contém o hash de \"Add search bar\" (o segundo commit de cima para baixo)."
+"show.title" = "Inspecionando um commit: show"
+"show.theory" = """
+Um colega pergunta "o que o seu último commit mudou?". `git show` exibe um commit: sua mensagem e as mudanças que ele fez.
+
+  git show                 o último commit
+  git show HEAD~1          o anterior
+  git show --stat          quais arquivos, com um resumo
+  git show --name-only     só os nomes dos arquivos"""
+"show-1.prompt" = "Qual arquivo o último commit alterou? Escreva o nome dele em answer.txt."
+"show-1.hint1" = "git show sem argumentos mostra o último commit."
+"show-1.hint2" = "git show --name-only imprime só os nomes dos arquivos."
+"show-1.check1.fail" = "O answer.txt deve conter exatamente o nome do arquivo alterado pelo último commit."
+"diff.title" = "O que mudou: diff"
+"diff.theory" = """
+Antes de fazer commit, revise seu próprio trabalho: `git diff` mostra as mudanças que ainda não foram preparadas. Linhas que começam com `+` foram adicionadas, linhas que começam com `-` foram removidas.
+
+  git diff             árvore de trabalho vs área de preparação
+  git diff --staged    área de preparação vs último commit
+  git diff HEAD~1      compara com um commit mais antigo"""
+"diff-1.prompt" = "O todo.txt tem mudanças sem commit. Quantas linhas foram adicionadas? Escreva o número em answer.txt."
+"diff-1.hint1" = "Execute git diff e conte as linhas que começam com +."
+"diff-1.hint2" = "A linha +++ é um cabeçalho do arquivo, não conta."
+"diff-1.check1.fail" = "O answer.txt deve conter apenas o número de linhas adicionadas."
+"rm.title" = "Removendo arquivos: rm"
+"rm.theory" = """
+Apagar um arquivo com o `rm` normal deixa para o git uma exclusão não preparada para tratar. `git rm` remove o arquivo e prepara a exclusão em um só passo.
+
+  git rm old.txt             apaga o arquivo e prepara a exclusão
+  git rm --cached secret.txt para de rastrear, mas mantém o arquivo no disco
+
+A segunda forma é a solução quando você commitou um arquivo por engano (uma configuração local, uma senha) e quer que o git o esqueça."""
+"rm-1.prompt" = "Remova o old.txt do projeto e prepare essa exclusão."
+"rm-1.hint1" = "Existe um comando do git que apaga e prepara de uma vez."
+"rm-1.check1.fail" = "A exclusão do old.txt não está preparada. Use git rm old.txt."
+"rm-1.check2.fail" = "O old.txt ainda existe no disco."
+"rm-2.prompt" = "O secret.txt foi commitado por engano. Faça o git parar de rastreá-lo, mas mantenha o arquivo no disco."
+"rm-2.hint1" = "Procure uma opção do git rm que só mexa no índice."
+"rm-2.hint2" = "Digite: git rm --cached secret.txt"
+"rm-2.check1.fail" = "O git ainda está rastreando o secret.txt."
+"rm-2.check2.fail" = "O arquivo foi apagado do disco. Ele devia ficar; o estado foi restaurado."
+"mv.title" = "Renomeando arquivos: mv"
+"mv.theory" = """
+Renomear um arquivo na mão faz o git enxergar uma exclusão mais um arquivo novo. `git mv` renomeia e prepara de uma vez, e o git reconhece a renomeação porque o conteúdo é o mesmo.
+
+  git mv draft.txt final.txt
+  git mv notes.txt docs/notes.txt     também move entre pastas"""
+"mv-1.prompt" = "Renomeie o draft.txt para final.txt para que o git registre uma renomeação."
+"mv-1.hint1" = "O comando tem o mesmo nome do do Unix, com git na frente."
+"mv-1.check1.fail" = "O final.txt não é uma renomeação preparada do draft.txt. Use git mv draft.txt final.txt."
+"mv-1.check2.fail" = "O draft.txt ainda existe."
+"restore.title" = "Desfazendo mudanças locais: restore"
+"restore.theory" = """
+Você editou um arquivo e o quebrou. Ou preparou algo que não queria no commit. `git restore` traz as coisas de volta sem mexer no histórico.
+
+  git restore file.txt            descarta suas edições (cuidado: elas se perdem)
+  git restore --staged file.txt   tira da preparação, mantendo suas edições"""
+"restore-1.prompt" = "O config.txt foi editado e quebrou. Descarte a edição e recupere a versão commitada."
+"restore-1.hint1" = "O próprio git status sugere o comando."
+"restore-1.check1.fail" = "O config.txt ainda não tem o conteúdo commitado (v1)."
+"restore-1.check2.fail" = "O config.txt ainda mostra mudanças."
+"restore-2.prompt" = "O f.txt foi preparado por engano. Tire-o da preparação, mas mantenha sua edição (v2) no arquivo."
+"restore-2.hint1" = "Você precisa da opção que age sobre a área de preparação."
+"restore-2.hint2" = "Digite: git restore --staged f.txt"
+"restore-2.check1.fail" = "O f.txt deve estar modificado, mas não preparado."
+"restore-2.check2.fail" = "Sua edição (v2) se perdeu; o estado foi restaurado."
+"gitignore.title" = "Ignorando arquivos: .gitignore"
+"gitignore.theory" = """
+Logs, pastas de build e arquivos do editor não deveriam estar no histórico. Liste padrões em um arquivo `.gitignore` e o git os ignora no `git status`.
+
+  *.log        todo arquivo terminado em .log
+  build/       a pasta build inteira
+
+Para perguntar por que um arquivo é ignorado (ou não), use `git check-ignore -v <caminho>`."""
+"gitignore-1.prompt" = "Crie um .gitignore para que app.log e a pasta build/ sejam ignorados, mas o notes.txt não."
+"gitignore-1.hint1" = "Crie o arquivo com echo '*.log' > .gitignore e adicione mais linhas com >>. Use o comando edit se preferir."
+"gitignore-1.hint2" = "O padrão de pasta termina com uma barra: build/"
+"gitignore-1.check1.fail" = "O app.log ainda não é ignorado. Adicione o padrão *.log."
+"gitignore-1.check2.fail" = "O build/ ainda não é ignorado. Adicione o padrão build/."
+"gitignore-1.check3.fail" = "O notes.txt está sendo ignorado, mas não deveria."
+"clean.title" = "Limpando arquivos sem rastreamento: clean"
+"clean.theory" = """
+Depois de um build que falhou, sua pasta fica cheia de arquivos temporários que o git não rastreia. `git clean` os apaga. É destrutivo (não há desfazer), por isso o git exige `-f` e oferece antes uma simulação.
+
+  git clean -n     mostra o que seria apagado
+  git clean -f     apaga os arquivos sem rastreamento
+  git clean -fd    apaga também as pastas sem rastreamento"""
+"clean-1.prompt" = "Apague os arquivos sem rastreamento (tmp1.txt e tmp2.txt) sem mexer no a.txt."
+"clean-1.hint1" = "Primeiro veja com a opção de simulação e depois execute de verdade."
+"clean-1.hint2" = "Digite: git clean -f"
+"clean-1.check1.fail" = "O tmp1.txt ainda existe. O git clean precisa de -f para apagar de verdade."
+"clean-1.check2.fail" = "O tmp2.txt ainda existe."
+"clean-1.check3.fail" = "O a.txt (rastreado) não pode ser apagado."

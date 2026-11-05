@@ -2,24 +2,9 @@ id = "diff-tree"
 level = 9
 order = 18
 
-[title]
-en = "Between two trees: diff-tree"
-es = "Entre dos trees: diff-tree"
-
-[theory]
-en = """
-`git diff-tree` compares two trees (usually two commits) without touching the working folder. For one commit it compares it with its parent.
-
-  git diff-tree --no-commit-id --name-only -r HEAD     files changed by the latest commit
-  git diff-tree -r A B                                  files that differ between A and B"""
-es = """
-`git diff-tree` compara dos trees (normalmente dos commits) sin tocar la carpeta de trabajo. Con un solo commit lo compara con su padre.
-
-  git diff-tree --no-commit-id --name-only -r HEAD     archivos que cambió el último commit
-  git diff-tree -r A B                                  archivos que difieren entre A y B"""
-
 [[exercise]]
 id = "diff-tree-1"
+hints = 1
 solution = ["git diff-tree --no-commit-id --name-only -r HEAD > answer.txt"]
 setup = [
   { do = "git", args = "init" },
@@ -33,10 +18,6 @@ setup = [
   { do = "git", args = "add c.txt" },
   { do = "git", args = "commit -m \"Add c\"" },
 ]
-prompt = { en = "Save into answer.txt the names of the files changed by the latest commit.", es = "Guardá en answer.txt los nombres de los archivos que cambió el último commit." }
-hints = [
-  { en = "Combine --no-commit-id, --name-only and -r.", es = "Combiná --no-commit-id, --name-only y -r." },
-]
 checks = [
-  { type = "file_equals_git", path = "answer.txt", args = "diff-tree --no-commit-id --name-only -r HEAD", fail = { en = "answer.txt must contain exactly the output of git diff-tree --no-commit-id --name-only -r HEAD.", es = "answer.txt debe contener exactamente la salida de git diff-tree --no-commit-id --name-only -r HEAD." } },
+  { type = "file_equals_git", path = "answer.txt", args = "diff-tree --no-commit-id --name-only -r HEAD" },
 ]

@@ -2,30 +2,9 @@ id = "merge-3way"
 level = 2
 order = 5
 
-[title]
-en = "Merging: three-way"
-es = "Fusionar: tres vías"
-
-[theory]
-en = """
-While you worked on feature, someone added commits to main. The branches diverged, so git cannot just slide a pointer. It compares both tips with their common ancestor (a three-way merge) and creates a new merge commit with two parents.
-
-  git switch main
-  git merge feature        creates the merge commit (an editor opens for the message)
-  git merge feature -m "Merge feature"   give the message directly
-
-If both sides changed different things, git combines them automatically."""
-es = """
-Mientras trabajabas en feature, alguien agregó commits a main. Las ramas divergieron, así que git no puede simplemente deslizar un puntero. Compara las dos puntas con su ancestro común (fusión de tres vías) y crea un commit de fusión nuevo con dos padres.
-
-  git switch main
-  git merge feature        crea el commit de fusión (se abre un editor para el mensaje)
-  git merge feature -m "Merge feature"   da el mensaje directamente
-
-Si cada lado cambió cosas distintas, git las combina solo."""
-
 [[exercise]]
 id = "merge-3way-1"
+hints = 2
 solution = ["git merge feature -m \"Merge feature\""]
 setup = [
   { do = "git", args = "init" },
@@ -41,13 +20,8 @@ setup = [
   { do = "git", args = "add main.txt" },
   { do = "git", args = "commit -m \"Add main work\"" },
 ]
-prompt = { en = "main and feature diverged. Merge feature into main.", es = "main y feature divergieron. Fusioná feature en main." }
-hints = [
-  { en = "Same command as before. Git will create the merge commit for you.", es = "El mismo comando de antes. Git va a crear el commit de fusión por vos." },
-  { en = "Type: git merge feature  (save the message in the editor with Ctrl+S)", es = "Escribí: git merge feature  (guardá el mensaje en el editor con Ctrl+S)" },
-]
 checks = [
-  { type = "git_ok", args = "rev-parse --verify HEAD^2", fail = { en = "The merge commit does not exist yet.", es = "El commit de fusión todavía no existe." } },
-  { type = "file_exists", path = "feature.txt", fail = { en = "feature.txt is missing after the merge.", es = "Falta feature.txt después de la fusión." } },
-  { type = "file_exists", path = "main.txt", fail = { en = "main.txt is missing after the merge.", es = "Falta main.txt después de la fusión." } },
+  { type = "git_ok", args = "rev-parse --verify HEAD^2" },
+  { type = "file_exists", path = "feature.txt" },
+  { type = "file_exists", path = "main.txt" },
 ]

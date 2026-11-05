@@ -1,13 +1,13 @@
 //! Lecciones en TOML embebidas en el binario.
 
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use anyhow::{Context, Result, bail};
 use include_dir::{Dir, include_dir};
 use serde::Deserialize;
 
 use crate::checks::Check;
-use crate::i18n::Text;
+use crate::i18n::{Lang, Text};
 use crate::progress::Progress;
 
 static CONTENT_DIR: Dir = include_dir!("$CARGO_MANIFEST_DIR/content");
@@ -15,6 +15,8 @@ static CONTENT_DIR: Dir = include_dir!("$CARGO_MANIFEST_DIR/content");
 #[derive(Debug, Deserialize)]
 pub struct Level {
     pub id: u8,
+    /// Se completa al cargar, desde `content/i18n/<idioma>/`.
+    #[serde(skip)]
     pub title: Text,
 }
 
@@ -26,7 +28,9 @@ struct LevelsFile {
 #[derive(Debug, Deserialize)]
 pub struct Achievement {
     pub id: String,
+    #[serde(skip)]
     pub title: Text,
+    #[serde(skip)]
     pub description: Text,
     pub condition: Condition,
 }
@@ -55,7 +59,12 @@ struct AchievementsFile {
 pub struct Question {
     pub id: String,
     pub level: u8,
+    #[serde(skip)]
     pub text: Text,
+    /// En el archivo es la cantidad de opciones; los textos se completan al cargar.
+    #[serde(rename = "options")]
+    pub option_count: usize,
+    #[serde(skip)]
     pub options: Vec<Text>,
     /// Índice (desde 0) de la opción correcta.
     pub answer: usize,
@@ -77,7 +86,9 @@ pub struct Lesson {
     /// `"bin:ssh-keygen"` (programa en el PATH). Si falta alguna, pasa a ser explicación.
     #[serde(default)]
     pub requires: Vec<String>,
+    #[serde(skip)]
     pub title: Text,
+    #[serde(skip)]
     pub theory: Text,
     #[serde(default, rename = "exercise")]
     pub exercises: Vec<Exercise>,
@@ -86,10 +97,14 @@ pub struct Lesson {
 #[derive(Debug, Deserialize)]
 pub struct Exercise {
     pub id: String,
+    #[serde(skip)]
     pub prompt: Text,
     #[serde(default)]
     pub setup: Vec<Action>,
-    #[serde(default)]
+    /// En el archivo es la cantidad de pistas; los textos se completan al cargar.
+    #[serde(default, rename = "hints")]
+    pub hint_count: usize,
+    #[serde(skip)]
     pub hints: Vec<Text>,
     pub checks: Vec<Check>,
     /// Carpeta (relativa a la raíz del sandbox) donde arranca la consola y donde se verifican
@@ -200,26 +215,6 @@ pub enum Action {
     },
 }
 
-impl Lesson {
-    /// Todos los textos de la lección, para verificar que existan en los dos idiomas.
-    pub fn texts(&self) -> Vec<(String, &Text)> {
-        let mut out = vec![
-            (format!("{}.title", self.id), &self.title),
-            (format!("{}.theory", self.id), &self.theory),
-        ];
-        for ex in &self.exercises {
-            out.push((format!("{}.prompt", ex.id), &ex.prompt));
-            for (i, hint) in ex.hints.iter().enumerate() {
-                out.push((format!("{}.hint{}", ex.id, i + 1), hint));
-            }
-            for (i, check) in ex.checks.iter().enumerate() {
-                out.push((format!("{}.check{}.fail", ex.id, i + 1), &check.fail));
-            }
-        }
-        out
-    }
-}
-
 pub struct Content {
     pub levels: Vec<Level>,
     pub lessons: Vec<Lesson>,
@@ -272,14 +267,99 @@ impl Content {
         }
         let achievements: AchievementsFile = read_toml("achievements.toml")?;
         let exam: ExamFile = read_toml("exam.toml")?;
-        let content = Self {
+        let mut content = Self {
             levels: levels.level,
             lessons,
             achievements: achievements.achievement,
             exam: exam.question,
         };
         content.validate_references()?;
+        content.allocate_text_slots();
+        content.apply_translations()?;
         Ok(content)
+    }
+
+    /// Todos los textos traducibles con su clave:
+    /// `level.N.title`, `ach.ID.title|description`, `exam.ID.text|optN`,
+    /// `LECCION.title|theory`, `EJERCICIO.prompt|hintN|checkN.fail`.
+    pub fn texts_mut(&mut self) -> Vec<(String, &mut Text)> {
+        let mut out: Vec<(String, &mut Text)> = Vec::new();
+        for level in &mut self.levels {
+            out.push((format!("level.{}.title", level.id), &mut level.title));
+        }
+        for a in &mut self.achievements {
+            out.push((format!("ach.{}.title", a.id), &mut a.title));
+            out.push((format!("ach.{}.description", a.id), &mut a.description));
+        }
+        for q in &mut self.exam {
+            out.push((format!("exam.{}.text", q.id), &mut q.text));
+            for (i, option) in q.options.iter_mut().enumerate() {
+                out.push((format!("exam.{}.opt{}", q.id, i + 1), option));
+            }
+        }
+        for lesson in &mut self.lessons {
+            out.push((format!("{}.title", lesson.id), &mut lesson.title));
+            out.push((format!("{}.theory", lesson.id), &mut lesson.theory));
+            for ex in &mut lesson.exercises {
+                out.push((format!("{}.prompt", ex.id), &mut ex.prompt));
+                for (i, hint) in ex.hints.iter_mut().enumerate() {
+                    out.push((format!("{}.hint{}", ex.id, i + 1), hint));
+                }
+                for (i, check) in ex.checks.iter_mut().enumerate() {
+                    out.push((format!("{}.check{}.fail", ex.id, i + 1), &mut check.fail));
+                }
+            }
+        }
+        out
+    }
+
+    /// Los archivos de contenido solo dicen cuántas pistas y opciones hay: acá se crean los
+    /// lugares para sus textos.
+    fn allocate_text_slots(&mut self) {
+        for lesson in &mut self.lessons {
+            for ex in &mut lesson.exercises {
+                ex.hints = vec![Text::default(); ex.hint_count];
+            }
+        }
+        for q in &mut self.exam {
+            q.options = vec![Text::default(); q.option_count];
+        }
+    }
+
+    /// Carga los textos de `content/i18n/<idioma>/*.toml` (tablas `"clave" = "texto"`), uno
+    /// por idioma. Una clave que no existe es un error: casi seguro es un typo.
+    fn apply_translations(&mut self) -> Result<()> {
+        for lang in Lang::ALL {
+            let Some(dir) = CONTENT_DIR.get_dir(format!("i18n/{}", lang.code())) else {
+                continue;
+            };
+            let mut translations: HashMap<String, String> = HashMap::new();
+            for file in dir.files() {
+                let path = file.path();
+                let text = file
+                    .contents_utf8()
+                    .with_context(|| format!("{} is not UTF-8", path.display()))?;
+                let table: HashMap<String, String> = toml::from_str(text)
+                    .with_context(|| format!("invalid translation file {}", path.display()))?;
+                for (key, value) in table {
+                    if translations.insert(key.clone(), value).is_some() {
+                        bail!("translation key '{key}' is duplicated ({})", lang.code());
+                    }
+                }
+            }
+            for (key, text) in self.texts_mut() {
+                if let Some(value) = translations.remove(&key) {
+                    text.set(lang, value);
+                }
+            }
+            if let Some(unknown) = translations.keys().min() {
+                bail!(
+                    "translation key '{unknown}' does not exist ({})",
+                    lang.code()
+                );
+            }
+        }
+        Ok(())
     }
 
     /// Los logros y el examen no pueden apuntar a niveles o ejercicios que no existen.
@@ -302,7 +382,7 @@ impl Content {
             }
         }
         for q in &self.exam {
-            if q.options.len() < 2 || q.answer >= q.options.len() {
+            if q.option_count < 2 || q.answer >= q.option_count {
                 bail!("question '{}' has invalid options or answer", q.id);
             }
         }
@@ -373,6 +453,10 @@ fn collect_toml<'a>(dir: &'a Dir<'static>, out: &mut Vec<&'a include_dir::File<'
         }
     }
     for sub in dir.dirs() {
+        // Las traducciones (content/i18n) no son lecciones.
+        if sub.path().file_name().is_some_and(|n| n == "i18n") {
+            continue;
+        }
         collect_toml(sub, out);
     }
 }

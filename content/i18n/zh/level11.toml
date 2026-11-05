@@ -1,0 +1,106 @@
+"daemon.title" = "git daemon"
+"daemon.theory" = """
+`git daemon` 是一个用于 git:// 协议（端口 9418）的小型服务器。它让你网络里的任何人都可以不用账号和密码就克隆仓库，默认只读。
+
+  git daemon --base-path=/srv/git --export-all
+  git clone git://myserver/project.git
+
+它没有认证也没有加密，所以只适合公开读取或私有网络内读取。需要写入时请使用 SSH 或 HTTP。"""
+"http-backend.title" = "git http-backend"
+"http-backend.theory" = """
+`git http-backend` 是一个 CGI 程序：Web 服务器（Apache、nginx……）在每次请求时运行它，使 clone、fetch 和 push 能通过 http:// 和 https:// 使用智能协议。认证和 TLS 由 Web 服务器负责。
+
+它是自建 HTTP git 服务背后的基础组件。你要做的是配置 Web 服务器去调用它；你自己永远不会输入这条命令。"""
+"http-fetch.title" = "git http-fetch"
+"http-fetch.theory" = """
+`git http-fetch` 通过古老的“哑”HTTP 协议下载对象，在这种协议里服务器只是一个存放静态文件的文件夹。它是 `git fetch`/`clone` 面对这类服务器时用的内部辅助程序。
+
+哑服务器需要用 `git update-server-info` 来发布索引文件。现代服务器使用智能协议，不需要这样做。"""
+"http-push.title" = "git http-push"
+"http-push.theory" = """
+`git http-push` 通过 WebDAV 向哑 HTTP 服务器推送。如今几乎不再使用，并且已经从较新的 git 版本中移除：智能 HTTP（git http-backend）取代了它。
+
+你可能会在旧文档里看到它。如果某个教程让你用它，请优先改用 SSH 或智能 HTTP 来推送。"""
+"instaweb.title" = "git instaweb"
+"instaweb.theory" = """
+`git instaweb` 会用 gitweb 启动一个本地 Web 服务器——gitweb 是你仓库的网页查看器（提交、差异、分支）——并打开你的浏览器。
+
+  git instaweb --httpd=lighttpd
+  git instaweb --stop
+
+它需要安装 Web 服务器和 Perl，还会留下一个常驻进程，所以本练习不会运行它。"""
+"update-server-info.title" = "git update-server-info"
+"update-server-info.theory" = """
+“哑”HTTP 服务器无法回答“你有哪些分支？”，所以 git 把这些信息写进静态文件（info/refs、objects/info/packs）。`git update-server-info` 会重新生成它们。通常在服务器上由 post-update 钩子来运行。
+
+  git update-server-info"""
+"upload-pack.title" = "git upload-pack"
+"upload-pack.theory" = """
+`git upload-pack` 是 fetch 和 clone 的“服务器”一半。当你运行 `git fetch origin` 时，你的 git 会在另一端启动 upload-pack（通过 SSH、本地路径或 daemon）。双方会交谈：服务器公布自己的引用，客户端说明自己有什么、想要什么，服务器再发送一个 pack。
+
+你不会自己运行它；它出现在服务器的进程列表里。"""
+"receive-pack.title" = "git receive-pack"
+"receive-pack.theory" = """
+`git receive-pack` 是 push 的“服务器”一半：它接收你的 `git push` 发来的 pack，检查它，运行服务器端钩子（pre-receive、update、post-receive），并更新引用。
+
+策略就存在于服务器钩子里：拒绝没有测试的推送、通知聊天群、部署等。行为可以通过 receive.denyCurrentBranch、receive.fsckObjects 等选项配置。"""
+"send-pack.title" = "git send-pack"
+"send-pack.theory" = """
+`git send-pack` 是 push 的“客户端”一半：它计算服务器缺少什么，构建一个 pack，并把它发给 `receive-pack`。`git push` 会替你调用它。
+
+  git send-pack ../server.git main
+
+有助于理解 push 做了什么；日常工作中请使用 git push。"""
+"fetch-pack.title" = "git fetch-pack"
+"fetch-pack.theory" = """
+`git fetch-pack` 是 fetch 的“客户端”一半：它与 `upload-pack` 交谈，协商你已经有哪些提交，并接收 pack。`git fetch` 和 `git clone` 在内部都用它。
+
+  git fetch-pack ../server.git main
+
+它只下载对象并输出哈希，不会更新分支。日常工作中请使用 git fetch。"""
+"upload-archive.title" = "git upload-archive"
+"upload-archive.theory" = """
+`git upload-archive` 是 `git archive --remote=<url>` 的服务器端：它让你不必克隆整个仓库，就能下载某个提交的 tar 包。
+
+  git archive --remote=git@server:project.git HEAD -o snapshot.tar
+
+许多托管服务会禁用它；如果你控制服务器，可以通过 uploadarchive.allowUnreachable 并允许该命令来启用它。"""
+"upload-archive-writer.title" = "git upload-archive--writer"
+"upload-archive-writer.theory" = """
+`git upload-archive--writer` 是 `git upload-archive` 启动的辅助进程，用来创建归档并写入连接，同时父进程转发进度信息。它只存在于这次交互之中。
+
+它从不单独运行，也没有任何选项供你使用。"""
+"shell.title" = "git shell"
+"shell.theory" = """
+`git shell` 是一个受限的登录 shell，用于只通过 SSH 使用 git 的服务器账号。如果 `git` 用户把它设为 shell，SSH 连接就只能运行 git-receive-pack、git-upload-pack 和 git-upload-archive，别的什么都做不了：没有交互会话，也不能执行任意命令。
+
+  sudo usermod -s $(which git-shell) git
+
+这是在你自己的机器上托管私有仓库最简单又安全的方式。"""
+"remote-ext.title" = "git remote-ext"
+"remote-ext.theory" = """
+“远程助手”（remote helper）是一个名为 git-remote-<协议> 的程序，用来教 git 认识一种新的 URL 协议。`remote-ext` 处理类似 `ext::ssh -p 2222 server git-upload-pack project.git` 的 URL：git 会运行你给出的命令，并通过它的输入和输出与之通信。
+
+因为它会执行任意命令，所以默认是“禁用”的（protocol.ext.allow）。永远不要对你无法掌控的 URL 启用它。"""
+"remote-fd.title" = "git remote-fd"
+"remote-fd.theory" = """
+`remote-fd` 处理类似 `fd::3,4` 的 URL：git 通过调用它的程序已经打开的文件描述符与服务器通信（这里 3 用于读，4 用于写）。自己建立连接的程序（隧道、自定义传输）会在这些描述符准备好之后再启动 git。
+
+它是给把 git 嵌入其他软件的人用的工具，不是日常使用的。"""
+"remote-http.title" = "git remote-http"
+"remote-http.theory" = """
+`git remote-http` 是 git 在 URL 以 `http://` 开头时启动的辅助程序。它使用 libcurl，讲智能 HTTP 协议（也讲老式的哑协议），代理设置（http.proxy）、证书设置和凭据都是在这里起作用的。
+
+克隆期间它会出现在进程列表里；真正有用的是了解 git 配置中的 http.* 选项。"""
+"remote-https.title" = "git remote-https"
+"remote-https.theory" = """
+`git remote-https` 与 `remote-http` 是同一个辅助程序，只是用于以 `https://` 开头的 URL：连接用 TLS 加密，并且会验证服务器证书。
+
+如果 git 对证书报错，不要一劳永逸地关闭验证（http.sslVerify=false）：请安装证书颁发机构，或修好服务器的证书。"""
+"web-browse.title" = "git web--browse"
+"web-browse.theory" = """
+`git web--browse` 会在你的浏览器里打开一个 URL 或文件，并为你的系统选择合适的程序（xdg-open、open、start、www-browser……）。其他命令也会用到它：`git help --web`、`git instaweb`。
+
+  git web--browse https://git-scm.com
+
+你可以用 `git config web.browser firefox` 强制指定浏览器。在纯终端会话或这个沙盒里，没有浏览器可以打开。"""

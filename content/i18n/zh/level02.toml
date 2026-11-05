@@ -1,0 +1,196 @@
+"branch.title" = "分支：创建、重命名、删除"
+"branch.theory" = """
+你要试一个有风险的重构，又不能弄坏团队正在用的代码。分支是指向某个提交的可移动指针：创建分支瞬间完成、代价极小，所以你可以放心实验，不满意就丢掉。
+
+  git branch                列出本地分支（* 标记当前分支）
+  git branch refactor       在当前提交上创建一个分支（你仍留在原处）
+  git branch -m old new     重命名分支
+  git branch -d name        删除已经合并的分支
+  git branch -D name        即使未合并也强制删除（小心）"""
+"branch-1.prompt" = "创建一个名为 refactor 的分支。你必须留在 main 上。"
+"branch-1.hint1" = "git branch 加上名字会创建分支，但不会切换过去。"
+"branch-1.check1.fail" = "分支 refactor 还不存在。"
+"branch-1.check2.fail" = "你应该仍然在 main 上。"
+"branch-2.prompt" = "分支 old-experiment 已经合并，不再需要了。把它删除。"
+"branch-2.hint1" = "对 git branch 使用删除选项。"
+"branch-2.hint2" = "输入：git branch -d old-experiment"
+"branch-2.check1.fail" = "old-experiment 仍然存在。"
+"branch-2.check2.fail" = "不能删除 main。"
+"branch-3.prompt" = "分支 featur 名字拼错了。把它重命名为 feature。"
+"branch-3.hint1" = "git branch -m 先接旧名字，再接新名字。"
+"branch-3.check1.fail" = "分支 feature 还不存在。"
+"branch-3.check2.fail" = "旧名字 featur 仍然存在。"
+"switch.title" = "在分支之间切换：switch"
+"switch.theory" = """
+你在另一个分支上工作时，同事报告 `develop` 上有个 bug。`git switch` 会把你的工作文件夹切换到另一个分支，并把文件替换成那个分支的版本。
+
+  git switch develop        切换到已有的分支
+  git switch -c hotfix      创建分支并切换过去
+  git switch -              回到上一个分支
+
+你现在做的提交属于当前所在的分支，因此其他分支不会受影响。"""
+"switch-1.prompt" = "切换到 develop 分支。"
+"switch-1.hint1" = "输入：git switch develop"
+"switch-1.check1.fail" = "你还没有在 develop 上。"
+"switch-2.prompt" = "用一条命令创建 hotfix 分支并切换过去。"
+"switch-2.hint1" = "switch 的 -c 选项表示创建。"
+"switch-2.hint2" = "输入：git switch -c hotfix"
+"switch-2.check1.fail" = "你还没有在 hotfix 上。"
+"switch-3.prompt" = "在不动 main 的前提下开发一个功能：创建 login 分支，切换过去，并在那里提交一个新文件 login.txt。"
+"switch-3.hint1" = "先创建分支，然后在该分支上创建并提交文件。"
+"switch-3.hint2" = "git switch -c login，然后 echo login > login.txt，再 git add 和 git commit。"
+"switch-3.check1.fail" = "你应该在 login 分支上。"
+"switch-3.check2.fail" = "login.txt 没有提交到 login 分支。"
+"switch-3.check3.fail" = "login.txt 跑到 main 上了。这项工作应该在 login 分支。"
+"checkout.title" = "checkout：老牌瑞士军刀"
+"checkout.theory" = """
+在 git 2.23 之前，`git checkout` 什么都管：切换分支、恢复文件、查看旧提交。它现在仍然可用，你会在老教程和脚本里见到它。
+
+  git checkout main                   等同于 git switch main
+  git checkout main -- config.txt     把 main 上的某一个文件取到你的工作目录（并暂存）
+  git checkout HEAD~1                 分离 HEAD：查看更早的提交
+
+处于分离 HEAD 状态时，你不在任何分支上。可以查看和实验，但新提交很容易丢：想保留的话，先创建分支（git switch -c 名字）。"""
+"checkout-1.prompt" = "你在 old 分支上，那里的 config.txt 是 v1。在不离开 old 的情况下，取回 main 上的 config.txt（v2）。"
+"checkout-1.hint1" = "checkout 接受“分支名 + -- + 文件名”。"
+"checkout-1.hint2" = "输入：git checkout main -- config.txt"
+"checkout-1.check1.fail" = "你应该继续留在 old 分支上。"
+"checkout-1.check2.fail" = "config.txt 仍然是 v1。"
+"checkout-1.check3.fail" = "这次改动应该已经暂存（带文件的 checkout 会自动暂存）。"
+"checkout-2.prompt" = "查看项目在最新提交的前一个提交时的样子，不要使用分支（分离 HEAD）。"
+"checkout-2.hint1" = "HEAD~1 表示当前提交的父提交。"
+"checkout-2.hint2" = "输入：git checkout HEAD~1  （git switch --detach HEAD~1 也可以）"
+"checkout-2.check1.fail" = "HEAD 仍然指向某个分支。它应该是分离状态。"
+"checkout-2.check2.fail" = "HEAD 已分离，但不在最新提交的前一个提交上。"
+"merge-ff.title" = "合并：快进（fast-forward）"
+"merge-ff.theory" = """
+你的功能分支已经完成，期间也没有人动过 main。`git merge` 会把工作带入你当前所在的分支。如果 main 没有移动，git 只是把 main 的指针向前滑动：这就是快进（fast-forward），不会创建新提交。
+
+  git switch main
+  git merge feature            可能时直接快进
+  git merge --no-ff feature    始终创建合并提交，这样功能分支的历史清晰可见"""
+"merge-ff-1.prompt" = "你在 main 上。把 feature 分支的工作合并进 main。"
+"merge-ff-1.hint1" = "合并的方向是进入你当前所在的分支。"
+"merge-ff-1.hint2" = "输入：git merge feature"
+"merge-ff-1.check1.fail" = "你应该在 main 上。"
+"merge-ff-1.check2.fail" = "main 还没有包含 feature 的工作。"
+"merge-ff-1.check3.fail" = "快进不应该产生额外的提交。"
+"merge-ff-2.prompt" = "把 feature 合并进 main，即使可以快进，也要强制生成一个合并提交。"
+"merge-ff-2.hint1" = "有一个表示“不要快进”的选项。"
+"merge-ff-2.hint2" = "输入：git merge --no-ff feature  （会打开编辑器写提交信息：按 Ctrl+S 保存）"
+"merge-ff-2.check1.fail" = "没有合并提交。请使用 --no-ff 选项。"
+"merge-ff-2.check2.fail" = "缺少 feature 的工作。"
+"merge-3way.title" = "合并：三方合并"
+"merge-3way.theory" = """
+你在 feature 上工作时，别人往 main 里加了提交。两个分支分叉了，git 不能只是滑动指针。它会把两个末端和它们的共同祖先做比较（三方合并），并创建一个有两个父提交的新合并提交。
+
+  git switch main
+  git merge feature        创建合并提交（会打开编辑器写信息）
+  git merge feature -m "Merge feature"   直接给出信息
+
+如果两边改的是不同的地方，git 会自动把它们合并在一起。"""
+"merge-3way-1.prompt" = "main 和 feature 分叉了。把 feature 合并进 main。"
+"merge-3way-1.hint1" = "和之前是同一条命令。git 会替你创建合并提交。"
+"merge-3way-1.hint2" = "输入：git merge feature  （在编辑器中按 Ctrl+S 保存信息）"
+"merge-3way-1.check1.fail" = "合并提交还不存在。"
+"merge-3way-1.check2.fail" = "合并后缺少 feature.txt。"
+"merge-3way-1.check3.fail" = "合并后缺少 main.txt。"
+"merge-conflict.title" = "合并冲突"
+"merge-conflict.theory" = """
+两个分支修改了同一个文件的同一行。git 无法判断哪个版本才对，于是停下来，并在文件里做标记：
+
+  <<<<<<< HEAD
+  Hello from main
+  =======
+  Hello from feature
+  >>>>>>> feature
+
+`<<<<<<<` 和 `=======` 之间是你这一边的内容，其余是另一个分支的内容。解决步骤：
+
+  1. 编辑文件，写成最终想要的内容（并删掉三行标记）
+  2. git add <文件>
+  3. git commit        （或 git merge --continue）
+
+如果觉得害怕，`git merge --abort` 会让一切回到合并之前的样子。"""
+"merge-conflict-1.prompt" = "把 feature 合并进 main。合并会在 greeting.txt 上冲突：保留两行（先放 main 的那行）来解决冲突，并用一次提交完成合并。"
+"merge-conflict-1.hint1" = "git merge feature 会因冲突而停下。用这个命令打开文件：edit greeting.txt"
+"merge-conflict-1.hint2" = "只保留那两行，不要留下 <<<<<<<、======= 或 >>>>>>> 标记。按 Ctrl+S 保存。"
+"merge-conflict-1.hint3" = "然后：git add greeting.txt，再 git commit -m \"Merge feature\""
+"merge-conflict-1.check1.fail" = "合并还没有完成：还没有合并提交。"
+"merge-conflict-1.check2.fail" = "greeting.txt 里仍有冲突标记。"
+"merge-conflict-1.check3.fail" = "缺少 main 的那一行。"
+"merge-conflict-1.check4.fail" = "缺少 feature 的那一行。"
+"merge-conflict-2.prompt" = "尝试合并 feature（会冲突），然后改变主意：中止合并，让 main 恢复成原来的样子。"
+"merge-conflict-2.hint1" = "先运行 git merge feature。中止的选项属于同一条命令。"
+"merge-conflict-2.hint2" = "输入：git merge --abort"
+"merge-conflict-2.check1.fail" = "请先用 git merge feature 尝试合并。"
+"merge-conflict-2.check2.fail" = "合并仍在进行中。请中止它。"
+"merge-conflict-2.check3.fail" = "greeting.txt 应该回到 main 上的版本。"
+"mergetool.title" = "用 mergetool 解决冲突"
+"mergetool.theory" = """
+`git mergetool` 会逐个处理有冲突的文件，并用你配置的工具打开它们，所以你不必自己去找这些文件。真实项目通常用图形化工具；这里则是内置编辑器打开冲突文件。
+
+  git mergetool         依次打开每个有冲突的文件
+  git commit            全部解决后完成合并
+
+当你保存并关闭工具时，git 会把该文件标记为已解决（它会替你执行 git add）。"""
+"mergetool-1.prompt" = "与 feature 的合并正在进行，greeting.txt 有冲突。运行 git mergetool，在编辑器里保留两行（按 Ctrl+S 保存），然后提交。"
+"mergetool-1.hint1" = "运行 git mergetool：编辑器会打开 greeting.txt。删掉那几行标记。"
+"mergetool-1.hint2" = "保存之后，用这个完成：git commit -m \"Merge feature\""
+"mergetool-1.check1.fail" = "合并还没有提交。"
+"mergetool-1.check2.fail" = "greeting.txt 里仍有冲突标记。"
+"mergetool-1.check3.fail" = "缺少 feature 的那一行。"
+"tag.title" = "标记版本：tag"
+"tag.theory" = """
+分支会随着每次提交而移动；标签则固定不动。标签给某个提交一个永久的名字，通常用来标记发布版本，比如 v1.0。
+
+  git tag v0.9                    轻量标签：只是当前提交的一个名字
+  git tag -a v1.0 -m "Release"    附注标签：还会保存作者、日期和说明（发布版本请用这种）
+  git tag v0.8 HEAD~2             给更早的提交打标签
+  git tag -d v0.8                 删除标签
+  git tag                         列出所有标签"""
+"tag-1.prompt" = "发布时间到了：给当前提交打一个附注标签 v1.0，说明为 \"First release\"。"
+"tag-1.hint1" = "-a 让标签成为附注标签，-m 给出它的说明。"
+"tag-1.hint2" = "输入：git tag -a v1.0 -m \"First release\""
+"tag-1.check1.fail" = "没有附注标签 v1.0。"
+"tag-1.check2.fail" = "v1.0 没有指向当前提交。"
+"tag-2.prompt" = "0.9 版本就是最新提交的前一个提交。把它标记为 v0.9（轻量标签即可）。"
+"tag-2.hint1" = "git tag 在标签名之后可以接要标记的提交。"
+"tag-2.check1.fail" = "标签 v0.9 不存在。"
+"tag-2.check2.fail" = "v0.9 必须指向最新提交的前一个提交。"
+"tag-3.prompt" = "标签 wrong-tag 是误建的。把它删除。"
+"tag-3.hint1" = "git tag 有一个删除选项：-d。"
+"tag-3.check1.fail" = "wrong-tag 仍然存在。"
+"describe.title" = "给提交起名：describe"
+"describe.theory" = """
+构建需要一个版本号字符串，但提交只有哈希值。`git describe` 会找到当前提交往前最近的标签，并生成一个可读的名字：
+
+  v1.0-2-g3f9a1c2
+
+意思是：在 v1.0 之后又有 2 个提交，当前提交是 3f9a1c2（g 代表 git）。如果正好在标签上，就只得到 v1.0。适合用在构建号和“关于”页面。默认只考虑附注标签（加 --tags 可同时使用轻量标签）。"""
+"describe-1.prompt" = "把 git describe 给当前提交起的名字保存到名为 version.txt 的文件中。"
+"describe-1.hint1" = "你可以用 > 把 git 命令的输出写入文件。"
+"describe-1.hint2" = "输入：git describe > version.txt"
+"describe-1.check1.fail" = "version.txt 必须恰好包含 git describe 的输出。"
+"stash.title" = "把工作放进抽屉：stash"
+"stash.theory" = """
+你改到一半时，突然来了个紧急 bug。做到一半的工作不能提交，工作区不干净时也不能切换分支。`git stash` 会把你尚未提交的改动收进“抽屉”，让文件夹恢复干净。
+
+  git stash             保存已跟踪文件的改动并清理工作区
+  git stash -u          连未跟踪的文件也一起保存
+  git stash list        查看抽屉里有什么
+  git stash pop         取回最近一次贮藏并从列表中移除
+  git stash apply       取回，但保留在列表中"""
+"stash-1.prompt" = "f.txt 里有改到一半的内容，现在来了个紧急 bug。把你的改动收起来，让工作区变干净。"
+"stash-1.hint1" = "输入：git stash"
+"stash-1.check1.fail" = "f.txt 里仍然有你的改动。"
+"stash-1.check2.fail" = "stash 里没有保存任何内容。"
+"stash-2.prompt" = "紧急 bug 已修好。取回你收起来的改动，并把它们从 stash 列表中移除。"
+"stash-2.hint1" = "pop 会取回并把它从列表中去掉。"
+"stash-2.check1.fail" = "你的改动还没有回到 f.txt。"
+"stash-2.check2.fail" = "stash 里仍然有这条记录。请使用 pop（或删除它）。"
+"stash-3.prompt" = "你创建了一个 git 还没有跟踪的新文件 new.txt。把它也放进 stash，让它从文件夹里消失。"
+"stash-3.hint1" = "普通的 git stash 会忽略未跟踪的文件。找找包含它们的那个选项。"
+"stash-3.hint2" = "输入：git stash -u"
+"stash-3.check1.fail" = "new.txt 仍在文件夹里。"
+"stash-3.check2.fail" = "stash 里没有保存任何内容。"

@@ -1,0 +1,191 @@
+"gc.title" = "日常整理：gc"
+"gc.theory" = """
+git 创建的每一个提交、tree 和文件版本，一开始都是一个独立的小“松散”对象。成千上万个这样的对象会让仓库又慢又大。`git gc`（“垃圾回收”）会把松散对象打包成压缩的 packfile，打包引用，并清除不可达的残留。
+
+  git gc                  执行清理
+  git count-objects -v    "count" = 松散对象数，"packs" = packfile 的数量
+
+git 自己会不时运行 `gc --auto`；手动运行适合在大型操作之后。"""
+"gc-1.prompt" = "你的仓库里只有松散对象。运行垃圾回收，让它们进入一个 packfile。"
+"gc-1.hint1" = "输入：git gc"
+"gc-1.hint2" = "用 git count-objects -v 检查。"
+"gc-1.check1.fail" = "仍然有松散对象。"
+"gc-1.check2.fail" = "应该有一个 packfile。"
+"prune.title" = "删除不可达对象：prune"
+"prune.theory" = """
+执行 `git reset --hard` 或删除分支之后，有些提交会变得“不可达”：没有任何分支、标签或 reflog 条目指向它们。它们会一直留在磁盘上，直到被清理。`git prune` 可以删除它们，但只会删除早于某个期限（默认 2 周）的对象，以免丢掉仍在使用的东西。
+
+  git fsck --unreachable --no-reflogs     列出它们
+  git prune --expire=now                  立即删除（不可恢复！）"""
+"prune-1.prompt" = "提交 \"Lost work\" 已经不可达，而且你不再需要它。立即删除所有不可达对象。"
+"prune-1.hint1" = "普通的 git prune 会保留较新的对象。加上 --expire=now。"
+"prune-1.check1.fail" = "仍然有不可达对象。"
+"prune-packed.title" = "重复对象：prune-packed"
+"prune-packed.theory" = """
+用 `git repack`（不带 -d）打包时，会把松散对象复制进 pack，但保留原来的松散对象。`git prune-packed` 会删除那些已经在 pack 里的松散对象。
+
+  git repack -a
+  git prune-packed
+
+`git repack -a -d` 则一次完成这两步。"""
+"prune-packed-1.prompt" = "对象已经打包了，但松散的副本还在。删除那些已经在 pack 里的松散对象。"
+"prune-packed-1.hint1" = "输入：git prune-packed"
+"prune-packed-1.check1.fail" = "仍然有已经被打包的松散对象。"
+"prune-packed-1.check2.fail" = "pack 必须保留。"
+"repack.title" = "重新打包：repack"
+"repack.theory" = """
+`git repack` 是 gc 的打包步骤。有用的选项：
+
+  git repack -a        把“所有”对象放进同一个 pack（而不只是新的松散对象）
+  git repack -d        随后删除多余的 pack 和松散对象
+  git repack -a -d     经典组合
+  git repack -a -d -f  从头重新计算 delta（慢，但压缩效果最好）"""
+"repack-1.prompt" = "用一条命令把所有对象放进同一个 pack，并删除松散对象。"
+"repack-1.hint1" = "你需要 -a（全部）和 -d（删除多余的）。"
+"repack-1.check1.fail" = "仍然有松散对象。"
+"repack-1.check2.fail" = "应该恰好有一个 pack。"
+"pack-objects.title" = "构建 pack：pack-objects"
+"pack-objects.theory" = """
+`git pack-objects` 是每一次 push、fetch 和 repack 背后在运行的程序：它从标准输入接收一个对象列表（加 --revs 则是修订版本列表），然后写出一个 pack。
+
+  git pack-objects --revs mypack < revs.txt     写出 mypack-<哈希>.pack 和 .idx；并输出 <哈希>
+  git pack-objects --revs --stdout < revs.txt > my.pack    以单个数据流写入文件
+
+这里 revs.txt 里是修订版本，每行一个（HEAD）。"""
+"pack-objects-1.prompt" = "把从 HEAD 可达的所有内容（revs.txt 中列出的修订版本）打包成以 mypack 开头的文件，并把 pack-objects 输出的哈希保存到 hash.txt。"
+"pack-objects-1.hint1" = "使用 --revs、前缀 mypack、< revs.txt 和 > hash.txt。"
+"pack-objects-1.check1.fail" = "没有找到名为 mypack-<哈希> 的有效 pack。你把哈希保存到 hash.txt 了吗？"
+"unpack-objects.title" = "从 pack 到松散对象：unpack-objects"
+"unpack-objects.theory" = """
+`git unpack-objects` 与 pack-objects 相反：它从标准输入读取一个 pack，并把每个对象写成一个松散文件。一个仓库就是这样接收小型推送的。
+
+  git unpack-objects < my.pack
+
+请在需要接收这些对象的仓库“里面”运行它。"""
+"unpack-objects-1.prompt" = "为 HEAD 生成一个 pack（my.pack），创建一个空仓库 ../copy，并在其中解包，让 ../copy 收到这 9 个对象。"
+"unpack-objects-1.hint1" = "git pack-objects --revs --stdout < revs.txt > my.pack，然后 git init ../copy 和 cd ../copy。"
+"unpack-objects-1.hint2" = "最后：git unpack-objects < ../project/my.pack"
+"unpack-objects-1.check1.fail" = "../copy 里还没有这 9 个松散对象。"
+"index-pack.title" = "为 pack 建立索引：index-pack"
+"index-pack.theory" = """
+单独一个 pack 文件只是一个很长的数据流；git 需要一个配套的索引（.idx）才能快速找到某个对象。`git index-pack` 会为一个没带索引的 pack 构建索引。
+
+  git index-pack my.pack         写出 my.idx
+  git index-pack --stdin         从输入接收一个 pack 并存入仓库"""
+"index-pack-1.prompt" = "用 HEAD（revs.txt 里的修订版本）以单个数据流生成 my.pack，并为它建立索引。"
+"index-pack-1.hint1" = "先：git pack-objects --revs --stdout < revs.txt > my.pack。然后：git index-pack my.pack。"
+"index-pack-1.check1.fail" = "my.idx 还不存在。"
+"index-pack-1.check2.fail" = "my.idx 不是 my.pack 的有效索引。"
+"verify-pack.title" = "检查 pack：verify-pack"
+"verify-pack.theory" = """
+`git verify-pack` 检查一个 pack 和它的索引是否一致；加上 -v 还会列出每个对象的类型、大小以及存储方式（delta 链）。
+
+  git verify-pack -v .git/objects/pack/pack-<哈希>.idx
+
+用 `ls .git/objects/pack` 找到 pack 的名字。"""
+"verify-pack-1.prompt" = "仓库的 .git/objects/pack 里有一个 pack。用详细模式验证它，并把报告保存到 report.txt。"
+"verify-pack-1.hint1" = "ls .git/objects/pack 会显示文件名。用 .idx 那个。"
+"verify-pack-1.hint2" = "git verify-pack -v <那个路径> > report.txt"
+"verify-pack-1.check1.fail" = "report.txt 看起来不像 verify-pack -v 的输出。"
+"show-index.title" = "读取索引：show-index"
+"show-index.theory" = """
+`git show-index` 从标准输入读取 pack 索引（.idx），并为每个对象输出一行：它在 pack 中的偏移量、哈希和一个校验和。
+
+  git show-index < .git/objects/pack/pack-<哈希>.idx"""
+"show-index-1.prompt" = "把 pack 索引的内容保存到 objects.txt（每个对象一行）。"
+"show-index-1.hint1" = "show-index 从标准输入读取 .idx：使用 < 路径。"
+"show-index-1.check1.fail" = "objects.txt 应该有 9 行，每个对象一行。"
+"pack-refs.title" = "打包引用：pack-refs"
+"pack-refs.theory" = """
+每个分支和标签通常都是 .git/refs/ 下的一个小文件。引用成千上万时，这样会很慢。`git pack-refs` 会把它们移到一个单独的文件 .git/packed-refs 里。
+
+  git pack-refs --all     分支和标签（默认只处理标签）"""
+"pack-refs-1.prompt" = "把所有分支和标签移到 .git/packed-refs 里。"
+"pack-refs-1.hint1" = "不加 --all 就只会打包标签。"
+"pack-refs-1.check1.fail" = "dev 分支还没有出现在 packed-refs 里。请使用 --all。"
+"pack-refs-1.check2.fail" = "dev 的松散文件仍然存在。"
+"count-objects.title" = "测量仓库：count-objects"
+"count-objects.theory" = """
+`git count-objects` 会报告有多少个松散对象，以及它们占用了多少磁盘。加上 -v 还会报告 pack 和“垃圾”。
+
+  git count-objects         例如 9 objects, 36 kilobytes
+  git count-objects -v      count、size、in-pack、packs、size-pack、garbage"""
+"count-objects-1.prompt" = "把这个仓库的详细对象统计信息保存到 answer.txt。"
+"count-objects-1.hint1" = "-v 会给出详细版本。"
+"count-objects-1.check1.fail" = "answer.txt 必须恰好包含 git count-objects -v 的输出。"
+"fsck.title" = "检查完整性：fsck"
+"fsck.theory" = """
+`git fsck`（“文件系统检查”，在老脚本里也叫 fsck-objects）会验证每个对象是否有效且可达。它还能找出“悬空”（dangling）对象：没有任何东西指向的提交，可用来找回丢失的工作。
+
+  git fsck                      检查所有内容
+  git fsck --lost-found         同时把悬空对象复制到 .git/lost-found/
+  git fsck --no-reflogs         忽略 reflog（列出 reflog 仍在保护的内容）
+
+丢了提交时，git reflog 更快；fsck 是最后的手段。"""
+"fsck-1.prompt" = "提交 \"Lost work\" 丢了，reflog 也已经不记得它。用 fsck 找到它，并把它的哈希写进 answer.txt。"
+"fsck-1.hint1" = "找出写着 dangling commit 的那些行。"
+"fsck-1.hint2" = "git fsck --no-reflogs 会输出 dangling commit <哈希>。"
+"fsck-1.check1.fail" = "answer.txt 必须包含提交 \"Lost work\" 的哈希。"
+"commit-graph.title" = "更快的历史：commit-graph"
+"commit-graph.theory" = """
+在有几十万个提交的仓库里，git log 和 merge-base 几乎把所有时间都花在读取提交对象上。commit-graph 文件以紧凑的形式保存所有提交的父提交和日期，这样就能直接在内存里回答。
+
+  git commit-graph write --reachable    构建它（.git/objects/info/commit-graph）
+  git commit-graph verify               验证它"""
+"commit-graph-1.prompt" = "为所有可达的提交构建 commit-graph 文件。"
+"commit-graph-1.hint1" = "输入：git commit-graph write --reachable"
+"commit-graph-1.check1.fail" = "commit-graph 文件还不存在。"
+"commit-graph-1.check2.fail" = "commit-graph 无效。"
+"multi-pack-index.title" = "多个 pack，一个索引：multi-pack-index"
+"multi-pack-index.theory" = """
+大型仓库最终会有很多 packfile；查找一个对象就意味着要逐个检查每个 .idx。multi-pack-index 是覆盖仓库所有 pack 的单一索引。
+
+  git multi-pack-index write      构建它（.git/objects/pack/multi-pack-index）
+  git multi-pack-index verify"""
+"multi-pack-index-1.prompt" = "为这个仓库的 pack 写出一个 multi-pack-index。"
+"multi-pack-index-1.hint1" = "输入：git multi-pack-index write"
+"multi-pack-index-1.check1.fail" = "multi-pack-index 还不存在。"
+"multi-pack-index-1.check2.fail" = "multi-pack-index 无效。"
+"maintenance.title" = "定期维护：maintenance run"
+"maintenance.theory" = """
+`git maintenance` 把各项维护任务（gc、commit-graph、prefetch、loose-objects、incremental-repack）集中在一起，还可以定时执行。
+
+  git maintenance run                            立即运行默认任务
+  git maintenance run --task=commit-graph        只运行某一个任务
+  git maintenance start / register               在你的操作系统里“安排”定时任务（cron、launchd、任务计划程序）
+
+本练习只练习 `maintenance run`：start 和 register 会改动你真实电脑上的计划任务。"""
+"maintenance-1.prompt" = "只运行一次 commit-graph 维护任务。"
+"maintenance-1.hint1" = "run 接受 --task=<名字>。"
+"maintenance-1.check1.fail" = "请使用 git maintenance run。"
+"maintenance-1.check2.fail" = "commit-graph 任务没有留下它的文件。"
+"for-each-repo.title" = "同一条命令用于多个仓库：for-each-repo"
+"for-each-repo.theory" = """
+`git for-each-repo` 会在一个多值配置键所列出的每个仓库里运行一条 git 命令。`maintenance` 就是这样照看你所有已注册的仓库的。
+
+  git config --global --add maintenance.repo /路径/repo1
+  git config --global --add maintenance.repo /路径/repo2
+  git for-each-repo --config=maintenance.repo gc"""
+"for-each-repo-1.prompt" = "文件夹 r1 和 r2 已列在配置键 maintenance.repo 里。用一条命令在两个仓库中都运行 gc。"
+"for-each-repo-1.hint1" = "for-each-repo 接 --config=<键>，再接 git 命令。"
+"for-each-repo-1.check1.fail" = "r1 仍然有松散对象。"
+"for-each-repo-1.check2.fail" = "r2 仍然有松散对象。"
+"fast-export.title" = "导出历史：fast-export"
+"fast-export.theory" = """
+`git fast-export` 把整个历史写成由简单命令（blob、commit、reset）组成的文本流。这是在 git 与其他系统之间转换仓库，或用脚本重写历史的标准方法。
+
+  git fast-export --all > history.txt"""
+"fast-export-1.prompt" = "把所有分支的完整历史导出到 history.txt。"
+"fast-export-1.hint1" = "输入：git fast-export --all > history.txt"
+"fast-export-1.check1.fail" = "history.txt 必须包含 git fast-export --all 的输出。"
+"fast-import.title" = "导入历史：fast-import"
+"fast-import.theory" = """
+`git fast-import` 读取 fast-export 写出的（或转换脚本生成的）流格式，并直接创建对象和引用。它非常快，可以在全新的或已有的仓库里使用。
+
+  git fast-import < stream.txt
+
+每个提交会给出：引用、提交者、信息（`data <字节数>`）以及文件改动（`M <模式> inline <路径>`）。"""
+"fast-import-1.prompt" = "stream.txt 用 fast-import 格式描述了一个提交。把它导入这个空仓库。"
+"fast-import-1.hint1" = "fast-import 从标准输入读取数据流：使用 < stream.txt。"
+"fast-import-1.check1.fail" = "提交 \"Hello import\" 还没有出现在 main 上。"
+"fast-import-1.check2.fail" = "hello.txt 没有导入的内容。"

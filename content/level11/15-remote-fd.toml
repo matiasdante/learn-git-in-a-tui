@@ -1,17 +1,3 @@
 id = "remote-fd"
 level = 11
 order = 15
-
-[title]
-en = "git remote-fd"
-es = "git remote-fd"
-
-[theory]
-en = """
-`remote-fd` handles URLs like `fd::3,4`: git talks to the server through file descriptors that the calling program already opened (here 3 for reading, 4 for writing). A program that creates its own connection (a tunnel, a custom transport) starts git with those descriptors ready.
-
-It is a tool for people who embed git in other software, not for daily use."""
-es = """
-`remote-fd` maneja URL como `fd::3,4`: git conversa con el servidor a través de descriptores de archivo que el programa que lo llama ya abrió (acá 3 para leer, 4 para escribir). Un programa que crea su propia conexión (un túnel, un transporte propio) inicia git con esos descriptores listos.
-
-Es una herramienta para quien integra git en otro software, no para el uso diario."""

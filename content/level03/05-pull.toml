@@ -2,29 +2,10 @@ id = "pull"
 level = 3
 order = 5
 
-[title]
-en = "Integrating: pull"
-es = "Integrar: pull"
-
-[theory]
-en = """
-`git pull` is fetch plus integration: it downloads and then merges (or rebases) the remote work into your current branch.
-
-  git pull               fetch + merge
-  git pull --rebase      fetch + replay your commits on top of the remote ones (linear history)
-
-When you have local commits and the server has new ones, the branches diverged. --rebase keeps the history in a straight line; the default creates a merge commit."""
-es = """
-`git pull` es fetch más integración: descarga y después fusiona (o rebasa) el trabajo remoto en tu rama actual.
-
-  git pull               fetch + merge
-  git pull --rebase      fetch + reaplica tus commits encima de los remotos (historia lineal)
-
-Cuando tenés commits locales y el servidor tiene nuevos, las ramas divergieron. --rebase mantiene la historia en línea recta; lo común es crear un commit de fusión."""
-
 [[exercise]]
 id = "pull-1"
 cwd = "project"
+hints = 1
 solution = ["git pull"]
 setup = [
   { do = "git", args = "init --bare server.git" },
@@ -46,18 +27,15 @@ setup = [
   { do = "git", args = "push", dir = "other" },
   { do = "rm", path = "other" },
 ]
-prompt = { en = "A teammate pushed a commit. Bring it into your main branch.", es = "Un compañero subió un commit. Traelo a tu rama main." }
-hints = [
-  { en = "pull downloads and integrates in one step.", es = "pull descarga e integra en un solo paso." },
-]
 checks = [
-  { type = "git_output", args = "rev-list --count main", equals = "3", fail = { en = "main does not include the team commit yet.", es = "main todavía no incluye el commit del equipo." } },
-  { type = "file_exists", path = "c.txt", fail = { en = "c.txt (from the teammate) is missing.", es = "Falta c.txt (del compañero)." } },
+  { type = "git_output", args = "rev-list --count main", equals = "3" },
+  { type = "file_exists", path = "c.txt" },
 ]
 
 [[exercise]]
 id = "pull-2"
 cwd = "project"
+hints = 2
 solution = ["git pull --rebase"]
 setup = [
   { do = "git", args = "init --bare server.git" },
@@ -82,21 +60,17 @@ setup = [
   { do = "git", args = "add d.txt", dir = "project" },
   { do = "git", args = "commit -m \"My commit\"", dir = "project" },
 ]
-prompt = { en = "You have a local commit and the server has a new one. Integrate them keeping a linear history (no merge commit).", es = "Tenés un commit local y el servidor tiene uno nuevo. Integralos manteniendo una historia lineal (sin commit de fusión)." }
-hints = [
-  { en = "pull has an option that replays your commits on top.", es = "pull tiene una opción que reaplica tus commits encima." },
-  { en = "Type: git pull --rebase", es = "Escribí: git pull --rebase" },
-]
 checks = [
-  { type = "git_output", args = "rev-list --count HEAD", equals = "4", fail = { en = "History should have 4 commits: 2 old, the team one and yours.", es = "La historia debería tener 4 commits: 2 viejos, el del equipo y el tuyo." } },
-  { type = "git_output", args = "rev-list --merges --count HEAD", equals = "0", fail = { en = "There is a merge commit. Use --rebase for a linear history.", es = "Hay un commit de fusión. Usá --rebase para una historia lineal." } },
-  { type = "file_exists", path = "c.txt", fail = { en = "c.txt (from the teammate) is missing.", es = "Falta c.txt (del compañero)." } },
-  { type = "file_exists", path = "d.txt", fail = { en = "d.txt (your commit) is missing.", es = "Falta d.txt (tu commit)." } },
+  { type = "git_output", args = "rev-list --count HEAD", equals = "4" },
+  { type = "git_output", args = "rev-list --merges --count HEAD", equals = "0" },
+  { type = "file_exists", path = "c.txt" },
+  { type = "file_exists", path = "d.txt" },
 ]
 
 [[exercise]]
 id = "pull-3"
 cwd = "project"
+hints = 2
 solution = ["git pull --rebase", "git push"]
 setup = [
   { do = "git", args = "init --bare server.git" },
@@ -121,12 +95,7 @@ setup = [
   { do = "git", args = "add d.txt", dir = "project" },
   { do = "git", args = "commit -m \"My commit\"", dir = "project" },
 ]
-prompt = { en = "Your push would be rejected: the server has a commit you do not have. Integrate it (linear history) and publish your commit.", es = "Tu push sería rechazado: el servidor tiene un commit que vos no tenés. Integralo (historia lineal) y publicá tu commit." }
-hints = [
-  { en = "First integrate the server work, then push.", es = "Primero integrá el trabajo del servidor y después hacé push." },
-  { en = "git pull --rebase and then git push", es = "git pull --rebase y después git push" },
-]
 checks = [
-  { type = "git_output", args = "rev-list --count main", equals = "4", repo = "server.git", fail = { en = "The server does not have your commit on top of the team work yet.", es = "El servidor todavía no tiene tu commit encima del trabajo del equipo." } },
-  { type = "git_output", args = "rev-parse origin/main", same_as = "rev-parse main", fail = { en = "Your main and origin/main differ.", es = "Tu main y origin/main difieren." } },
+  { type = "git_output", args = "rev-list --count main", equals = "4", repo = "server.git" },
+  { type = "git_output", args = "rev-parse origin/main", same_as = "rev-parse main" },
 ]

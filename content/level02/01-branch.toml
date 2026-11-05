@@ -2,30 +2,9 @@ id = "branch"
 level = 2
 order = 1
 
-[title]
-en = "Branches: create, rename, delete"
-es = "Ramas: crear, renombrar, borrar"
-
-[theory]
-en = """
-You must try a risky refactor without breaking the code your team uses. A branch is a movable pointer to a commit: creating one is instant and cheap, so you can experiment freely and throw it away.
-
-  git branch                list local branches (* marks the current one)
-  git branch refactor       create a branch at the current commit (you stay where you are)
-  git branch -m old new     rename a branch
-  git branch -d name        delete a branch that is already merged
-  git branch -D name        delete it even if it is not merged (careful)"""
-es = """
-Tenés que probar un refactor riesgoso sin romper el código que usa tu equipo. Una rama es un puntero movible a un commit: crearla es instantáneo y barato, así que podés experimentar y tirarla.
-
-  git branch                lista las ramas locales (* marca la actual)
-  git branch refactor       crea una rama en el commit actual (seguís donde estabas)
-  git branch -m vieja nueva renombra una rama
-  git branch -d nombre      borra una rama que ya está fusionada
-  git branch -D nombre      la borra aunque no esté fusionada (cuidado)"""
-
 [[exercise]]
 id = "branch-1"
+hints = 1
 solution = ["git branch refactor"]
 setup = [
   { do = "git", args = "init" },
@@ -33,17 +12,14 @@ setup = [
   { do = "git", args = "add a.txt" },
   { do = "git", args = "commit -m \"Add a\"" },
 ]
-prompt = { en = "Create a branch called refactor. You must stay on main.", es = "Creá una rama llamada refactor. Tenés que quedarte en main." }
-hints = [
-  { en = "git branch followed by a name creates it without switching.", es = "git branch seguido de un nombre la crea sin cambiarte de rama." },
-]
 checks = [
-  { type = "branch_exists", name = "refactor", fail = { en = "The branch refactor does not exist yet.", es = "La rama refactor todavía no existe." } },
-  { type = "branch", name = "main", fail = { en = "You should still be on main.", es = "Tendrías que seguir en main." } },
+  { type = "branch_exists", name = "refactor" },
+  { type = "branch", name = "main" },
 ]
 
 [[exercise]]
 id = "branch-2"
+hints = 2
 solution = ["git branch -d old-experiment"]
 setup = [
   { do = "git", args = "init" },
@@ -52,18 +28,14 @@ setup = [
   { do = "git", args = "commit -m \"Add a\"" },
   { do = "git", args = "branch old-experiment" },
 ]
-prompt = { en = "The branch old-experiment is already merged and no longer needed. Delete it.", es = "La rama old-experiment ya está fusionada y no se necesita más. Borrala." }
-hints = [
-  { en = "Use git branch with the delete option.", es = "Usá git branch con la opción de borrar." },
-  { en = "Type: git branch -d old-experiment", es = "Escribí: git branch -d old-experiment" },
-]
 checks = [
-  { type = "git_fails", args = "show-ref --verify --quiet refs/heads/old-experiment", fail = { en = "old-experiment still exists.", es = "old-experiment todavía existe." } },
-  { type = "branch_exists", name = "main", fail = { en = "main must not be deleted.", es = "main no se debe borrar." } },
+  { type = "git_fails", args = "show-ref --verify --quiet refs/heads/old-experiment" },
+  { type = "branch_exists", name = "main" },
 ]
 
 [[exercise]]
 id = "branch-3"
+hints = 1
 solution = ["git branch -m featur feature"]
 setup = [
   { do = "git", args = "init" },
@@ -72,11 +44,7 @@ setup = [
   { do = "git", args = "commit -m \"Add a\"" },
   { do = "git", args = "branch featur" },
 ]
-prompt = { en = "The branch featur has a typo. Rename it to feature.", es = "La rama featur tiene un error de tipeo. Renombrala a feature." }
-hints = [
-  { en = "git branch -m takes the old name and then the new one.", es = "git branch -m recibe el nombre viejo y después el nuevo." },
-]
 checks = [
-  { type = "branch_exists", name = "feature", fail = { en = "The branch feature does not exist yet.", es = "La rama feature todavía no existe." } },
-  { type = "git_fails", args = "show-ref --verify --quiet refs/heads/featur", fail = { en = "The old name featur still exists.", es = "El nombre viejo featur todavía existe." } },
+  { type = "branch_exists", name = "feature" },
+  { type = "git_fails", args = "show-ref --verify --quiet refs/heads/featur" },
 ]

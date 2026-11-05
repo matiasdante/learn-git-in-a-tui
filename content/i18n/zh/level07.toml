@@ -1,0 +1,100 @@
+"worktree.title" = "多个文件夹，一个仓库：worktree"
+"worktree.theory" = """
+你正在做一个功能，这时来了个 hotfix。与其用 stash，不如用 `git worktree` 得到同一个仓库的第二个工作文件夹，处于另一个分支，并共享全部历史。不用再克隆一份，也没有重复的对象。
+
+  git worktree add ../hotfix hotfix    新建文件夹 ../hotfix，并检出 hotfix 分支
+  git worktree list                    列出这个仓库的所有文件夹
+  git worktree remove ../hotfix        用完后删除多余的文件夹
+
+一个分支同一时间只能在一个工作树中被检出。"""
+"worktree-1.prompt" = "打开第二个工作文件夹 ../hotfix 并检出 hotfix 分支，同时不要离开你当前的工作。"
+"worktree-1.hint1" = "worktree add 先接新文件夹，再接分支。"
+"worktree-1.hint2" = "输入：git worktree add ../hotfix hotfix"
+"worktree-1.check1.fail" = "文件夹 ../hotfix 没有检出 hotfix 分支。"
+"worktree-1.check2.fail" = "../hotfix 里没有项目的文件。"
+"worktree-2.prompt" = "hotfix 已完成。删除多余的工作文件夹 ../hotfix（分支可以保留）。"
+"worktree-2.hint1" = "worktree 有一个用于删除的子命令。"
+"worktree-2.check1.fail" = "文件夹 ../hotfix 仍然存在。"
+"worktree-2.check2.fail" = "hotfix 分支应该保留。"
+"submodule.title" = "仓库里的仓库：submodule"
+"submodule.theory" = """
+你的应用依赖一个放在独立仓库里的库。子模块会把它固定在某个提交上嵌入进来：你的仓库记录的是“libs/lib = 提交 abc123”，而不是复制文件。
+
+  git submodule add <url> libs/lib     嵌入它（会创建 .gitmodules）
+  git submodule update --init          克隆之后：拉取子模块的内容
+  git clone --recurse-submodules <url> 一步完成克隆并填充子模块
+
+主项目只保存子模块的提交；想升级到更新的版本，要先在子模块里提交，再在主项目里提交新的指针。"""
+"submodule-1.prompt" = "把仓库 ../lib 作为子模块嵌入到 libs/lib。"
+"submodule-1.hint1" = "submodule add 接 URL（这里是一个路径）和放置的位置。"
+"submodule-1.hint2" = "输入：git submodule add ../lib libs/lib"
+"submodule-1.check1.fail" = ".gitmodules 还不存在。"
+"submodule-1.check2.fail" = "libs/lib 没有被注册为子模块（模式 160000）。"
+"submodule-1.check3.fail" = "缺少库的内容。"
+"submodule-2.prompt" = "你把项目克隆到了 app，但 libs/lib 是空的。把子模块的内容取下来。"
+"submodule-2.hint1" = "普通克隆之后，子模块需要初始化。"
+"submodule-2.hint2" = "输入：git submodule update --init"
+"submodule-2.check1.fail" = "libs/lib 仍然是空的。"
+"subtree.title" = "把项目拷贝进来：subtree"
+"subtree.theory" = """
+subtree 是子模块的替代方案：另一个项目的文件会成为你仓库里“普通的”文件，放在一个子文件夹中。克隆或构建时，谁都不需要特殊命令。
+
+  git subtree add --prefix=vendor/lib ../lib main --squash    引入
+  git subtree pull --prefix=vendor/lib ../lib main --squash   以后更新
+  git subtree push --prefix=vendor/lib ../lib main            把你的本地改动送回去
+
+对使用者来说比子模块更简单，但你的项目和库的历史会混在一起（--squash 可以让它保持精简）。"""
+"subtree-1.prompt" = "把仓库 ../lib（main 分支）作为 subtree 引入子文件夹 vendor/lib，并压缩它的历史。"
+"subtree-1.hint1" = "subtree add 需要 --prefix、仓库和分支。"
+"subtree-1.hint2" = "输入：git subtree add --prefix=vendor/lib ../lib main --squash"
+"subtree-1.check1.fail" = "缺少 vendor/lib/lib.txt。"
+"subtree-1.check2.fail" = "subtree 不使用 .gitmodules。"
+"subtree-1.check3.fail" = "这些文件必须已提交到你的仓库里。"
+"sparse-checkout.title" = "只处理仓库的一部分：sparse-checkout"
+"sparse-checkout.theory" = """
+一个巨大的单体仓库有几百个文件夹，而你只改其中一个。`git sparse-checkout` 只在你的工作区保留你选择的文件夹；其余的仍在历史里，但不会出现在磁盘上。
+
+  git sparse-checkout set docs          只保留 docs 文件夹
+  git sparse-checkout add backend       再加上 backend
+  git sparse-checkout disable           把所有内容都带回来"""
+"sparse-1.prompt" = "你只负责文档。让工作区里只保留 docs 文件夹。"
+"sparse-1.hint1" = "sparse-checkout set 接要保留的文件夹。"
+"sparse-1.hint2" = "输入：git sparse-checkout set docs"
+"sparse-1.check1.fail" = "docs 必须保留在工作区里。"
+"sparse-1.check2.fail" = "frontend 仍然在磁盘上。"
+"sparse-1.check3.fail" = "backend 仍然在磁盘上。"
+"archive.title" = "打包一个版本：archive"
+"archive.theory" = """
+要交付一个版本，你需要一个干净的文件，只包含已跟踪的文件：没有 .git，没有构建垃圾，也没有未跟踪的笔记。`git archive` 可以为任意提交或标签生成 tar 或 zip。
+
+  git archive -o release.tar HEAD            当前提交的 tar 包
+  git archive -o v1.zip v1.0                 某个标签的 zip（格式由扩展名决定）
+  git archive --prefix=app-1.0/ -o app.tar HEAD   所有内容放在一个顶层文件夹里"""
+"archive-1.prompt" = "用当前提交的内容创建 release.tar。"
+"archive-1.hint1" = "archive 用 -o 指定输出文件，再接要打包的提交。"
+"archive-1.hint2" = "输入：git archive -o release.tar HEAD"
+"archive-1.check1.fail" = "release.tar 还不存在。"
+"archive-1.check2.fail" = "请用 git archive 创建这个文件。"
+"get-tar-commit-id.title" = "这个 tar 包来自哪个提交？get-tar-commit-id"
+"get-tar-commit-id.theory" = """
+由 `git archive` 根据某个提交生成的 tar 包，在文件头里带有该提交的哈希。如果你发现一个旧的 release.tar，想知道它是用哪份源码构建的：
+
+  git get-tar-commit-id < release.tar
+
+它会输出哈希；如果这个 tar 不是由 git archive 根据提交生成的，就什么也不输出。"""
+"get-tar-commit-id-1.prompt" = "release.tar 是根据这个仓库中的某个提交生成的。把那个提交的哈希写进 answer.txt。"
+"get-tar-commit-id-1.hint1" = "这个命令从标准输入读取 tar：使用 < release.tar。"
+"get-tar-commit-id-1.check1.fail" = "answer.txt 必须包含生成这个 tar 包的提交的哈希。"
+"submodule-helper.title" = "submodule--helper（内部命令）"
+"submodule-helper.theory" = """
+`git submodule--helper` 是 `git submodule` 背后的内部程序。它最初是个 shell 脚本；其中繁重的部分（克隆、更新、状态）后来用 C 重写，并通过这个辅助程序暴露出来。你永远不会自己调用它，但它会出现在错误信息和进程列表里。
+
+如果某个子模块操作失败，请阅读错误信息，然后重新运行公开的命令（git submodule update --init --recursive），而不要去调用这个辅助程序。"""
+"merge-subtree.title" = "merge-subtree（合并策略）"
+"merge-subtree.theory" = """
+`subtree` 同时也是一种“合并策略”（你可能会在列表里看到 git-merge-subtree 这个程序）。当你合并的项目，其文件位于你仓库的某个子文件夹里时，它会自己找到正确的前缀来比较。
+
+  git merge -s subtree library/main
+  git merge -X subtree=vendor/lib library/main    当 git 需要你明确指出前缀时
+
+`git subtree pull` 在内部就用了它。日常使用请优先用高层的 git subtree 命令。"""

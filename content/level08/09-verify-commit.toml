@@ -3,36 +3,9 @@ level = 8
 order = 9
 requires = ["bin:ssh-keygen"]
 
-[title]
-en = "Signed commits: verify-commit"
-es = "Commits firmados: verify-commit"
-
-[theory]
-en = """
-Anyone can type any name in a commit. A SIGNATURE proves who really made it. Git signs with GPG or, since 2.34, with an SSH key you already have.
-
-  git config gpg.format ssh
-  git config user.signingkey ~/.ssh/id_ed25519
-  git config gpg.ssh.allowedSignersFile allowed_signers    who is trusted
-  git commit -S -m "message"        sign the commit
-  git verify-commit HEAD            check the signature
-  git log --show-signature          see it in the log
-
-The sandbox already created a key (key / key.pub) and the allowed_signers file for you."""
-es = """
-Cualquiera puede escribir cualquier nombre en un commit. Una FIRMA prueba quién lo hizo de verdad. Git firma con GPG o, desde la 2.34, con una clave SSH que ya tengas.
-
-  git config gpg.format ssh
-  git config user.signingkey ~/.ssh/id_ed25519
-  git config gpg.ssh.allowedSignersFile allowed_signers    en quién se confía
-  git commit -S -m "mensaje"        firma el commit
-  git verify-commit HEAD            verifica la firma
-  git log --show-signature          la muestra en el log
-
-El sandbox ya creó una clave (key / key.pub) y el archivo allowed_signers por vos."""
-
 [[exercise]]
 id = "verify-commit-1"
+hints = 2
 solution = ["git commit -S -m \"Signed change\"", "git verify-commit HEAD"]
 setup = [
   { do = "git", args = "init" },
@@ -44,12 +17,7 @@ setup = [
   { do = "write", path = "a.txt", content = "a\n" },
   { do = "git", args = "add a.txt" },
 ]
-prompt = { en = "a.txt is staged and git is configured to sign with SSH. Make a signed commit and verify its signature.", es = "a.txt está preparado y git está configurado para firmar con SSH. Hacé un commit firmado y verificá su firma." }
-hints = [
-  { en = "Add -S to git commit.", es = "Sumá -S a git commit." },
-  { en = "Then run git verify-commit HEAD.", es = "Después ejecutá git verify-commit HEAD." },
-]
 checks = [
-  { type = "git_output", args = "log -1 --format=%G?", equals = "G", fail = { en = "The latest commit does not have a good signature (%G? is not G).", es = "El último commit no tiene una firma válida (%G? no es G)." } },
-  { type = "ran", any = ["verify-commit"], fail = { en = "Verify the signature with git verify-commit HEAD.", es = "Verificá la firma con git verify-commit HEAD." } },
+  { type = "git_output", args = "log -1 --format=%G?", equals = "G" },
+  { type = "ran", any = ["verify-commit"] },
 ]

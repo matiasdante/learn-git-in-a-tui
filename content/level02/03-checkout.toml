@@ -2,30 +2,9 @@ id = "checkout"
 level = 2
 order = 3
 
-[title]
-en = "checkout: the older Swiss army knife"
-es = "checkout: la navaja suiza clásica"
-
-[theory]
-en = """
-Before git 2.23, `git checkout` did everything: switching branches, restoring files and inspecting old commits. It still works and you will meet it in old tutorials and scripts.
-
-  git checkout main                   same as git switch main
-  git checkout main -- config.txt     take ONE file from main into your working folder (and stage it)
-  git checkout HEAD~1                 detached HEAD: look around at an older commit
-
-In a detached HEAD you are not on any branch. You can look and experiment, but new commits are easy to lose: create a branch (git switch -c name) if you want to keep them."""
-es = """
-Antes de git 2.23, `git checkout` hacía de todo: cambiar de rama, restaurar archivos e inspeccionar commits viejos. Todavía funciona y lo vas a encontrar en tutoriales y scripts viejos.
-
-  git checkout main                   equivale a git switch main
-  git checkout main -- config.txt     trae UN archivo de main a tu carpeta (y lo prepara)
-  git checkout HEAD~1                 HEAD desacoplado: mirás un commit más viejo
-
-Con HEAD desacoplado no estás en ninguna rama. Podés mirar y experimentar, pero los commits nuevos se pierden fácil: creá una rama (git switch -c nombre) si querés conservarlos."""
-
 [[exercise]]
 id = "checkout-1"
+hints = 2
 solution = ["git checkout main -- config.txt"]
 setup = [
   { do = "git", args = "init" },
@@ -37,19 +16,15 @@ setup = [
   { do = "git", args = "commit -am \"Update config\"" },
   { do = "git", args = "switch old" },
 ]
-prompt = { en = "You are on the branch old, where config.txt is v1. Bring config.txt as it is on main (v2) without leaving old.", es = "Estás en la rama old, donde config.txt es v1. Traé config.txt como está en main (v2) sin salir de old." }
-hints = [
-  { en = "checkout accepts a branch followed by -- and a file name.", es = "checkout acepta una rama seguida de -- y un nombre de archivo." },
-  { en = "Type: git checkout main -- config.txt", es = "Escribí: git checkout main -- config.txt" },
-]
 checks = [
-  { type = "branch", name = "old", fail = { en = "You should stay on the branch old.", es = "Tendrías que quedarte en la rama old." } },
-  { type = "file_content", path = "config.txt", equals = "v2", fail = { en = "config.txt is still v1.", es = "config.txt sigue siendo v1." } },
-  { type = "status", path = "config.txt", xy = "M.", fail = { en = "The change should be staged (checkout with a file stages it).", es = "El cambio debería estar preparado (checkout con un archivo lo prepara)." } },
+  { type = "branch", name = "old" },
+  { type = "file_content", path = "config.txt", equals = "v2" },
+  { type = "status", path = "config.txt", xy = "M." },
 ]
 
 [[exercise]]
 id = "checkout-2"
+hints = 2
 solution = ["git checkout HEAD~1"]
 setup = [
   { do = "git", args = "init" },
@@ -61,12 +36,7 @@ setup = [
   { do = "write", path = "a.txt", content = "3\n" },
   { do = "git", args = "commit -am \"Third\"" },
 ]
-prompt = { en = "Look at the project as it was one commit before the latest, without using a branch (detached HEAD).", es = "Mirá el proyecto como estaba un commit antes del último, sin usar una rama (HEAD desacoplado)." }
-hints = [
-  { en = "HEAD~1 means the parent of the current commit.", es = "HEAD~1 es el padre del commit actual." },
-  { en = "Type: git checkout HEAD~1  (git switch --detach HEAD~1 also works)", es = "Escribí: git checkout HEAD~1  (git switch --detach HEAD~1 también sirve)" },
-]
 checks = [
-  { type = "git_fails", args = "symbolic-ref -q HEAD", fail = { en = "HEAD still points to a branch. It should be detached.", es = "HEAD todavía apunta a una rama. Tendría que estar desacoplado." } },
-  { type = "git_output", args = "rev-parse HEAD", same_as = "rev-parse main~1", fail = { en = "HEAD is detached but not at the commit before the latest.", es = "HEAD está desacoplado pero no en el commit anterior al último." } },
+  { type = "git_fails", args = "symbolic-ref -q HEAD" },
+  { type = "git_output", args = "rev-parse HEAD", same_as = "rev-parse main~1" },
 ]

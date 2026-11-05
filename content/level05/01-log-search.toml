@@ -2,34 +2,9 @@ id = "log-search"
 level = 5
 order = 1
 
-[title]
-en = "Searching the history: log -S, -G and filters"
-es = "Buscar en la historia: log -S, -G y filtros"
-
-[theory]
-en = """
-"Who added this API key?" `git log` can search the CONTENT of changes, not just messages:
-
-  git log -S"API_KEY"        pickaxe: commits that changed how many times the string appears
-  git log -G"timeout=\\d+"    commits whose diff has a line matching the regex
-  git log --author=Bob       commits by one author
-  git log --since=2.weeks    recent commits
-  git log --format=%h        just the short hash, one per line
-
-Add --oneline or --stat to taste, and -- <path> to limit the search to one file."""
-es = """
-"¿Quién agregó esta clave de API?" `git log` puede buscar en el CONTENIDO de los cambios, no solo en los mensajes:
-
-  git log -S"API_KEY"        pickaxe: commits que cambiaron cuántas veces aparece el texto
-  git log -G"timeout=\\d+"    commits cuyo diff tiene una línea que coincide con la regex
-  git log --author=Bob       commits de un autor
-  git log --since=2.weeks    commits recientes
-  git log --format=%h        solo el hash corto, uno por línea
-
-Sumá --oneline o --stat a gusto, y -- <ruta> para limitar la búsqueda a un archivo."""
-
 [[exercise]]
 id = "log-search-1"
+hints = 2
 solution = ["git log -S API_KEY --format=%h > answer.txt"]
 setup = [
   { do = "git", args = "init" },
@@ -45,17 +20,13 @@ setup = [
   { do = "git", args = "add more.txt" },
   { do = "git", args = "commit -m \"Add more\"" },
 ]
-prompt = { en = "Some commit added the text API_KEY to config.txt. Find it with the pickaxe search and write its short hash into answer.txt.", es = "Algún commit agregó el texto API_KEY a config.txt. Encontralo con la búsqueda pickaxe y escribí su hash corto en answer.txt." }
-hints = [
-  { en = "git log -S\"text\" lists the commits that added or removed that text.", es = "git log -S\"texto\" lista los commits que agregaron o quitaron ese texto." },
-  { en = "Add --format=%h to print only the hash, then redirect with > answer.txt.", es = "Agregá --format=%h para imprimir solo el hash y redirigí con > answer.txt." },
-]
 checks = [
-  { type = "file_matches_rev", path = "answer.txt", rev = "HEAD~2", fail = { en = "answer.txt must contain the hash of the commit that added API_KEY (\"Tweak config\").", es = "answer.txt debe contener el hash del commit que agregó API_KEY (\"Tweak config\")." } },
+  { type = "file_matches_rev", path = "answer.txt", rev = "HEAD~2" },
 ]
 
 [[exercise]]
 id = "log-search-2"
+hints = 2
 solution = ["git rev-list --count --author=Bob HEAD > answer.txt"]
 setup = [
   { do = "git", args = "init" },
@@ -75,11 +46,6 @@ setup = [
   { do = "git", args = "add e.txt" },
   { do = "git", args = "-c user.name=Alice -c user.email=alice@example.com commit -m \"Alice 3\"" },
 ]
-prompt = { en = "How many commits did Bob author? Write the number into answer.txt.", es = "¿Cuántos commits escribió Bob? Escribí el número en answer.txt." }
-hints = [
-  { en = "git log --author=Bob --oneline lists them; you can count the lines.", es = "git log --author=Bob --oneline los lista; podés contar las líneas." },
-  { en = "git rev-list --count --author=Bob HEAD prints the number directly.", es = "git rev-list --count --author=Bob HEAD imprime el número directamente." },
-]
 checks = [
-  { type = "file_content", path = "answer.txt", equals = "2", fail = { en = "answer.txt must contain only the number of Bob's commits.", es = "answer.txt debe contener solo el número de commits de Bob." } },
+  { type = "file_content", path = "answer.txt", equals = "2" },
 ]

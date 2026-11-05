@@ -2,35 +2,14 @@ id = "check-ref-format"
 level = 9
 order = 15
 
-[title]
-en = "Valid names: check-ref-format"
-es = "Nombres válidos: check-ref-format"
-
-[theory]
-en = """
-Not every string can be a branch or tag name: no spaces, no `..`, no `~ ^ : ? * [ \\`, cannot end with `.lock` or `/`. `git check-ref-format` tests a name; exit code 0 means valid.
-
-  git check-ref-format refs/heads/feature/login     valid (exit 0)
-  git check-ref-format refs/heads/feature..login    invalid (exit 1)
-  git check-ref-format --branch feature/login       validates a branch name"""
-es = """
-No cualquier texto puede ser nombre de rama o tag: sin espacios, sin `..`, sin `~ ^ : ? * [ \\`, no puede terminar en `.lock` ni en `/`. `git check-ref-format` prueba un nombre; el código de salida 0 significa válido.
-
-  git check-ref-format refs/heads/feature/login     válido (salida 0)
-  git check-ref-format refs/heads/feature..login    inválido (salida 1)
-  git check-ref-format --branch feature/login       valida el nombre de una rama"""
-
 [[exercise]]
 id = "check-ref-format-1"
+hints = 1
 solution = [{ run = "git check-ref-format refs/heads/feature..login", allow_fail = true }, "echo no > answer.txt"]
 setup = [
   { do = "git", args = "init" },
 ]
-prompt = { en = "Is feature..login a valid branch name? Test it with git check-ref-format (the exit code tells) and write yes or no into answer.txt.", es = "¿Es feature..login un nombre de rama válido? Probalo con git check-ref-format (lo dice el código de salida) y escribí yes o no en answer.txt." }
-hints = [
-  { en = "Use the full name refs/heads/feature..login. A failure shows as [exit code 1].", es = "Usá el nombre completo refs/heads/feature..login. Un fallo se ve como [exit code 1]." },
-]
 checks = [
-  { type = "ran", any = ["check-ref-format"], fail = { en = "Test the name with git check-ref-format.", es = "Probá el nombre con git check-ref-format." } },
-  { type = "file_content", path = "answer.txt", equals = "no", fail = { en = "The name is not valid (.. is forbidden): answer.txt should say no.", es = "El nombre no es válido (.. está prohibido): answer.txt debería decir no." } },
+  { type = "ran", any = ["check-ref-format"] },
+  { type = "file_content", path = "answer.txt", equals = "no" },
 ]

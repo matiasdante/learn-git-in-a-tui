@@ -2,37 +2,16 @@ id = "update-index"
 level = 9
 order = 25
 
-[title]
-en = "Editing the index: update-index"
-es = "Editar el índice: update-index"
-
-[theory]
-en = """
-`git update-index` modifies the index directly. `git add` and `git rm --cached` are friendlier versions of it.
-
-  git update-index --add a.txt           put a new file in the index
-  git update-index --chmod=+x run.sh     make a file executable in the index
-  git update-index --assume-unchanged f  pretend a file never changes (careful)"""
-es = """
-`git update-index` modifica el índice directamente. `git add` y `git rm --cached` son versiones más amigables.
-
-  git update-index --add a.txt           pone un archivo nuevo en el índice
-  git update-index --chmod=+x run.sh     hace ejecutable un archivo en el índice
-  git update-index --assume-unchanged f  finge que un archivo nunca cambia (cuidado)"""
-
 [[exercise]]
 id = "update-index-1"
+hints = 1
 solution = ["git update-index --add --chmod=+x run.sh"]
 setup = [
   { do = "git", args = "init" },
   { do = "write", path = "a.txt", content = "a\n" },
   { do = "write", path = "run.sh", content = "echo hi\n" },
 ]
-prompt = { en = "Put run.sh in the index as an executable file (mode 100755) using update-index, not git add.", es = "Poné run.sh en el índice como archivo ejecutable (modo 100755) usando update-index, no git add." }
-hints = [
-  { en = "You need --add (new file) and --chmod=+x.", es = "Necesitás --add (archivo nuevo) y --chmod=+x." },
-]
 checks = [
-  { type = "git_output", args = "ls-files --stage run.sh", contains = "100755", fail = { en = "run.sh is not in the index with mode 100755.", es = "run.sh no está en el índice con modo 100755." } },
-  { type = "status", path = "a.txt", xy = "??", fail = { en = "a.txt should stay untracked.", es = "a.txt tendría que seguir sin seguimiento." } },
+  { type = "git_output", args = "ls-files --stage run.sh", contains = "100755" },
+  { type = "status", path = "a.txt", xy = "??" },
 ]

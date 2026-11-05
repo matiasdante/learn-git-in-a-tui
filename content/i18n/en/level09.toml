@@ -1,0 +1,321 @@
+"cat-file.title" = "Reading objects: cat-file"
+"cat-file.theory" = """
+Everything git stores is an object identified by its hash: blob (file content), tree (folder), commit and tag. `git cat-file` reads any of them.
+
+  git cat-file -t HEAD            the type of the object (commit)
+  git cat-file -p HEAD            pretty-print it
+  git cat-file -p HEAD:a.txt      the content of a file at a commit
+  git cat-file -s HEAD:a.txt      its size in bytes"""
+"cat-file-1.prompt" = "Save the content of a.txt as it was two commits ago (HEAD~2) into answer.txt, reading it directly from the object database."
+"cat-file-1.hint1" = "cat-file -p takes revision:path."
+"cat-file-1.check1.fail" = "answer.txt must contain exactly the output of git cat-file -p HEAD~2:a.txt."
+"hash-object.title" = "Creating blobs: hash-object"
+"hash-object.theory" = """
+The hash of a file is computed from its content only (plus a small header). `git hash-object` shows it, and with -w also WRITES the object to the repository.
+
+  git hash-object hello.txt        just compute the hash
+  git hash-object -w hello.txt     compute and store the blob
+  git hash-object --stdin          hash text read from the input"""
+"hash-object-1.prompt" = "Store hello.txt as a blob in the object database (without staging it) and save its hash into answer.txt."
+"hash-object-1.hint1" = "-w writes the object."
+"hash-object-1.hint2" = "Type: git hash-object -w hello.txt > answer.txt"
+"hash-object-1.check1.fail" = "The blob is not in the object database. Did you use -w?"
+"hash-object-1.check2.fail" = "answer.txt must contain the hash of the blob."
+"ls-tree.title" = "Listing a tree: ls-tree"
+"ls-tree.theory" = """
+A tree object is a folder: a list of names, modes and hashes. `git ls-tree` prints it.
+
+  git ls-tree HEAD                  mode, type, hash and name of each entry
+  git ls-tree --name-only HEAD      just the names
+  git ls-tree -r HEAD               recursive, into subfolders"""
+"ls-tree-1.prompt" = "Save into answer.txt the names of the files in the tree of HEAD~1."
+"ls-tree-1.hint1" = "Use --name-only and name the commit."
+"ls-tree-1.check1.fail" = "answer.txt must contain exactly the output of git ls-tree --name-only HEAD~1."
+"ls-files.title" = "The index: ls-files"
+"ls-files.theory" = """
+The index (staging area) is a list of paths with the blob each one will have in the next commit. `git ls-files` shows it.
+
+  git ls-files               tracked paths
+  git ls-files --stage       mode, hash, stage number and path
+  git ls-files --others      untracked files
+  git ls-files --deleted     tracked files missing on disk"""
+"ls-files-1.prompt" = "Save the full contents of the index (mode, hash and path of every file) into answer.txt."
+"ls-files-1.hint1" = "--stage adds the mode and the hash."
+"ls-files-1.check1.fail" = "answer.txt must contain exactly the output of git ls-files --stage."
+"mktree.title" = "Building a tree by hand: mktree"
+"mktree.theory" = """
+`git mktree` reads lines of the form `<mode> <type> <hash><TAB><name>` from the standard input and creates the tree object. It is how you would build a folder without touching any working file.
+
+  git hash-object -w hello.txt            -> the blob hash
+  git mktree                              then type:  100644 blob <hash><TAB>hello.txt   and press Ctrl+D
+
+It prints the hash of the new tree."""
+"mktree-1.prompt" = "Create a tree containing the file hello.txt (blob 3b18e512dba79e4c8300dd08aeb37f8e728b8dad, mode 100644) with git mktree, and save the tree hash into answer.txt. Store the blob first."
+"mktree-1.hint1" = "Run git hash-object -w hello.txt first, then git mktree > answer.txt."
+"mktree-1.hint2" = "Type the line with a real TAB between the hash and the name; end with Ctrl+D."
+"mktree-1.check1.fail" = "answer.txt must contain the hash of a tree with hello.txt in it."
+"write-tree.title" = "Index to tree: write-tree"
+"write-tree.theory" = "`git write-tree` turns the current index into a tree object and prints its hash. It is the first half of what `git commit` does (the second half, commit-tree, wraps that tree in a commit)."
+"write-tree-1.prompt" = "a.txt and b.txt are staged. Write the index as a tree object and save its hash into answer.txt."
+"write-tree-1.hint1" = "Type: git write-tree > answer.txt"
+"write-tree-1.check1.fail" = "answer.txt must contain the hash of the tree with a.txt and b.txt."
+"read-tree.title" = "Tree to index: read-tree"
+"read-tree.theory" = """
+`git read-tree <tree-ish>` is the opposite of write-tree: it loads a tree into the index, replacing it. Files in the working folder are not touched. The porcelain commands reset and checkout use it internally.
+
+  git read-tree HEAD~1        the index now looks like the previous commit"""
+"read-tree-1.prompt" = "Make the index look like the previous commit (HEAD~1), leaving the files on disk alone."
+"read-tree-1.hint1" = "Type: git read-tree HEAD~1"
+"read-tree-1.check1.fail" = "The index should only contain a.txt."
+"read-tree-1.check2.fail" = "b.txt must remain on disk."
+"commit-tree.title" = "Creating a commit by hand: commit-tree"
+"commit-tree.theory" = "`git commit-tree <tree> -m \"message\"` creates a commit object for a tree, optionally with parents (-p <commit>), and prints its hash. It does NOT move any branch: the commit exists but nothing points to it until you update a ref.\n\n  git commit-tree <tree> -m \"Manual commit\"\n  git commit-tree <tree> -p HEAD -m \"Child of HEAD\""
+"commit-tree-1.prompt" = "a.txt is staged. Create a commit object from the index tree with the message \"Manual commit\" and save its hash into answer.txt. No branch should move."
+"commit-tree-1.hint1" = "First git write-tree, then git commit-tree <that hash> -m \"Manual commit\"."
+"commit-tree-1.check1.fail" = "answer.txt must contain the hash of a commit with the message \"Manual commit\"."
+"commit-tree-1.check2.fail" = "A branch moved: commit-tree must not update any branch."
+"update-ref.title" = "Moving references: update-ref"
+"update-ref.theory" = """
+Branches and tags are just files containing a hash (in .git/refs/). `git update-ref` creates and moves them safely.
+
+  git update-ref refs/heads/manual HEAD      create the branch manual at HEAD
+  git update-ref refs/heads/manual <commit>  move it
+  git update-ref -d refs/heads/manual        delete it"""
+"update-ref-1.prompt" = "Create a branch called manual that points to the previous commit (HEAD~1), using update-ref and not git branch."
+"update-ref-1.hint1" = "The full name of a branch is refs/heads/<name>."
+"update-ref-1.check1.fail" = "The branch manual does not point to HEAD~1."
+"update-ref-1.check2.fail" = "Use git update-ref."
+"symbolic-ref.title" = "What HEAD points to: symbolic-ref"
+"symbolic-ref.theory" = """
+HEAD is normally not a hash but a symbolic reference: the name of the current branch. `git symbolic-ref` reads and writes it.
+
+  git symbolic-ref HEAD                         refs/heads/main
+  git symbolic-ref --short HEAD                 main
+  git symbolic-ref HEAD refs/heads/other        switch the current branch WITHOUT touching files (careful!)"""
+"symbolic-ref-1.prompt" = "Make HEAD point to the branch other by editing the symbolic reference directly."
+"symbolic-ref-1.hint1" = "symbolic-ref takes the name (HEAD) and then the target ref."
+"symbolic-ref-1.check1.fail" = "HEAD does not point to refs/heads/other yet."
+"rev-parse.title" = "Translating names: rev-parse"
+"rev-parse.theory" = """
+`git rev-parse` is the Swiss army knife of scripts: it turns any revision expression into a full hash and answers questions about the repository.
+
+  git rev-parse HEAD~2              full hash
+  git rev-parse --short HEAD        short hash
+  git rev-parse --abbrev-ref HEAD   current branch name
+  git rev-parse --show-toplevel     root folder of the working tree
+  git rev-parse --is-inside-work-tree"""
+"rev-parse-1.prompt" = "Save the full hash of HEAD~2 into answer.txt."
+"rev-parse-1.hint1" = "Type: git rev-parse HEAD~2 > answer.txt"
+"rev-parse-1.check1.fail" = "answer.txt must contain exactly the output of git rev-parse HEAD~2."
+"rev-list.title" = "Walking the history: rev-list"
+"rev-list.theory" = """
+`git rev-list` prints commit hashes reachable from a starting point, one per line. It is the engine under `git log` and ideal for scripts.
+
+  git rev-list HEAD                  every commit
+  git rev-list --count main..feature how many commits feature has that main lacks
+  git rev-list --max-count=3 HEAD    just three
+  git rev-list --merges HEAD         only merge commits"""
+"rev-list-1.prompt" = "Save into answer.txt how many commits feature has that main does not."
+"rev-list-1.hint1" = "Use --count with main..feature."
+"rev-list-1.check1.fail" = "answer.txt must contain exactly the output of git rev-list --count main..feature."
+"for-each-ref.title" = "Listing refs with a format: for-each-ref"
+"for-each-ref.theory" = """
+`git for-each-ref` lists branches, tags and other refs with a format you choose. Output designed for scripts: stable and without decoration.
+
+  git for-each-ref refs/heads
+  git for-each-ref --format='%(refname:short)' refs/heads     branch names only
+  git for-each-ref --sort=-committerdate refs/heads           most recently used first"""
+"for-each-ref-1.prompt" = "Save the short names of all local branches (one per line, nothing else) into answer.txt."
+"for-each-ref-1.hint1" = "Use --format=%(refname:short) and the prefix refs/heads."
+"for-each-ref-1.check1.fail" = "answer.txt must contain exactly the output of git for-each-ref --format=%(refname:short) refs/heads."
+"show-ref.title" = "Branches and tags with hashes: show-ref"
+"show-ref.theory" = """
+`git show-ref` prints `hash refname` for each ref. Also useful to test whether a ref exists:
+
+  git show-ref --heads               branches
+  git show-ref --tags                tags
+  git show-ref --verify refs/heads/main   exit code 0 if it exists"""
+"show-ref-1.prompt" = "Save the list of tags with their hashes into answer.txt."
+"show-ref-1.hint1" = "show-ref has a --tags option."
+"show-ref-1.check1.fail" = "answer.txt must contain exactly the output of git show-ref --tags."
+"check-ref-format.title" = "Valid names: check-ref-format"
+"check-ref-format.theory" = """
+Not every string can be a branch or tag name: no spaces, no `..`, no `~ ^ : ? * [ \\`, cannot end with `.lock` or `/`. `git check-ref-format` tests a name; exit code 0 means valid.
+
+  git check-ref-format refs/heads/feature/login     valid (exit 0)
+  git check-ref-format refs/heads/feature..login    invalid (exit 1)
+  git check-ref-format --branch feature/login       validates a branch name"""
+"check-ref-format-1.prompt" = "Is feature..login a valid branch name? Test it with git check-ref-format (the exit code tells) and write yes or no into answer.txt."
+"check-ref-format-1.hint1" = "Use the full name refs/heads/feature..login. A failure shows as [exit code 1]."
+"check-ref-format-1.check1.fail" = "Test the name with git check-ref-format."
+"check-ref-format-1.check2.fail" = "The name is not valid (.. is forbidden): answer.txt should say no."
+"diff-files.title" = "Working tree vs index: diff-files"
+"diff-files.theory" = """
+The three diff plumbing commands compare different pairs:
+
+  git diff-files        working tree  vs  index       (unstaged changes)
+  git diff-index HEAD   index/tree    vs  a commit    (everything since HEAD)
+  git diff-tree A B     tree          vs  tree        (two commits)
+
+Their raw output is stable for scripts. Add --name-only to list just the paths."""
+"diff-files-1.prompt" = "Save into answer.txt the names of the files modified in the working tree and not staged yet."
+"diff-files-1.hint1" = "diff-files compares the working tree with the index."
+"diff-files-1.check1.fail" = "answer.txt must contain exactly the output of git diff-files --name-only."
+"diff-index.title" = "Against a commit: diff-index"
+"diff-index.theory" = """
+`git diff-index <commit>` compares a commit with the index and the working tree. With --cached it only compares the commit with the index (what you are about to commit).
+
+  git diff-index --name-only HEAD          every file differing from HEAD
+  git diff-index --cached --name-only HEAD only the staged ones"""
+"diff-index-1.prompt" = "Save into answer.txt only the names of the files that are STAGED (differ between HEAD and the index)."
+"diff-index-1.hint1" = "Add --cached to compare only the index."
+"diff-index-1.check1.fail" = "answer.txt must contain exactly the output of git diff-index --cached --name-only HEAD."
+"diff-tree.title" = "Between two trees: diff-tree"
+"diff-tree.theory" = """
+`git diff-tree` compares two trees (usually two commits) without touching the working folder. For one commit it compares it with its parent.
+
+  git diff-tree --no-commit-id --name-only -r HEAD     files changed by the latest commit
+  git diff-tree -r A B                                  files that differ between A and B"""
+"diff-tree-1.prompt" = "Save into answer.txt the names of the files changed by the latest commit."
+"diff-tree-1.hint1" = "Combine --no-commit-id, --name-only and -r."
+"diff-tree-1.check1.fail" = "answer.txt must contain exactly the output of git diff-tree --no-commit-id --name-only -r HEAD."
+"checkout-index.title" = "Index to disk: checkout-index"
+"checkout-index.theory" = """
+`git checkout-index` copies files from the index to the working folder. It is how you restore a deleted file to the staged version.
+
+  git checkout-index a.txt        restore one file
+  git checkout-index -a           restore everything missing
+  git checkout-index -a -f        overwrite files that exist too"""
+"checkout-index-1.prompt" = "a.txt was deleted from the folder but is still in the index. Bring it back from the index."
+"checkout-index-1.hint1" = "Type: git checkout-index a.txt"
+"checkout-index-1.check1.fail" = "a.txt is not back yet."
+"merge-file.title" = "Merging three files: merge-file"
+"merge-file.theory" = """
+`git merge-file` does a three-way merge of plain files, with no repository involved: your version, the common base and the other version. The result is written over your version.
+
+  git merge-file mine.txt base.txt theirs.txt
+
+If both changed the same lines, conflict markers are inserted and the exit code is the number of conflicts."""
+"merge-file-1.prompt" = "Merge theirs.txt into mine.txt using base.txt as the common ancestor. Both changes (different lines) must end up in mine.txt."
+"merge-file-1.hint1" = "The order is: your file, the base, the other file."
+"merge-file-1.check1.fail" = "mine.txt should have both changes: \"1 mine\" and \"3 theirs\"."
+"merge-tree.title" = "Merging without touching anything: merge-tree"
+"merge-tree.theory" = """
+`git merge-tree --write-tree A B` (git 2.38+) performs the merge of two commits entirely in memory and prints the hash of the resulting tree, without changing the index or the working folder. A server can use it to check whether a branch merges cleanly.
+
+  git merge-tree --write-tree main feature     prints the tree (and, if there are conflicts, lists them and exits with 1)"""
+"merge-tree-1.prompt" = "Compute, without merging for real, the tree that merging feature into main would produce, and save its hash into answer.txt."
+"merge-tree-1.hint1" = "Use --write-tree with the two branches and redirect to answer.txt."
+"merge-tree-1.check1.fail" = "answer.txt must contain the hash of the merged tree (base, feature and main files)."
+"merge-tree-1.check2.fail" = "No real merge should have happened."
+"unpack-file.title" = "A blob as a temporary file: unpack-file"
+"unpack-file.theory" = """
+`git unpack-file <blob>` writes the content of a blob into a new temporary file in the current folder (named .merge_file_XXXX) and prints its name. Merge tools use it to hand you the three versions of a conflicted file.
+
+  git unpack-file $(git rev-parse HEAD:a.txt)"""
+"unpack-file-1.prompt" = "Extract the blob of a.txt at HEAD into a temporary file and save the file name that git prints into answer.txt."
+"unpack-file-1.hint1" = "Get the blob hash with git rev-parse HEAD:a.txt, then pass it to unpack-file."
+"unpack-file-1.check1.fail" = "answer.txt must contain the temporary file name (.merge_file_...)."
+"var.title" = "Git's own variables: var"
+"var.theory" = """
+`git var` prints values git computes: who it thinks you are, which editor it would open.
+
+  git var GIT_AUTHOR_IDENT       Name <email> timestamp timezone
+  git var GIT_COMMITTER_IDENT
+  git var GIT_EDITOR
+  git var -l                     everything"""
+"var-1.prompt" = "Save the identity git would use as the author of your next commit into answer.txt."
+"var-1.hint1" = "The variable is GIT_AUTHOR_IDENT."
+"var-1.check1.fail" = "answer.txt must contain exactly the output of git var GIT_AUTHOR_IDENT."
+"mktag.title" = "Creating a tag object: mktag"
+"mktag.theory" = """
+An annotated tag is an object of its own. `git mktag` builds one from a strictly formatted text read from the standard input:
+
+  object <commit hash>
+  type commit
+  tag v1
+  tagger Ann <ann@example.com> 1704110400 +0000
+  <blank line>
+  message
+
+It prints the hash of the tag object; to publish it you still have to point a ref to it (git update-ref refs/tags/v1 <hash>)."""
+"mktag-1.prompt" = "Create a tag object named v1 for the latest commit with git mktag (tagger Ann <ann@example.com> 1704110400 +0000, message \"First version\") and save its hash into answer.txt."
+"mktag-1.hint1" = "Get the commit hash with git rev-parse HEAD. Type the lines of the format, a blank line, the message, then Ctrl+D."
+"mktag-1.check1.fail" = "answer.txt must contain the hash of a tag object."
+"mktag-1.check2.fail" = "The tag object must be named v1."
+"update-index.title" = "Editing the index: update-index"
+"update-index.theory" = """
+`git update-index` modifies the index directly. `git add` and `git rm --cached` are friendlier versions of it.
+
+  git update-index --add a.txt           put a new file in the index
+  git update-index --chmod=+x run.sh     make a file executable in the index
+  git update-index --assume-unchanged f  pretend a file never changes (careful)"""
+"update-index-1.prompt" = "Put run.sh in the index as an executable file (mode 100755) using update-index, not git add."
+"update-index-1.hint1" = "You need --add (new file) and --chmod=+x."
+"update-index-1.check1.fail" = "run.sh is not in the index with mode 100755."
+"update-index-1.check2.fail" = "a.txt should stay untracked."
+"checkout-worker.title" = "checkout--worker (internal)"
+"checkout-worker.theory" = """
+`git checkout--worker` is a helper process used by parallel checkout. When git writes many files at once (a big checkout or clone), it can start several workers that each write a share of the files, which is much faster on fast disks.
+
+The feature is controlled with checkout.workers (0 = all cores, 1 = no parallelism). You never run the helper yourself."""
+"merge-index.title" = "merge-index"
+"merge-index.theory" = """
+`git merge-index` runs a program for every file that is still unmerged in the index. It is the glue between the merge machinery and the little programs that resolve each file; today it is used by the old merge strategies.
+
+  git merge-index git-merge-one-file -a
+
+In practice you resolve conflicts by editing files and git add, not with this command."""
+"merge-one-file.title" = "merge-one-file"
+"merge-one-file.theory" = """
+`git merge-one-file` is the standard program that `git merge-index` calls for each unmerged file. It decides what to do: take the file if only one side added it, delete it if one side deleted it and the other did not change it, or run a three-way merge of the contents (leaving conflict markers when needed).
+
+It is part of the plumbing of the `resolve` and `octopus` strategies."""
+"sh-i18n-envsubst.title" = "sh-i18n--envsubst (internal)"
+"sh-i18n-envsubst.theory" = """
+`git sh-i18n--envsubst` is a tiny internal program that replaces `$variables` in a translated message. Git's shell scripts (git-sh-i18n) use it to print messages in your language with the right values inserted.
+
+You will never need it, unless you are translating git itself."""
+"merge-ours.title" = "Strategy: ours"
+"merge-ours.theory" = """
+`ours` records a merge but keeps EXACTLY your side, ignoring all the changes of the other branches. Useful to mark a branch as merged when you do not want its content.
+
+  git merge -s ours old-branch
+
+Do not confuse it with the option -X ours, which merges normally and only prefers your side where there are conflicts."""
+"merge-recursive.title" = "Strategy: recursive (and ort)"
+"merge-recursive.theory" = """
+`recursive` was the default strategy for merging two branches: it finds the common ancestor and, when there are several, merges them recursively to build a virtual one. Since git 2.34 the default is the faster rewrite `ort`, with the same results in nearly every case.
+
+  git merge -s recursive feature
+  git merge -s ort feature
+
+You rarely choose a strategy by hand; the options -X ours / -X theirs are more common."""
+"merge-recursive-ours.title" = "recursive with -X ours"
+"merge-recursive-ours.theory" = """
+`merge-recursive-ours` is the variant of the recursive strategy that resolves conflicting hunks in favor of YOUR side automatically; non-conflicting changes of the other branch are still merged.
+
+  git merge -X ours feature
+
+The merge succeeds without asking you anything, so check the result: you may be silently discarding the other branch's work."""
+"merge-recursive-theirs.title" = "recursive with -X theirs"
+"merge-recursive-theirs.theory" = """
+`merge-recursive-theirs` is the mirror image: conflicting hunks are resolved in favor of the OTHER branch.
+
+  git merge -X theirs feature
+
+Handy when you know the incoming branch is right (for example, a generated file), but it never replaces reading the conflicts when the code matters."""
+"merge-resolve.title" = "Strategy: resolve"
+"merge-resolve.theory" = """
+`resolve` is the older two-head strategy: a plain three-way merge that uses only one common ancestor and does not detect renames. It is simpler and, in rare cases of criss-cross merges, more conservative.
+
+  git merge -s resolve feature
+
+It lives on for compatibility; nowadays ort covers its use cases."""
+"merge-octopus.title" = "Strategy: octopus"
+"merge-octopus.theory" = """
+`octopus` merges MORE than two branches in a single commit with many parents. It is the default when you pass several branches to git merge, and it refuses to start if there would be a conflict to resolve by hand.
+
+  git merge feature-a feature-b feature-c
+
+Good for joining independent topic branches that do not touch the same lines."""

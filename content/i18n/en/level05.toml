@@ -1,0 +1,118 @@
+"log-search.title" = "Searching the history: log -S, -G and filters"
+"log-search.theory" = """
+"Who added this API key?" `git log` can search the CONTENT of changes, not just messages:
+
+  git log -S"API_KEY"        pickaxe: commits that changed how many times the string appears
+  git log -G"timeout=\\d+"    commits whose diff has a line matching the regex
+  git log --author=Bob       commits by one author
+  git log --since=2.weeks    recent commits
+  git log --format=%h        just the short hash, one per line
+
+Add --oneline or --stat to taste, and -- <path> to limit the search to one file."""
+"log-search-1.prompt" = "Some commit added the text API_KEY to config.txt. Find it with the pickaxe search and write its short hash into answer.txt."
+"log-search-1.hint1" = "git log -S\"text\" lists the commits that added or removed that text."
+"log-search-1.hint2" = "Add --format=%h to print only the hash, then redirect with > answer.txt."
+"log-search-1.check1.fail" = "answer.txt must contain the hash of the commit that added API_KEY (\"Tweak config\")."
+"log-search-2.prompt" = "How many commits did Bob author? Write the number into answer.txt."
+"log-search-2.hint1" = "git log --author=Bob --oneline lists them; you can count the lines."
+"log-search-2.hint2" = "git rev-list --count --author=Bob HEAD prints the number directly."
+"log-search-2.check1.fail" = "answer.txt must contain only the number of Bob's commits."
+"shortlog.title" = "Who contributes: shortlog"
+"shortlog.theory" = """
+`git shortlog` groups the history by author. It is what release notes and "thanks to" lists are made of.
+
+  git shortlog              commit titles grouped by author
+  git shortlog -s           only the number of commits per author
+  git shortlog -sn          sorted by number, biggest first
+  git shortlog -sne         with e-mail addresses"""
+"shortlog-1.prompt" = "Which author has the most commits? Write that name into answer.txt."
+"shortlog-1.hint1" = "git shortlog -sn sorts authors by number of commits."
+"shortlog-1.check1.fail" = "answer.txt must contain the name of the top contributor."
+"blame.title" = "Line by line: blame"
+"blame.theory" = """
+A strange line in a file: who wrote it, when, and in which commit? `git blame` annotates each line with its last change.
+
+  git blame app.txt          every line with commit, author and date
+  git blame -L 2,4 app.txt   only lines 2 to 4
+  git blame -w app.txt       ignore whitespace-only changes
+
+(`git annotate` does the same with a slightly different output format.) The commit found is the starting point: use git show on it to read the reason."""
+"blame-1.prompt" = "Who wrote line 2 of app.txt? Write the author's name into answer.txt."
+"blame-1.hint1" = "git blame -L 2,2 app.txt annotates only line 2."
+"blame-1.check1.fail" = "answer.txt must contain the name of whoever wrote line 2."
+"grep.title" = "Searching the code: grep"
+"grep.theory" = """
+`git grep` searches the tracked files only (no build output, no node_modules) and it is fast. It can also search any older version.
+
+  git grep TODO              lines containing TODO
+  git grep -n TODO           with line numbers
+  git grep -c TODO           count per file
+  git grep -h TODO           without file names
+  git grep TODO v1.0         search how the code was at v1.0"""
+"grep-1.prompt" = "Save every line containing TODO from the tracked files (without file names) into todos.txt."
+"grep-1.hint1" = "-h hides the file names."
+"grep-1.hint2" = "Type: git grep -h TODO > todos.txt"
+"grep-1.check1.fail" = "todos.txt must contain exactly the output of git grep -h TODO."
+"bisect.title" = "Finding the culprit: bisect"
+"bisect.theory" = """
+A bug exists today, but it worked 8 commits ago. Instead of testing every commit, `git bisect` does a binary search: you tell it one good and one bad commit, it checks out the middle, you say good/bad, and in about log2(n) steps it names the first bad commit.
+
+  git bisect start
+  git bisect bad                 the current commit has the bug
+  git bisect good <old-commit>   this old one was fine
+  (git checks out the middle: test it, then git bisect good / git bisect bad)
+  git bisect reset               go back when finished
+
+If you have a script that exits 0 for good and non-zero for bad, git can do it all: git bisect run ./test.sh"""
+"bisect-1.prompt" = "status.txt said \"ok\" in the first commit and says \"broken\" now. The script ./test.sh exits 0 when status.txt is ok. Use bisect to find the first bad commit and write its hash into answer.txt."
+"bisect-1.hint1" = "git bisect start <bad> <good> sets both ends. Then git bisect run ./test.sh."
+"bisect-1.hint2" = "When it finishes, git rev-parse refs/bisect/bad is the culprit. Finish with git bisect reset."
+"bisect-1.check1.fail" = "answer.txt must contain the hash of the first commit where status.txt became broken (\"Change 5\")."
+"show-branch.title" = "Comparing branches: show-branch"
+"show-branch.theory" = """
+`git show-branch` draws a compact table: one column per branch, one row per commit, so you see at a glance how branches diverged and where they share history.
+
+  git show-branch main feature
+  git show-branch --all           every branch
+
+Commits marked with * are on the current branch, + on the others; the last rows are the shared ancestors."""
+"show-branch-1.prompt" = "Compare main and feature with git show-branch, then write into answer.txt how many commits feature has that main does not."
+"show-branch-1.hint1" = "Run git show-branch main feature and count the rows marked only for feature."
+"show-branch-1.check1.fail" = "Use git show-branch to compare the branches first."
+"show-branch-1.check2.fail" = "answer.txt must contain the number 2."
+"name-rev.title" = "Human names for hashes: name-rev"
+"name-rev.theory" = """
+Given a hash from a log or an error report, `git name-rev` tells you where it is relative to a branch or tag.
+
+  git name-rev <hash>              e.g. 3f9a1c2 main~3
+  git name-rev --name-only <hash>  just the name
+  git name-rev --tags <hash>       relative to tags"""
+"name-rev-1.prompt" = "Save into answer.txt the name that git name-rev gives (name only) to the commit HEAD~2."
+"name-rev-1.hint1" = "Use --name-only and redirect with > answer.txt."
+"name-rev-1.check1.fail" = "answer.txt must contain exactly the output of git name-rev --name-only HEAD~2."
+"merge-base.title" = "Finding the fork point: merge-base"
+"merge-base.theory" = """
+Where did `feature` split from `main`? `git merge-base A B` prints the best common ancestor of two commits: the point both histories share. Merge and rebase use it internally.
+
+  git merge-base main feature
+  git merge-base --is-ancestor A B    exit code 0 if A is contained in B"""
+"merge-base-1.prompt" = "Write into answer.txt the hash of the commit where feature split from main."
+"merge-base-1.hint1" = "git merge-base takes the two branches."
+"merge-base-1.check1.fail" = "answer.txt must contain the hash of the fork point (\"Two\")."
+"difftool.title" = "Viewing changes with a tool: difftool"
+"difftool.theory" = """
+`git difftool` runs a diff tool you choose instead of the built-in diff. Teams use graphical viewers; here it is configured to print a unified diff in the console. It takes the same arguments as git diff:
+
+  git difftool                 working tree vs staging area
+  git difftool HEAD~1 HEAD     two commits
+  git difftool --staged
+
+(The program git launches for each file pair is `git difftool--helper`, an internal command you never call yourself.)"""
+"difftool-1.prompt" = "notes.txt has uncommitted changes. View them with git difftool and save its output into diff.txt."
+"difftool-1.hint1" = "difftool works like git diff; redirect its output with > diff.txt."
+"difftool-1.check1.fail" = "diff.txt must contain the diff of notes.txt (with the added line)."
+"difftool-helper.title" = "difftool--helper (internal)"
+"difftool-helper.theory" = """
+`git difftool--helper` is not a command for you. When you run `git difftool`, git calls this helper once per changed file; the helper reads the configured tool (diff.tool, difftool.<tool>.cmd), prepares the LOCAL and REMOTE copies of the file and launches your tool.
+
+You will only see it in process lists or when debugging a broken difftool configuration. If a difftool does nothing, check git config diff.tool and difftool.<tool>.cmd instead of calling the helper directly."""

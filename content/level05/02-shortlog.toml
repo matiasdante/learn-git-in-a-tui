@@ -2,28 +2,9 @@ id = "shortlog"
 level = 5
 order = 2
 
-[title]
-en = "Who contributes: shortlog"
-es = "Quién contribuye: shortlog"
-
-[theory]
-en = """
-`git shortlog` groups the history by author. It is what release notes and "thanks to" lists are made of.
-
-  git shortlog              commit titles grouped by author
-  git shortlog -s           only the number of commits per author
-  git shortlog -sn          sorted by number, biggest first
-  git shortlog -sne         with e-mail addresses"""
-es = """
-`git shortlog` agrupa la historia por autor. Es la base de las notas de versión y de las listas de agradecimientos.
-
-  git shortlog              títulos de commits agrupados por autor
-  git shortlog -s           solo la cantidad de commits por autor
-  git shortlog -sn          ordenado por cantidad, el mayor primero
-  git shortlog -sne         con direcciones de e-mail"""
-
 [[exercise]]
 id = "shortlog-1"
+hints = 1
 solution = ["git shortlog -sn HEAD", "echo Alice > answer.txt"]
 setup = [
   { do = "git", args = "init" },
@@ -43,10 +24,6 @@ setup = [
   { do = "git", args = "add e.txt" },
   { do = "git", args = "-c user.name=Carol -c user.email=carol@example.com commit -m \"C1\"" },
 ]
-prompt = { en = "Which author has the most commits? Write that name into answer.txt.", es = "¿Qué autor tiene más commits? Escribí ese nombre en answer.txt." }
-hints = [
-  { en = "git shortlog -sn sorts authors by number of commits.", es = "git shortlog -sn ordena a los autores por cantidad de commits." },
-]
 checks = [
-  { type = "file_content", path = "answer.txt", equals = "Alice", fail = { en = "answer.txt must contain the name of the top contributor.", es = "answer.txt debe contener el nombre de quien más contribuyó." } },
+  { type = "file_content", path = "answer.txt", equals = "Alice" },
 ]

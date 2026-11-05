@@ -2,30 +2,9 @@ id = "maintenance"
 level = 10
 order = 15
 
-[title]
-en = "Scheduled care: maintenance run"
-es = "Cuidado programado: maintenance run"
-
-[theory]
-en = """
-`git maintenance` bundles the housekeeping tasks (gc, commit-graph, prefetch, loose-objects, incremental-repack) and can schedule them.
-
-  git maintenance run                            run the default tasks now
-  git maintenance run --task=commit-graph        only one task
-  git maintenance start / register               SCHEDULE tasks in your operating system (cron, launchd, Task Scheduler)
-
-In this practice only `maintenance run` is practiced: start and register would change the scheduler of your real computer."""
-es = """
-`git maintenance` agrupa las tareas de mantenimiento (gc, commit-graph, prefetch, loose-objects, incremental-repack) y puede programarlas.
-
-  git maintenance run                            ejecuta ahora las tareas por defecto
-  git maintenance run --task=commit-graph        una sola tarea
-  git maintenance start / register               PROGRAMA tareas en tu sistema operativo (cron, launchd, Programador de tareas)
-
-En esta práctica solo se ejercita `maintenance run`: start y register cambiarían el programador de tu computadora real."""
-
 [[exercise]]
 id = "maintenance-1"
+hints = 1
 solution = ["git maintenance run --task=commit-graph"]
 setup = [
   { do = "git", args = "init" },
@@ -39,11 +18,7 @@ setup = [
   { do = "git", args = "add c.txt" },
   { do = "git", args = "commit -m \"Add c\"" },
 ]
-prompt = { en = "Run only the commit-graph maintenance task, once.", es = "Ejecutá una vez solo la tarea de mantenimiento commit-graph." }
-hints = [
-  { en = "run accepts --task=<name>.", es = "run acepta --task=<nombre>." },
-]
 checks = [
-  { type = "ran", any = ["maintenance run"], fail = { en = "Use git maintenance run.", es = "Usá git maintenance run." } },
-  { type = "file_exists", path = ".git/objects/info/commit-graphs", fail = { en = "The commit-graph task did not leave its files.", es = "La tarea commit-graph no dejó sus archivos." } },
+  { type = "ran", any = ["maintenance run"] },
+  { type = "file_exists", path = ".git/objects/info/commit-graphs" },
 ]

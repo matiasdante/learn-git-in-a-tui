@@ -2,30 +2,9 @@ id = "am"
 level = 6
 order = 2
 
-[title]
-en = "Applying mailed patches: am"
-es = "Aplicar parches recibidos: am"
-
-[theory]
-en = """
-`git am` is the other half of format-patch: it applies patch files as real commits, keeping the original author, date and message.
-
-  git am 0001-fix.patch 0002-more.patch
-  git am --abort             give up and go back
-  git am --continue          after fixing a failed patch by hand
-
-Use `git apply` instead when you only want the changes, without creating commits."""
-es = """
-`git am` es la otra mitad de format-patch: aplica archivos de parche como commits reales, conservando el autor, la fecha y el mensaje originales.
-
-  git am 0001-fix.patch 0002-mas.patch
-  git am --abort             abandona y vuelve atrás
-  git am --continue          después de arreglar a mano un parche que falló
-
-Usá `git apply` si solo querés los cambios, sin crear commits."""
-
 [[exercise]]
 id = "am-1"
+hints = 2
 solution = ["git am patches/0001-Add-f1.patch patches/0002-Add-f2.patch"]
 setup = [
   { do = "git", args = "init" },
@@ -43,13 +22,8 @@ setup = [
   { do = "git", args = "format-patch -o patches main..feature" },
   { do = "git", args = "branch -D feature" },
 ]
-prompt = { en = "Alice sent two patches, saved in the folder patches. Apply both as commits on main.", es = "Alice mandó dos parches, guardados en la carpeta patches. Aplicá los dos como commits en main." }
-hints = [
-  { en = "git am accepts several patch files, in order.", es = "git am acepta varios archivos de parche, en orden." },
-  { en = "Type: git am patches/0001-Add-f1.patch patches/0002-Add-f2.patch", es = "Escribí: git am patches/0001-Add-f1.patch patches/0002-Add-f2.patch" },
-]
 checks = [
-  { type = "commit_count", count = 3, fail = { en = "main should have 3 commits: the base and the two patches.", es = "main debería tener 3 commits: la base y los dos parches." } },
-  { type = "git_output", args = "log -1 --format=%an", equals = "Alice", fail = { en = "The commits should keep Alice as author.", es = "Los commits deberían conservar a Alice como autora." } },
-  { type = "file_missing", path = ".git/rebase-apply", fail = { en = "The am session is still in progress.", es = "La sesión de am sigue en curso." } },
+  { type = "commit_count", count = 3 },
+  { type = "git_output", args = "log -1 --format=%an", equals = "Alice" },
+  { type = "file_missing", path = ".git/rebase-apply" },
 ]

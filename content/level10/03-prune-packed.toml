@@ -2,28 +2,9 @@ id = "prune-packed"
 level = 10
 order = 3
 
-[title]
-en = "Duplicates: prune-packed"
-es = "Duplicados: prune-packed"
-
-[theory]
-en = """
-Packing with `git repack` (without -d) copies loose objects into a pack but leaves the loose originals. `git prune-packed` deletes the loose objects that are already inside a pack.
-
-  git repack -a
-  git prune-packed
-
-`git repack -a -d` does both steps at once."""
-es = """
-Empaquetar con `git repack` (sin -d) copia los objetos sueltos a un pack pero deja los originales sueltos. `git prune-packed` borra los objetos sueltos que ya están dentro de un pack.
-
-  git repack -a
-  git prune-packed
-
-`git repack -a -d` hace los dos pasos de una vez."""
-
 [[exercise]]
 id = "prune-packed-1"
+hints = 1
 solution = ["git prune-packed"]
 setup = [
   { do = "git", args = "init" },
@@ -38,11 +19,7 @@ setup = [
   { do = "git", args = "commit -m \"Add c\"" },
   { do = "git", args = "repack -a -q" },
 ]
-prompt = { en = "The objects were packed but the loose copies are still there. Remove the loose objects that are already in a pack.", es = "Los objetos se empaquetaron pero las copias sueltas siguen ahí. Eliminá los objetos sueltos que ya están en un pack." }
-hints = [
-  { en = "Type: git prune-packed", es = "Escribí: git prune-packed" },
-]
 checks = [
-  { type = "git_output", args = "count-objects -v", contains = "count: 0", fail = { en = "There are still loose objects that are already packed.", es = "Todavía hay objetos sueltos que ya están empaquetados." } },
-  { type = "git_output", args = "count-objects -v", contains = "packs: 1", fail = { en = "The pack must stay.", es = "El pack tiene que quedar." } },
+  { type = "git_output", args = "count-objects -v", contains = "count: 0" },
+  { type = "git_output", args = "count-objects -v", contains = "packs: 1" },
 ]

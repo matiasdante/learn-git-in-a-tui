@@ -7,19 +7,25 @@ use learn_git_tui::requirements;
 use learn_git_tui::sandbox::{Sandbox, remove_dir_all_force};
 
 #[test]
-fn every_text_exists_in_both_languages() {
-    let content = Content::load().unwrap();
+fn every_text_exists_in_the_four_languages() {
+    let mut content = Content::load().unwrap();
     let missing: Vec<String> = content
-        .lessons
-        .iter()
-        .flat_map(|l| l.texts())
+        .texts_mut()
+        .into_iter()
         .filter(|(_, text)| !text.is_complete())
-        .map(|(name, _)| name)
+        .map(|(key, text)| {
+            format!(
+                "{key} {:?}",
+                text.missing().iter().map(|l| l.code()).collect::<Vec<_>>()
+            )
+        })
         .collect();
-    assert!(missing.is_empty(), "texts missing en/es: {missing:?}");
-    for level in &content.levels {
-        assert!(level.title.is_complete(), "level {} title", level.id);
-    }
+    assert!(
+        missing.is_empty(),
+        "{} texts without all languages, for example: {:?}",
+        missing.len(),
+        &missing[..missing.len().min(8)]
+    );
     for lesson in &content.lessons {
         assert!(
             content.level(lesson.level).is_some(),

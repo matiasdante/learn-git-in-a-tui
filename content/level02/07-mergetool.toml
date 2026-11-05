@@ -2,32 +2,10 @@ id = "mergetool"
 level = 2
 order = 7
 
-[title]
-en = "Resolving with mergetool"
-es = "Resolver con mergetool"
-
-[theory]
-en = """
-`git mergetool` walks through every conflicted file and opens your configured tool on it, so you do not have to hunt for the files yourself. Real projects use graphical tools; here the built-in editor opens on the conflicted file.
-
-  git mergetool         open each conflicted file in turn
-  git commit            finish the merge once everything is resolved
-
-When you save and close the tool, git marks the file as resolved (it runs git add for you)."""
-es = """
-`git mergetool` recorre cada archivo en conflicto y abre sobre él tu herramienta configurada, así no tenés que buscar los archivos a mano. Los proyectos reales usan herramientas gráficas; acá se abre el editor integrado sobre el archivo en conflicto.
-
-  git mergetool         abre cada archivo en conflicto, uno por uno
-  git commit            termina la fusión cuando todo está resuelto
-
-Cuando guardás y cerrás la herramienta, git marca el archivo como resuelto (ejecuta git add por vos)."""
-
 [[exercise]]
 id = "mergetool-1"
-solution = [
-  { run = "git mergetool", editor = [{ write = "Hello from main\nHello from feature\n" }] },
-  "git commit -m \"Merge feature\"",
-]
+hints = 2
+solution = [{ run = "git mergetool", editor = [{ write = "Hello from main\nHello from feature\n" }] }, "git commit -m \"Merge feature\""]
 setup = [
   { do = "git", args = "init" },
   { do = "write", path = "greeting.txt", content = "Hello\n" },
@@ -41,13 +19,8 @@ setup = [
   { do = "git", args = "commit -am \"Greet from main\"" },
   { do = "git", args = "merge feature", allow_fail = true },
 ]
-prompt = { en = "A merge with feature is in progress and greeting.txt has a conflict. Run git mergetool, keep both lines in the editor (save with Ctrl+S), then commit.", es = "Hay una fusión con feature en curso y greeting.txt tiene un conflicto. Ejecutá git mergetool, dejá las dos líneas en el editor (guardá con Ctrl+S) y después commiteá." }
-hints = [
-  { en = "Run git mergetool: the editor opens on greeting.txt. Delete the marker lines.", es = "Ejecutá git mergetool: el editor se abre sobre greeting.txt. Borrá las líneas de marcas." },
-  { en = "After saving, finish with: git commit -m \"Merge feature\"", es = "Después de guardar, terminá con: git commit -m \"Merge feature\"" },
-]
 checks = [
-  { type = "git_ok", args = "rev-parse --verify HEAD^2", fail = { en = "The merge is not committed yet.", es = "La fusión todavía no está commiteada." } },
-  { type = "file_not_contains", path = "greeting.txt", text = "<<<<<<<", fail = { en = "greeting.txt still has conflict markers.", es = "greeting.txt todavía tiene marcas de conflicto." } },
-  { type = "file_contains", path = "greeting.txt", contains = "Hello from feature", fail = { en = "The line from feature is missing.", es = "Falta la línea de feature." } },
+  { type = "git_ok", args = "rev-parse --verify HEAD^2" },
+  { type = "file_not_contains", path = "greeting.txt", text = "<<<<<<<" },
+  { type = "file_contains", path = "greeting.txt", contains = "Hello from feature" },
 ]

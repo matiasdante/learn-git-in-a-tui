@@ -1,197 +1,131 @@
 [[achievement]]
 id = "first-repo"
-title = { en = "Day one", es = "Día uno" }
-description = { en = "Create your first repository.", es = "Creá tu primer repositorio." }
 condition = { type = "exercise_done", exercise = "init-1" }
 
 [[achievement]]
 id = "first-commit"
-title = { en = "First commit", es = "Primer commit" }
-description = { en = "Save your first snapshot with git commit.", es = "Guardá tu primera foto con git commit." }
 condition = { type = "exercise_done", exercise = "commit-1" }
 
 [[achievement]]
 id = "keeper-of-secrets"
-title = { en = "Keeper of secrets", es = "Guardián de secretos" }
-description = { en = "Make git forget a file committed by mistake.", es = "Hacé que git olvide un archivo commiteado por error." }
 condition = { type = "exercise_done", exercise = "rm-2" }
 
 [[achievement]]
 id = "level-1-done"
-title = { en = "Fundamentals complete", es = "Fundamentos completos" }
-description = { en = "Finish every exercise of level 1.", es = "Terminá todos los ejercicios del nivel 1." }
 condition = { type = "level_done", level = 1 }
 
 [[achievement]]
 id = "level-1-no-hints"
-title = { en = "No training wheels", es = "Sin rueditas" }
-description = { en = "Finish level 1 without using a single hint.", es = "Terminá el nivel 1 sin usar ni una pista." }
 condition = { type = "level_no_hints", level = 1 }
 
 [[achievement]]
 id = "first-release"
-title = { en = "Shipped it", es = "A producción" }
-description = { en = "Mark a release with an annotated tag.", es = "Marcá una versión con un tag anotado." }
 condition = { type = "exercise_done", exercise = "tag-1" }
 
 [[achievement]]
 id = "first-conflict"
-title = { en = "Conflict resolved", es = "Conflicto resuelto" }
-description = { en = "Resolve your first merge conflict.", es = "Resolvé tu primer conflicto de fusión." }
 condition = { type = "exercise_done", exercise = "merge-conflict-1" }
 
 [[achievement]]
 id = "level-2-done"
-title = { en = "Branch master", es = "Maestro de ramas" }
-description = { en = "Finish every exercise of level 2.", es = "Terminá todos los ejercicios del nivel 2." }
 condition = { type = "level_done", level = 2 }
 
 [[achievement]]
 id = "level-2-no-hints"
-title = { en = "Branching blind", es = "Ramas a ciegas" }
-description = { en = "Finish level 2 without using a single hint.", es = "Terminá el nivel 2 sin usar ni una pista." }
 condition = { type = "level_no_hints", level = 2 }
 
 [[achievement]]
 id = "first-push"
-title = { en = "Going public", es = "A la luz pública" }
-description = { en = "Publish a branch to a remote for the first time.", es = "Publicá una rama en un remoto por primera vez." }
 condition = { type = "exercise_done", exercise = "push-1" }
 
 [[achievement]]
 id = "team-player"
-title = { en = "Team player", es = "Jugador de equipo" }
-description = { en = "Integrate a teammate's commit and publish yours.", es = "Integrá el commit de un compañero y publicá el tuyo." }
 condition = { type = "exercise_done", exercise = "pull-3" }
 
 [[achievement]]
 id = "level-3-done"
-title = { en = "Remote control", es = "Control remoto" }
-description = { en = "Finish every exercise of level 3.", es = "Terminá todos los ejercicios del nivel 3." }
 condition = { type = "level_done", level = 3 }
 
 [[achievement]]
 id = "level-3-no-hints"
-title = { en = "Lone wolf", es = "Lobo solitario" }
-description = { en = "Finish level 3 without using a single hint.", es = "Terminá el nivel 3 sin usar ni una pista." }
 condition = { type = "level_no_hints", level = 3 }
 
 [[achievement]]
 id = "reflog-rescue"
-title = { en = "Reflog rescue", es = "Rescate con reflog" }
-description = { en = "Recover commits you thought were lost.", es = "Recuperá commits que creías perdidos." }
 condition = { type = "exercise_done", exercise = "reflog-1" }
 
 [[achievement]]
 id = "history-editor"
-title = { en = "History editor", es = "Editor de historia" }
-description = { en = "Squash commits with an interactive rebase.", es = "Aplastá commits con un rebase interactivo." }
 condition = { type = "exercise_done", exercise = "rebase-2" }
 
 [[achievement]]
 id = "level-4-done"
-title = { en = "Time traveler", es = "Viajero del tiempo" }
-description = { en = "Finish every exercise of level 4.", es = "Terminá todos los ejercicios del nivel 4." }
 condition = { type = "level_done", level = 4 }
 
 [[achievement]]
 id = "level-4-no-hints"
-title = { en = "No second thoughts", es = "Sin arrepentimientos" }
-description = { en = "Finish level 4 without using a single hint.", es = "Terminá el nivel 4 sin usar ni una pista." }
 condition = { type = "level_no_hints", level = 4 }
 
 [[achievement]]
 id = "bug-hunter"
-title = { en = "Bug hunter", es = "Cazador de bugs" }
-description = { en = "Find the guilty commit with git bisect.", es = "Encontrá el commit culpable con git bisect." }
 condition = { type = "exercise_done", exercise = "bisect-1" }
 
 [[achievement]]
 id = "level-5-done"
-title = { en = "History detective", es = "Detective de la historia" }
-description = { en = "Finish every exercise of level 5.", es = "Terminá todos los ejercicios del nivel 5." }
 condition = { type = "level_done", level = 5 }
 
 [[achievement]]
 id = "level-5-no-hints"
-title = { en = "Elementary", es = "Elemental" }
-description = { en = "Finish level 5 without using a single hint.", es = "Terminá el nivel 5 sin usar ni una pista." }
 condition = { type = "level_no_hints", level = 5 }
 
 [[achievement]]
 id = "level-6-done"
-title = { en = "Postman", es = "Cartero" }
-description = { en = "Finish every exercise of level 6.", es = "Terminá todos los ejercicios del nivel 6." }
 condition = { type = "level_done", level = 6 }
 
 [[achievement]]
 id = "level-6-no-hints"
-title = { en = "Sent without a note", es = "Enviado sin nota" }
-description = { en = "Finish level 6 without using a single hint.", es = "Terminá el nivel 6 sin usar ni una pista." }
 condition = { type = "level_no_hints", level = 6 }
 
 [[achievement]]
 id = "level-7-done"
-title = { en = "Monorepo wrangler", es = "Domador de monorepos" }
-description = { en = "Finish every exercise of level 7.", es = "Terminá todos los ejercicios del nivel 7." }
 condition = { type = "level_done", level = 7 }
 
 [[achievement]]
 id = "level-7-no-hints"
-title = { en = "Nested and unassisted", es = "Anidado y sin ayuda" }
-description = { en = "Finish level 7 without using a single hint.", es = "Terminá el nivel 7 sin usar ni una pista." }
 condition = { type = "level_no_hints", level = 7 }
 
 [[achievement]]
 id = "signed-commit"
-title = { en = "Trust me", es = "Confiá en mí" }
-description = { en = "Make a commit with a valid SSH signature.", es = "Hacé un commit con una firma SSH válida." }
 condition = { type = "exercise_done", exercise = "verify-commit-1" }
 
 [[achievement]]
 id = "hook-maker"
-title = { en = "Gatekeeper", es = "Portero" }
-description = { en = "Write a hook that blocks commits.", es = "Escribí un hook que bloquea commits." }
 condition = { type = "exercise_done", exercise = "hook-1" }
 
 [[achievement]]
 id = "level-8-done"
-title = { en = "Locked down", es = "Todo asegurado" }
-description = { en = "Finish every exercise of level 8.", es = "Terminá todos los ejercicios del nivel 8." }
 condition = { type = "level_done", level = 8 }
 
 [[achievement]]
 id = "level-8-no-hints"
-title = { en = "Paranoid and proud", es = "Paranoico y orgulloso" }
-description = { en = "Finish level 8 without using a single hint.", es = "Terminá el nivel 8 sin usar ni una pista." }
 condition = { type = "level_no_hints", level = 8 }
 
 [[achievement]]
 id = "hand-made-commit"
-title = { en = "Handmade", es = "Hecho a mano" }
-description = { en = "Create a commit object with commit-tree.", es = "Creá un objeto commit con commit-tree." }
 condition = { type = "exercise_done", exercise = "commit-tree-1" }
 
 [[achievement]]
 id = "level-9-done"
-title = { en = "Under the hood", es = "Bajo el capó" }
-description = { en = "Finish every exercise of level 9.", es = "Terminá todos los ejercicios del nivel 9." }
 condition = { type = "level_done", level = 9 }
 
 [[achievement]]
 id = "level-9-no-hints"
-title = { en = "Plumber's pride", es = "Orgullo de plomero" }
-description = { en = "Finish level 9 without using a single hint.", es = "Terminá el nivel 9 sin usar ni una pista." }
 condition = { type = "level_no_hints", level = 9 }
 
 [[achievement]]
 id = "level-10-done"
-title = { en = "Spring cleaning", es = "Limpieza de primavera" }
-description = { en = "Finish every exercise of level 10.", es = "Terminá todos los ejercicios del nivel 10." }
 condition = { type = "level_done", level = 10 }
 
 [[achievement]]
 id = "level-10-no-hints"
-title = { en = "Tidy and unassisted", es = "Prolijo y sin ayuda" }
-description = { en = "Finish level 10 without using a single hint.", es = "Terminá el nivel 10 sin usar ni una pista." }
 condition = { type = "level_no_hints", level = 10 }

@@ -1,17 +1,3 @@
 id = "submodule-helper"
 level = 7
 order = 7
-
-[title]
-en = "submodule--helper (internal)"
-es = "submodule--helper (interno)"
-
-[theory]
-en = """
-`git submodule--helper` is the internal program behind `git submodule`. Originally a shell script, the heavy parts (cloning, updating, status) were rewritten in C and exposed through this helper. You never call it yourself, but it shows up in error messages and process lists.
-
-If a submodule operation fails, read the message and run the public command again (git submodule update --init --recursive) instead of invoking the helper."""
-es = """
-`git submodule--helper` es el programa interno detrás de `git submodule`. Originalmente era un script de shell; las partes pesadas (clonar, actualizar, estado) se reescribieron en C y se exponen a través de este ayudante. Nunca lo llamás vos, pero aparece en mensajes de error y listas de procesos.
-
-Si una operación de submódulo falla, leé el mensaje y volvé a ejecutar el comando público (git submodule update --init --recursive) en vez de invocar el ayudante."""

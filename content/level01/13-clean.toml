@@ -2,26 +2,9 @@ id = "clean"
 level = 1
 order = 13
 
-[title]
-en = "Cleaning untracked files: clean"
-es = "Limpiar archivos sin seguimiento: clean"
-
-[theory]
-en = """
-After a failed build, your folder is full of temporary files that git does not track. `git clean` deletes them. It is destructive (there is no undo), so git asks for `-f` and offers a dry run first.
-
-  git clean -n     show what would be deleted
-  git clean -f     delete untracked files
-  git clean -fd    also untracked folders"""
-es = """
-Después de un build fallido, tu carpeta se llena de archivos temporales que git no sigue. `git clean` los borra. Es destructivo (no hay deshacer), por eso git pide `-f` y ofrece primero una corrida de prueba.
-
-  git clean -n     muestra qué se borraría
-  git clean -f     borra los archivos sin seguimiento
-  git clean -fd    borra también las carpetas sin seguimiento"""
-
 [[exercise]]
 id = "clean-1"
+hints = 2
 solution = ["git clean -n", "git clean -f"]
 setup = [
   { do = "git", args = "init" },
@@ -31,13 +14,8 @@ setup = [
   { do = "write", path = "tmp1.txt", content = "junk\n" },
   { do = "write", path = "tmp2.txt", content = "junk\n" },
 ]
-prompt = { en = "Delete the untracked files (tmp1.txt and tmp2.txt) without touching a.txt.", es = "Borrá los archivos sin seguimiento (tmp1.txt y tmp2.txt) sin tocar a.txt." }
-hints = [
-  { en = "First preview with the dry-run option, then run it for real.", es = "Primero mirá con la opción de prueba y después ejecutalo de verdad." },
-  { en = "Type: git clean -f", es = "Escribí: git clean -f" },
-]
 checks = [
-  { type = "file_missing", path = "tmp1.txt", fail = { en = "tmp1.txt still exists. git clean needs -f to actually delete.", es = "tmp1.txt todavía existe. git clean necesita -f para borrar de verdad." } },
-  { type = "file_missing", path = "tmp2.txt", fail = { en = "tmp2.txt still exists.", es = "tmp2.txt todavía existe." } },
-  { type = "file_exists", path = "a.txt", fail = { en = "a.txt (tracked) must not be deleted.", es = "a.txt (seguido) no debe borrarse." } },
+  { type = "file_missing", path = "tmp1.txt" },
+  { type = "file_missing", path = "tmp2.txt" },
+  { type = "file_exists", path = "a.txt" },
 ]

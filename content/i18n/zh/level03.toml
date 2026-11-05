@@ -1,0 +1,119 @@
+"clone.title" = "获取一份副本：clone"
+"clone.theory" = """
+你加入了一个团队，需要把项目放到自己的机器上。`git clone` 会下载整个仓库（包括全部历史），并把来源记为名叫 origin 的远程仓库。
+
+  git clone <url> [文件夹]
+
+在这个练习里，服务器是 `server.git` 文件夹中的一个裸仓库（没有工作目录），所以“url”其实就是一个路径。全程不涉及网络。"""
+"clone-1.prompt" = "团队仓库在 server.git 里。把它克隆到名为 project 的文件夹。"
+"clone-1.hint1" = "git clone 先接来源，再接文件夹名。"
+"clone-1.hint2" = "输入：git clone server.git project"
+"clone-1.check1.fail" = "project 文件夹还不是仓库。"
+"clone-1.check2.fail" = "克隆应该包含服务器上的 2 个提交。"
+"clone-1.check3.fail" = "克隆应该有一个名为 origin 的远程仓库。"
+"remote.title" = "管理远程仓库：remote"
+"remote.theory" = """
+远程仓库就是你的仓库另一份副本的昵称。`git remote` 用来管理这些昵称。
+
+  git remote -v                       列出远程仓库及其 URL
+  git remote add origin <url>         注册一个远程仓库
+  git remote rename origin upstream   重命名
+  git remote set-url origin <url>     修改 URL（服务器搬家了）
+  git remote remove 名字              忘掉它"""
+"remote-1.prompt" = "你在本地开始了一个项目。把 ../server.git 注册为名叫 origin 的远程仓库。"
+"remote-1.hint1" = "git remote add 先接名字，再接 URL。"
+"remote-1.hint2" = "输入：git remote add origin ../server.git"
+"remote-1.check1.fail" = "还没有名为 origin 的远程仓库。"
+"remote-1.check2.fail" = "origin 没有指向可访问的仓库。请检查路径。"
+"remote-2.prompt" = "把远程仓库 origin 重命名为 upstream。"
+"remote-2.hint1" = "git remote rename 接旧名字和新名字。"
+"remote-2.check1.fail" = "远程仓库还没有叫 upstream。"
+"remote-3.prompt" = "origin 指向 ../old.git，但它已经不存在了。让它指向 ../server.git。"
+"remote-3.hint1" = "remote 有一个子命令可以修改 URL。"
+"remote-3.check1.fail" = "origin 的 URL 还不是 ../server.git。"
+"push.title" = "发布你的工作：push"
+"push.theory" = """
+在你推送之前，你的提交只存在于你自己的机器上。`git push` 把一个分支上传到远程仓库。
+
+  git push -u origin main      第一次推送：同时记住 origin/main 作为 main 的上游
+  git push                     之后的推送：使用记住的上游
+  git push origin feature      发布另一个分支
+  git push origin --delete old 从服务器上删除一个分支
+
+如果别人先推送了，git 会拒绝你的推送：你需要先整合他们的工作（git pull）再推送。在共享分支上永远不要强制推送。"""
+"push-1.prompt" = "第一次把你的 main 分支发布到 origin，并把它记为上游。"
+"push-1.hint1" = "用 -u 让 git 记住 main 与 origin/main 的对应关系。"
+"push-1.hint2" = "输入：git push -u origin main"
+"push-1.check1.fail" = "服务器上还没有 main 分支。"
+"push-1.check2.fail" = "main 还没有跟踪 origin/main。你用了 -u 吗？"
+"push-2.prompt" = "你在 feature 分支上提交了。把这个分支发布到 origin。"
+"push-2.hint1" = "先写远程仓库名，再写分支名。"
+"push-2.check1.fail" = "服务器上还没有 feature 分支。"
+"push-3.prompt" = "分支 old 是误发布的。把它从服务器（origin）上删除。"
+"push-3.hint1" = "git push 有一个 --delete 选项。"
+"push-3.hint2" = "输入：git push origin --delete old"
+"push-3.check1.fail" = "服务器上仍然有 old 分支。"
+"fetch.title" = "合并之前先看看：fetch"
+"fetch.theory" = """
+`git fetch` 会从远程仓库下载新的提交，但不会改动你的分支，也不会改动你的文件。这些提交会放到类似 origin/main 的远程跟踪分支里，让你先检查一下。
+
+  git fetch                 更新 origin 的所有远程跟踪分支
+  git log main..origin/main 服务器上有什么新内容
+  git fetch --prune         同时忘掉服务器上已删除的远程分支"""
+"fetch-1.prompt" = "同事推送了一个提交。把它下载下来，但不要改动你自己的 main 分支。"
+"fetch-1.hint1" = "有一条命令只下载，不合并。"
+"fetch-1.hint2" = "输入：git fetch"
+"fetch-1.check1.fail" = "origin/main 还没有那个新提交。"
+"fetch-1.check2.fail" = "你的 main 不应该有变化。请用 fetch，不要用 pull。"
+"pull.title" = "整合：pull"
+"pull.theory" = """
+`git pull` 就是 fetch 加整合：先下载，再把远程的工作合并（或变基）到你当前的分支。
+
+  git pull               fetch + 合并
+  git pull --rebase      fetch + 把你的提交重放到远程提交之上（历史保持线性）
+
+当你有本地提交、服务器也有新提交时，两个分支就分叉了。--rebase 让历史保持一条直线；默认做法会创建一个合并提交。"""
+"pull-1.prompt" = "同事推送了一个提交。把它带到你的 main 分支。"
+"pull-1.hint1" = "pull 一步完成下载和整合。"
+"pull-1.check1.fail" = "main 还没有包含团队的那个提交。"
+"pull-1.check2.fail" = "缺少 c.txt（同事的文件）。"
+"pull-2.prompt" = "你有一个本地提交，服务器上有一个新提交。把它们整合起来，并保持历史线性（不要合并提交）。"
+"pull-2.hint1" = "pull 有一个选项，可以把你的提交重放到上面。"
+"pull-2.hint2" = "输入：git pull --rebase"
+"pull-2.check1.fail" = "历史应该有 4 个提交：2 个旧的、团队的那个和你的。"
+"pull-2.check2.fail" = "出现了合并提交。请使用 --rebase 来保持历史线性。"
+"pull-2.check3.fail" = "缺少 c.txt（同事的文件）。"
+"pull-2.check4.fail" = "缺少 d.txt（你的提交）。"
+"pull-3.prompt" = "你的推送会被拒绝：服务器上有一个你没有的提交。把它整合进来（保持线性历史），然后发布你的提交。"
+"pull-3.hint1" = "先整合服务器上的工作，再推送。"
+"pull-3.hint2" = "先 git pull --rebase，再 git push"
+"pull-3.check1.fail" = "服务器上还没有你那个排在团队工作之上的提交。"
+"pull-3.check2.fail" = "你的 main 和 origin/main 不一致。"
+"ls-remote.title" = "窥探服务器：ls-remote"
+"ls-remote.theory" = """
+有时你只想知道远程仓库里有什么（它的分支、标签，以及它们指向的提交），而不想下载任何东西。
+
+  git ls-remote origin                  服务器上的所有引用
+  git ls-remote --heads origin          只看分支
+  git ls-remote origin refs/heads/main  某一个具体的引用
+
+输出是：哈希、一个制表符、引用的名字。"""
+"ls-remote-1.prompt" = "向服务器询问它的 release 分支所指向的提交，并把结果保存到 answer.txt。"
+"ls-remote-1.hint1" = "ls-remote 在远程仓库名之后可以接引用的名字。"
+"ls-remote-1.hint2" = "输入：git ls-remote origin refs/heads/release > answer.txt"
+"ls-remote-1.check1.fail" = "answer.txt 必须以 release 分支的哈希开头。"
+"bundle.title" = "用文件搬运历史：bundle"
+"bundle.theory" = """
+没有网络？同事在离线工作？`git bundle` 可以把提交打包成一个文件，这个文件的行为就像一个远程仓库：你可以从它克隆或 fetch。
+
+  git bundle create backup.bundle --all   打包所有分支和标签
+  git bundle verify backup.bundle         检查文件是否有效
+  git clone backup.bundle restored        从文件恢复一个仓库"""
+"bundle-1.prompt" = "把整个仓库（所有分支）备份到名为 backup.bundle 的文件中。"
+"bundle-1.hint1" = "git bundle create 接文件名和要包含的内容。"
+"bundle-1.hint2" = "输入：git bundle create backup.bundle --all"
+"bundle-1.check1.fail" = "backup.bundle 不存在，或者不是有效的 bundle。"
+"bundle-1.check2.fail" = "bundle 应该包含所有分支。请使用 --all。"
+"bundle-2.prompt" = "项目文件夹丢了，但 backup.bundle 还在。把仓库恢复到名为 restored 的文件夹里。"
+"bundle-2.hint1" = "bundle 可以像普通仓库一样被克隆。"
+"bundle-2.check1.fail" = "restored 里没有备份中的那 2 个提交。"

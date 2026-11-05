@@ -2,26 +2,9 @@ id = "sparse-checkout"
 level = 7
 order = 4
 
-[title]
-en = "Working with part of a repo: sparse-checkout"
-es = "Trabajar con una parte del repo: sparse-checkout"
-
-[theory]
-en = """
-A huge monorepo has hundreds of folders and you only touch one. `git sparse-checkout` leaves only the folders you choose in your working tree; the rest stays in the history but not on disk.
-
-  git sparse-checkout set docs          only the folder docs
-  git sparse-checkout add backend       also backend
-  git sparse-checkout disable           bring everything back"""
-es = """
-Un monorepo enorme tiene cientos de carpetas y vos solo tocás una. `git sparse-checkout` deja en tu árbol de trabajo solo las carpetas que elegís; el resto sigue en la historia pero no en el disco.
-
-  git sparse-checkout set docs          solo la carpeta docs
-  git sparse-checkout add backend       también backend
-  git sparse-checkout disable           trae todo de vuelta"""
-
 [[exercise]]
 id = "sparse-1"
+hints = 2
 solution = ["git sparse-checkout set docs"]
 setup = [
   { do = "git", args = "init" },
@@ -31,13 +14,8 @@ setup = [
   { do = "git", args = "add ." },
   { do = "git", args = "commit -m \"Add the three folders\"" },
 ]
-prompt = { en = "You only work on documentation. Leave only the folder docs in your working tree.", es = "Solo trabajás en la documentación. Dejá únicamente la carpeta docs en tu árbol de trabajo." }
-hints = [
-  { en = "sparse-checkout set takes the folders to keep.", es = "sparse-checkout set recibe las carpetas que se conservan." },
-  { en = "Type: git sparse-checkout set docs", es = "Escribí: git sparse-checkout set docs" },
-]
 checks = [
-  { type = "file_exists", path = "docs/readme.txt", fail = { en = "docs must stay in the working tree.", es = "docs tiene que quedar en el árbol de trabajo." } },
-  { type = "file_missing", path = "frontend/ui.txt", fail = { en = "frontend is still on disk.", es = "frontend sigue en el disco." } },
-  { type = "file_missing", path = "backend/api.txt", fail = { en = "backend is still on disk.", es = "backend sigue en el disco." } },
+  { type = "file_exists", path = "docs/readme.txt" },
+  { type = "file_missing", path = "frontend/ui.txt" },
+  { type = "file_missing", path = "backend/api.txt" },
 ]

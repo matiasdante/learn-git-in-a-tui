@@ -1,0 +1,119 @@
+"clone.title" = "Getting a copy: clone"
+"clone.theory" = """
+You join a team and need the project on your machine. `git clone` downloads the whole repository, history included, and remembers where it came from as a remote called origin.
+
+  git clone <url> [folder]
+
+In this practice the server is a bare repository (one without a working folder) in the folder `server.git`, so the "url" is just a path. No network is involved."""
+"clone-1.prompt" = "The team repository lives in server.git. Clone it into a folder called project."
+"clone-1.hint1" = "git clone takes the source and then the folder name."
+"clone-1.hint2" = "Type: git clone server.git project"
+"clone-1.check1.fail" = "The folder project is not a repository yet."
+"clone-1.check2.fail" = "The clone should contain the 2 commits of the server."
+"clone-1.check3.fail" = "The clone should have a remote called origin."
+"remote.title" = "Managing remotes: remote"
+"remote.theory" = """
+A remote is a nickname for another copy of your repository. `git remote` manages those nicknames.
+
+  git remote -v                       list remotes with their URLs
+  git remote add origin <url>         register a remote
+  git remote rename origin upstream   rename it
+  git remote set-url origin <url>     change the URL (the server moved)
+  git remote remove name              forget it"""
+"remote-1.prompt" = "You started a project locally. Register ../server.git as a remote called origin."
+"remote-1.hint1" = "git remote add takes a name and then a URL."
+"remote-1.hint2" = "Type: git remote add origin ../server.git"
+"remote-1.check1.fail" = "There is no remote called origin yet."
+"remote-1.check2.fail" = "origin does not point to a reachable repository. Check the path."
+"remote-2.prompt" = "Rename the remote origin to upstream."
+"remote-2.hint1" = "git remote rename takes the old name and the new name."
+"remote-2.check1.fail" = "The remote is not called upstream yet."
+"remote-3.prompt" = "origin points to ../old.git, which does not exist anymore. Point it to ../server.git."
+"remote-3.hint1" = "There is a remote subcommand that changes the URL."
+"remote-3.check1.fail" = "The URL of origin is not ../server.git yet."
+"push.title" = "Publishing your work: push"
+"push.theory" = """
+Your commits only exist on your machine until you push them. `git push` uploads a branch to a remote.
+
+  git push -u origin main      first push: also remembers origin/main as the upstream of main
+  git push                     later pushes: uses the remembered upstream
+  git push origin feature      publish another branch
+  git push origin --delete old remove a branch from the server
+
+If someone pushed first, git rejects your push: you must integrate their work (git pull) and push again. Never force it on a shared branch."""
+"push-1.prompt" = "Publish your main branch to origin for the first time and remember it as the upstream."
+"push-1.hint1" = "Use -u so git remembers the relation between main and origin/main."
+"push-1.hint2" = "Type: git push -u origin main"
+"push-1.check1.fail" = "The server does not have the branch main yet."
+"push-1.check2.fail" = "main does not track origin/main yet. Did you use -u?"
+"push-2.prompt" = "You committed on the branch feature. Publish that branch to origin."
+"push-2.hint1" = "Name the remote and then the branch."
+"push-2.check1.fail" = "The server does not have the branch feature yet."
+"push-3.prompt" = "The branch old was published by mistake. Delete it from the server (origin)."
+"push-3.hint1" = "git push has a --delete option."
+"push-3.hint2" = "Type: git push origin --delete old"
+"push-3.check1.fail" = "The server still has the branch old."
+"fetch.title" = "Looking before merging: fetch"
+"fetch.theory" = """
+`git fetch` downloads new commits from the remote but does NOT touch your branches or your files. They land in remote-tracking branches such as origin/main, so you can review them first.
+
+  git fetch                 update all remote-tracking branches of origin
+  git log main..origin/main what is new on the server
+  git fetch --prune         also forget remote branches deleted on the server"""
+"fetch-1.prompt" = "A teammate pushed a commit. Download it without changing your own main branch."
+"fetch-1.hint1" = "One command downloads but does not merge."
+"fetch-1.hint2" = "Type: git fetch"
+"fetch-1.check1.fail" = "origin/main does not have the new commit yet."
+"fetch-1.check2.fail" = "Your main should not have changed. Use fetch, not pull."
+"pull.title" = "Integrating: pull"
+"pull.theory" = """
+`git pull` is fetch plus integration: it downloads and then merges (or rebases) the remote work into your current branch.
+
+  git pull               fetch + merge
+  git pull --rebase      fetch + replay your commits on top of the remote ones (linear history)
+
+When you have local commits and the server has new ones, the branches diverged. --rebase keeps the history in a straight line; the default creates a merge commit."""
+"pull-1.prompt" = "A teammate pushed a commit. Bring it into your main branch."
+"pull-1.hint1" = "pull downloads and integrates in one step."
+"pull-1.check1.fail" = "main does not include the team commit yet."
+"pull-1.check2.fail" = "c.txt (from the teammate) is missing."
+"pull-2.prompt" = "You have a local commit and the server has a new one. Integrate them keeping a linear history (no merge commit)."
+"pull-2.hint1" = "pull has an option that replays your commits on top."
+"pull-2.hint2" = "Type: git pull --rebase"
+"pull-2.check1.fail" = "History should have 4 commits: 2 old, the team one and yours."
+"pull-2.check2.fail" = "There is a merge commit. Use --rebase for a linear history."
+"pull-2.check3.fail" = "c.txt (from the teammate) is missing."
+"pull-2.check4.fail" = "d.txt (your commit) is missing."
+"pull-3.prompt" = "Your push would be rejected: the server has a commit you do not have. Integrate it (linear history) and publish your commit."
+"pull-3.hint1" = "First integrate the server work, then push."
+"pull-3.hint2" = "git pull --rebase and then git push"
+"pull-3.check1.fail" = "The server does not have your commit on top of the team work yet."
+"pull-3.check2.fail" = "Your main and origin/main differ."
+"ls-remote.title" = "Peeking at a server: ls-remote"
+"ls-remote.theory" = """
+Sometimes you only want to know what a remote has (its branches, its tags and the commits they point to) without downloading anything.
+
+  git ls-remote origin                  every ref of the server
+  git ls-remote --heads origin          only branches
+  git ls-remote origin refs/heads/main  one specific ref
+
+The output is hash, a tab, and the name of the ref."""
+"ls-remote-1.prompt" = "Ask the server for the commit of its branch release and save the result into answer.txt."
+"ls-remote-1.hint1" = "ls-remote accepts the name of the ref after the remote."
+"ls-remote-1.hint2" = "Type: git ls-remote origin refs/heads/release > answer.txt"
+"ls-remote-1.check1.fail" = "answer.txt must start with the hash of the branch release."
+"bundle.title" = "Moving history by file: bundle"
+"bundle.theory" = """
+No network? A colleague works offline? `git bundle` packs commits into a single file that behaves like a remote: you can clone or fetch from it.
+
+  git bundle create backup.bundle --all   pack every branch and tag
+  git bundle verify backup.bundle         check that the file is valid
+  git clone backup.bundle restored        recover a repository from the file"""
+"bundle-1.prompt" = "Make a backup of the whole repository (all branches) in a file called backup.bundle."
+"bundle-1.hint1" = "git bundle create takes the file name and what to include."
+"bundle-1.hint2" = "Type: git bundle create backup.bundle --all"
+"bundle-1.check1.fail" = "backup.bundle does not exist or is not a valid bundle."
+"bundle-1.check2.fail" = "The bundle should include every branch. Use --all."
+"bundle-2.prompt" = "The project folder was lost, but backup.bundle survived. Recover the repository into a folder called restored."
+"bundle-2.hint1" = "A bundle can be cloned like any repository."
+"bundle-2.check1.fail" = "restored does not contain the 2 commits of the backup."

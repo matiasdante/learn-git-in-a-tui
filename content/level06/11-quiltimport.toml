@@ -1,21 +1,3 @@
 id = "quiltimport"
 level = 6
 order = 11
-
-[title]
-en = "quiltimport"
-es = "quiltimport"
-
-[theory]
-en = """
-Quilt is an older tool to manage a stack of patches. If a project keeps its changes as a `patches/` folder with a `series` file listing the order, `git quiltimport` applies them all as commits, using the author found in each patch.
-
-  git quiltimport --patches patches
-
-It is a migration tool: you use it once when moving a project to git."""
-es = """
-Quilt es una herramienta más vieja para manejar una pila de parches. Si un proyecto guarda sus cambios en una carpeta `patches/` con un archivo `series` que lista el orden, `git quiltimport` los aplica todos como commits, usando el autor que figura en cada parche.
-
-  git quiltimport --patches patches
-
-Es una herramienta de migración: se usa una sola vez al pasar un proyecto a git."""

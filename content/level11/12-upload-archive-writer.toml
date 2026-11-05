@@ -1,17 +1,3 @@
 id = "upload-archive-writer"
 level = 11
 order = 12
-
-[title]
-en = "git upload-archive--writer"
-es = "git upload-archive--writer"
-
-[theory]
-en = """
-`git upload-archive--writer` is a helper process that `git upload-archive` starts to create the archive and write it to the connection, while the parent process relays the progress messages. It exists only inside that exchange.
-
-It never runs on its own and has no options for you."""
-es = """
-`git upload-archive--writer` es un proceso auxiliar que `git upload-archive` inicia para crear el archivo y escribirlo en la conexión, mientras el proceso padre retransmite los mensajes de progreso. Existe solo dentro de ese intercambio.
-
-Nunca corre solo y no tiene opciones para vos."""

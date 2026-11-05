@@ -2,50 +2,18 @@ id = "first-steps"
 level = 1
 order = 1
 
-[title]
-en = "First steps: version and help"
-es = "Primeros pasos: versión y ayuda"
-
-[theory]
-en = """
-A teammate writes: "git does not do what the docs say on my machine". Before anything else, ask which git version is installed: features such as `git switch` or `git restore` only exist from git 2.23 on.
-
-  git --version        shows the installed version
-  git help -a          lists every available subcommand
-  git <command> -h     short usage of one subcommand (works offline)
-  git help <command>   full manual page (needs the man pages installed)
-
-Use the console below. Press F1 for a hint and F5 when you think you are done."""
-es = """
-Un compañero te escribe: "git no hace lo que dice la documentación en mi máquina". Antes que nada, preguntá qué versión de git tiene instalada: comandos como `git switch` o `git restore` existen recién desde git 2.23.
-
-  git --version        muestra la versión instalada
-  git help -a          lista todos los subcomandos disponibles
-  git <comando> -h     uso resumido de un subcomando (funciona sin conexión)
-  git help <comando>   página completa del manual (requiere las man pages)
-
-Usá la consola de abajo. Apretá F1 para una pista y F5 cuando creas que terminaste."""
-
 [[exercise]]
 id = "version-1"
+hints = 2
 solution = ["git --version"]
-prompt = { en = "Find out which git version this machine has.", es = "Averiguá qué versión de git tiene esta máquina." }
-hints = [
-  { en = "The version is shown by an option that starts with two dashes.", es = "La versión la muestra una opción que empieza con dos guiones." },
-  { en = "Type: git --version", es = "Escribí: git --version" },
-]
 checks = [
-  { type = "ran", any = ["git --version", "git version"], fail = { en = "You have not asked git for its version yet. Run git --version in the console.", es = "Todavía no le pediste la versión a git. Ejecutá git --version en la consola." } },
+  { type = "ran", any = ["git --version", "git version"] },
 ]
 
 [[exercise]]
 id = "help-1"
+hints = 2
 solution = ["git help -a"]
-prompt = { en = "List all the available git subcommands.", es = "Listá todos los subcomandos de git disponibles." }
-hints = [
-  { en = "The help command has an option that means all.", es = "El comando de ayuda tiene una opción que significa todos." },
-  { en = "Type: git help -a", es = "Escribí: git help -a" },
-]
 checks = [
-  { type = "ran", any = ["git help -a", "git help --all", "git --list-cmds"], fail = { en = "Run git help -a to list every subcommand.", es = "Ejecutá git help -a para listar todos los subcomandos." } },
+  { type = "ran", any = ["git help -a", "git help --all", "git --list-cmds"] },
 ]

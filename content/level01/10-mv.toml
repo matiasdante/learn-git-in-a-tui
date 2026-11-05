@@ -2,24 +2,9 @@ id = "mv"
 level = 1
 order = 10
 
-[title]
-en = "Renaming files: mv"
-es = "Renombrar archivos: mv"
-
-[theory]
-en = """
-Renaming a file by hand makes git see a deletion plus a new file. `git mv` renames and stages in one go, and git recognizes the rename because the content is the same.
-
-  git mv draft.txt final.txt
-  git mv notes.txt docs/notes.txt     also moves between folders"""
-es = """
-Renombrar un archivo a mano hace que git vea una eliminación más un archivo nuevo. `git mv` renombra y prepara de una vez, y git reconoce el renombre porque el contenido es el mismo.
-
-  git mv borrador.txt final.txt
-  git mv notas.txt docs/notas.txt     también mueve entre carpetas"""
-
 [[exercise]]
 id = "mv-1"
+hints = 1
 solution = ["git mv draft.txt final.txt"]
 setup = [
   { do = "git", args = "init" },
@@ -27,11 +12,7 @@ setup = [
   { do = "git", args = "add ." },
   { do = "git", args = "commit -m \"Add draft\"" },
 ]
-prompt = { en = "Rename draft.txt to final.txt so that git records a rename.", es = "Renombrá draft.txt a final.txt para que git registre un renombre." }
-hints = [
-  { en = "The command has the same name as the Unix one, with git in front.", es = "El comando se llama igual que el de Unix, con git adelante." },
-]
 checks = [
-  { type = "status", path = "final.txt", xy = "R.", fail = { en = "final.txt is not a staged rename of draft.txt. Use git mv draft.txt final.txt.", es = "final.txt no es un renombre preparado de draft.txt. Usá git mv draft.txt final.txt." } },
-  { type = "file_missing", path = "draft.txt", fail = { en = "draft.txt still exists.", es = "draft.txt todavía existe." } },
+  { type = "status", path = "final.txt", xy = "R." },
+  { type = "file_missing", path = "draft.txt" },
 ]

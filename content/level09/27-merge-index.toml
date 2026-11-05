@@ -1,21 +1,3 @@
 id = "merge-index"
 level = 9
 order = 27
-
-[title]
-en = "merge-index"
-es = "merge-index"
-
-[theory]
-en = """
-`git merge-index` runs a program for every file that is still unmerged in the index. It is the glue between the merge machinery and the little programs that resolve each file; today it is used by the old merge strategies.
-
-  git merge-index git-merge-one-file -a
-
-In practice you resolve conflicts by editing files and git add, not with this command."""
-es = """
-`git merge-index` ejecuta un programa por cada archivo que sigue sin fusionar en el índice. Es el pegamento entre la maquinaria de fusión y los programitas que resuelven cada archivo; hoy lo usan las estrategias de fusión viejas.
-
-  git merge-index git-merge-one-file -a
-
-En la práctica los conflictos se resuelven editando archivos y git add, no con este comando."""

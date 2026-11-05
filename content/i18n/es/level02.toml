@@ -1,0 +1,196 @@
+"branch.title" = "Ramas: crear, renombrar, borrar"
+"branch.theory" = """
+Tenés que probar un refactor riesgoso sin romper el código que usa tu equipo. Una rama es un puntero movible a un commit: crearla es instantáneo y barato, así que podés experimentar y tirarla.
+
+  git branch                lista las ramas locales (* marca la actual)
+  git branch refactor       crea una rama en el commit actual (seguís donde estabas)
+  git branch -m vieja nueva renombra una rama
+  git branch -d nombre      borra una rama que ya está fusionada
+  git branch -D nombre      la borra aunque no esté fusionada (cuidado)"""
+"branch-1.prompt" = "Creá una rama llamada refactor. Tenés que quedarte en main."
+"branch-1.hint1" = "git branch seguido de un nombre la crea sin cambiarte de rama."
+"branch-1.check1.fail" = "La rama refactor todavía no existe."
+"branch-1.check2.fail" = "Tendrías que seguir en main."
+"branch-2.prompt" = "La rama old-experiment ya está fusionada y no se necesita más. Borrala."
+"branch-2.hint1" = "Usá git branch con la opción de borrar."
+"branch-2.hint2" = "Escribí: git branch -d old-experiment"
+"branch-2.check1.fail" = "old-experiment todavía existe."
+"branch-2.check2.fail" = "main no se debe borrar."
+"branch-3.prompt" = "La rama featur tiene un error de tipeo. Renombrala a feature."
+"branch-3.hint1" = "git branch -m recibe el nombre viejo y después el nuevo."
+"branch-3.check1.fail" = "La rama feature todavía no existe."
+"branch-3.check2.fail" = "El nombre viejo featur todavía existe."
+"switch.title" = "Moverse entre ramas: switch"
+"switch.theory" = """
+Un compañero reporta un bug en `develop` mientras vos estás en otra rama. `git switch` mueve tu carpeta de trabajo a otra rama y reemplaza los archivos por los de esa rama.
+
+  git switch develop        va a una rama existente
+  git switch -c hotfix      crea una rama y va a ella
+  git switch -              vuelve a la rama anterior
+
+Los commits que hagas ahora pertenecen a la rama donde estás, así que las otras ramas quedan intactas."""
+"switch-1.prompt" = "Pasate a la rama develop."
+"switch-1.hint1" = "Escribí: git switch develop"
+"switch-1.check1.fail" = "Todavía no estás en develop."
+"switch-2.prompt" = "Creá la rama hotfix y pasate a ella con un solo comando."
+"switch-2.hint1" = "La opción -c de switch significa crear."
+"switch-2.hint2" = "Escribí: git switch -c hotfix"
+"switch-2.check1.fail" = "Todavía no estás en hotfix."
+"switch-3.prompt" = "Trabajá en una funcionalidad sin tocar main: creá la rama login, pasate a ella y commiteá ahí un archivo nuevo login.txt."
+"switch-3.hint1" = "Primero creá la rama y después creá y commiteá el archivo estando en ella."
+"switch-3.hint2" = "git switch -c login, después echo login > login.txt, git add y git commit."
+"switch-3.check1.fail" = "Tendrías que estar en la rama login."
+"switch-3.check2.fail" = "login.txt no está commiteado en la rama login."
+"switch-3.check3.fail" = "login.txt quedó en main. El trabajo tiene que estar en la rama login."
+"checkout.title" = "checkout: la navaja suiza clásica"
+"checkout.theory" = """
+Antes de git 2.23, `git checkout` hacía de todo: cambiar de rama, restaurar archivos e inspeccionar commits viejos. Todavía funciona y lo vas a encontrar en tutoriales y scripts viejos.
+
+  git checkout main                   equivale a git switch main
+  git checkout main -- config.txt     trae UN archivo de main a tu carpeta (y lo prepara)
+  git checkout HEAD~1                 HEAD desacoplado: mirás un commit más viejo
+
+Con HEAD desacoplado no estás en ninguna rama. Podés mirar y experimentar, pero los commits nuevos se pierden fácil: creá una rama (git switch -c nombre) si querés conservarlos."""
+"checkout-1.prompt" = "Estás en la rama old, donde config.txt es v1. Traé config.txt como está en main (v2) sin salir de old."
+"checkout-1.hint1" = "checkout acepta una rama seguida de -- y un nombre de archivo."
+"checkout-1.hint2" = "Escribí: git checkout main -- config.txt"
+"checkout-1.check1.fail" = "Tendrías que quedarte en la rama old."
+"checkout-1.check2.fail" = "config.txt sigue siendo v1."
+"checkout-1.check3.fail" = "El cambio debería estar preparado (checkout con un archivo lo prepara)."
+"checkout-2.prompt" = "Mirá el proyecto como estaba un commit antes del último, sin usar una rama (HEAD desacoplado)."
+"checkout-2.hint1" = "HEAD~1 es el padre del commit actual."
+"checkout-2.hint2" = "Escribí: git checkout HEAD~1  (git switch --detach HEAD~1 también sirve)"
+"checkout-2.check1.fail" = "HEAD todavía apunta a una rama. Tendría que estar desacoplado."
+"checkout-2.check2.fail" = "HEAD está desacoplado pero no en el commit anterior al último."
+"merge-ff.title" = "Fusionar: fast-forward"
+"merge-ff.theory" = """
+Tu rama de funcionalidad está terminada y nadie tocó main mientras tanto. `git merge` trae el trabajo a la rama donde estás. Si main no se movió, git simplemente desliza el puntero de main hacia adelante: es un fast-forward y no se crea ningún commit nuevo.
+
+  git switch main
+  git merge feature            fast-forward cuando se puede
+  git merge --no-ff feature    siempre crea un commit de fusión, que deja visible la historia de la funcionalidad"""
+"merge-ff-1.prompt" = "Estás en main. Traé a main el trabajo de la rama feature."
+"merge-ff-1.hint1" = "La fusión va en la dirección de la rama donde estás."
+"merge-ff-1.hint2" = "Escribí: git merge feature"
+"merge-ff-1.check1.fail" = "Tendrías que estar en main."
+"merge-ff-1.check2.fail" = "main todavía no incluye el trabajo de feature."
+"merge-ff-1.check3.fail" = "Un fast-forward no debería crear un commit extra."
+"merge-ff-2.prompt" = "Fusioná feature en main, pero forzá un commit de fusión aunque sea posible un fast-forward."
+"merge-ff-2.hint1" = "Hay una opción que significa sin fast-forward."
+"merge-ff-2.hint2" = "Escribí: git merge --no-ff feature  (se abre un editor para el mensaje: guardá con Ctrl+S)"
+"merge-ff-2.check1.fail" = "No hay un commit de fusión. Usá la opción --no-ff."
+"merge-ff-2.check2.fail" = "Falta el trabajo de feature."
+"merge-3way.title" = "Fusionar: tres vías"
+"merge-3way.theory" = """
+Mientras trabajabas en feature, alguien agregó commits a main. Las ramas divergieron, así que git no puede simplemente deslizar un puntero. Compara las dos puntas con su ancestro común (fusión de tres vías) y crea un commit de fusión nuevo con dos padres.
+
+  git switch main
+  git merge feature        crea el commit de fusión (se abre un editor para el mensaje)
+  git merge feature -m "Merge feature"   da el mensaje directamente
+
+Si cada lado cambió cosas distintas, git las combina solo."""
+"merge-3way-1.prompt" = "main y feature divergieron. Fusioná feature en main."
+"merge-3way-1.hint1" = "El mismo comando de antes. Git va a crear el commit de fusión por vos."
+"merge-3way-1.hint2" = "Escribí: git merge feature  (guardá el mensaje en el editor con Ctrl+S)"
+"merge-3way-1.check1.fail" = "El commit de fusión todavía no existe."
+"merge-3way-1.check2.fail" = "Falta feature.txt después de la fusión."
+"merge-3way-1.check3.fail" = "Falta main.txt después de la fusión."
+"merge-conflict.title" = "Conflictos de fusión"
+"merge-conflict.theory" = """
+Dos ramas cambiaron la misma línea del mismo archivo. Git no puede decidir cuál versión es la correcta, así que se detiene y marca el archivo:
+
+  <<<<<<< HEAD
+  Hello from main
+  =======
+  Hello from feature
+  >>>>>>> feature
+
+Todo lo que está entre `<<<<<<<` y `=======` es tu lado, el resto es la otra rama. Para resolverlo:
+
+  1. editá el archivo para que quede el contenido final (y borrá las tres líneas de marcas)
+  2. git add <archivo>
+  3. git commit        (o git merge --continue)
+
+Si te asustás, `git merge --abort` deja todo como estaba antes de la fusión."""
+"merge-conflict-1.prompt" = "Fusioná feature en main. La fusión va a dar conflicto en greeting.txt: resolvelo conservando las dos líneas (primero la de main) y terminá la fusión con un commit."
+"merge-conflict-1.hint1" = "git merge feature se detiene con un conflicto. Abrí el archivo con: edit greeting.txt"
+"merge-conflict-1.hint2" = "Dejá solo las dos líneas, sin las marcas <<<<<<<, ======= ni >>>>>>>. Guardá con Ctrl+S."
+"merge-conflict-1.hint3" = "Después: git add greeting.txt y git commit -m \"Merge feature\""
+"merge-conflict-1.check1.fail" = "La fusión no terminó: todavía no hay commit de fusión."
+"merge-conflict-1.check2.fail" = "greeting.txt todavía tiene marcas de conflicto."
+"merge-conflict-1.check3.fail" = "Falta la línea de main."
+"merge-conflict-1.check4.fail" = "Falta la línea de feature."
+"merge-conflict-2.prompt" = "Intentá fusionar feature (va a dar conflicto) y después cambiá de idea: abortá la fusión para que main quede exactamente como antes."
+"merge-conflict-2.hint1" = "Primero git merge feature. La opción para abortar es del mismo comando."
+"merge-conflict-2.hint2" = "Escribí: git merge --abort"
+"merge-conflict-2.check1.fail" = "Primero probá la fusión con git merge feature."
+"merge-conflict-2.check2.fail" = "La fusión sigue en curso. Abortala."
+"merge-conflict-2.check3.fail" = "greeting.txt debería volver a la versión de main."
+"mergetool.title" = "Resolver con mergetool"
+"mergetool.theory" = """
+`git mergetool` recorre cada archivo en conflicto y abre sobre él tu herramienta configurada, así no tenés que buscar los archivos a mano. Los proyectos reales usan herramientas gráficas; acá se abre el editor integrado sobre el archivo en conflicto.
+
+  git mergetool         abre cada archivo en conflicto, uno por uno
+  git commit            termina la fusión cuando todo está resuelto
+
+Cuando guardás y cerrás la herramienta, git marca el archivo como resuelto (ejecuta git add por vos)."""
+"mergetool-1.prompt" = "Hay una fusión con feature en curso y greeting.txt tiene un conflicto. Ejecutá git mergetool, dejá las dos líneas en el editor (guardá con Ctrl+S) y después commiteá."
+"mergetool-1.hint1" = "Ejecutá git mergetool: el editor se abre sobre greeting.txt. Borrá las líneas de marcas."
+"mergetool-1.hint2" = "Después de guardar, terminá con: git commit -m \"Merge feature\""
+"mergetool-1.check1.fail" = "La fusión todavía no está commiteada."
+"mergetool-1.check2.fail" = "greeting.txt todavía tiene marcas de conflicto."
+"mergetool-1.check3.fail" = "Falta la línea de feature."
+"tag.title" = "Marcar versiones: tag"
+"tag.theory" = """
+Una rama se mueve con cada commit; un tag se queda quieto. Los tags le dan un nombre permanente a un commit, típicamente una versión como v1.0.
+
+  git tag v0.9                    tag liviano: solo un nombre para el commit actual
+  git tag -a v1.0 -m "Release"    tag anotado: guarda también autor, fecha y mensaje (usalo para versiones)
+  git tag v0.8 HEAD~2             etiqueta un commit más viejo
+  git tag -d v0.8                 borra un tag
+  git tag                         lista los tags"""
+"tag-1.prompt" = "Hora de publicar: marcá el commit actual con un tag anotado v1.0 y el mensaje \"First release\"."
+"tag-1.hint1" = "-a hace el tag anotado y -m le da el mensaje."
+"tag-1.hint2" = "Escribí: git tag -a v1.0 -m \"First release\""
+"tag-1.check1.fail" = "No hay un tag anotado v1.0."
+"tag-1.check2.fail" = "v1.0 no apunta al commit actual."
+"tag-2.prompt" = "La versión 0.9 fue el commit anterior al último. Marcalo como v0.9 (alcanza con un tag liviano)."
+"tag-2.hint1" = "git tag acepta el commit a marcar después del nombre del tag."
+"tag-2.check1.fail" = "El tag v0.9 no existe."
+"tag-2.check2.fail" = "v0.9 tiene que apuntar al commit anterior al último."
+"tag-3.prompt" = "El tag wrong-tag se creó por error. Borralo."
+"tag-3.hint1" = "git tag tiene una opción para borrar, -d."
+"tag-3.check1.fail" = "wrong-tag todavía existe."
+"describe.title" = "Ponerle nombre a un commit: describe"
+"describe.theory" = """
+Un build necesita un número de versión, pero los commits solo tienen hashes. `git describe` busca el tag más cercano hacia atrás desde el commit actual y arma un nombre legible:
+
+  v1.0-2-g3f9a1c2
+
+Se lee: 2 commits después de v1.0, en el commit 3f9a1c2 (la g es de git). Si estás justo en el tag, obtenés solo v1.0. Útil para números de build y pantallas "Acerca de". Por defecto solo cuentan los tags anotados (agregá --tags para incluir los livianos)."""
+"describe-1.prompt" = "Guardá el nombre que da git describe para el commit actual en un archivo llamado version.txt."
+"describe-1.hint1" = "Podés mandar la salida de un comando git a un archivo con > ."
+"describe-1.hint2" = "Escribí: git describe > version.txt"
+"describe-1.check1.fail" = "version.txt tiene que contener exactamente la salida de git describe."
+"stash.title" = "Guardar trabajo en el cajón: stash"
+"stash.theory" = """
+Estás a mitad de un cambio cuando llega un bug urgente. No podés commitear trabajo a medias ni cambiar de rama con el árbol sucio. `git stash` guarda tus cambios sin commitear en un cajón y deja la carpeta limpia.
+
+  git stash             guarda los cambios seguidos y limpia el árbol
+  git stash -u          guarda también los archivos sin seguimiento
+  git stash list        qué hay en el cajón
+  git stash pop         trae de vuelta el último stash y lo saca de la lista
+  git stash apply       lo trae de vuelta pero lo deja en la lista"""
+"stash-1.prompt" = "f.txt tiene cambios a medias y llegó un bug urgente. Guardá tus cambios para que el árbol de trabajo quede limpio."
+"stash-1.hint1" = "Escribí: git stash"
+"stash-1.check1.fail" = "f.txt todavía tiene tus cambios."
+"stash-1.check2.fail" = "No se guardó nada en el stash."
+"stash-2.prompt" = "El bug urgente está arreglado. Recuperá tus cambios guardados y sacalos de la lista del stash."
+"stash-2.hint1" = "pop lo trae de vuelta y lo saca de la lista."
+"stash-2.check1.fail" = "Tus cambios todavía no volvieron a f.txt."
+"stash-2.check2.fail" = "El stash todavía tiene la entrada. Usá pop (o borrala)."
+"stash-3.prompt" = "Creaste un archivo nuevo, new.txt, que git todavía no sigue. Guardalo también en el stash, para que desaparezca de la carpeta."
+"stash-3.hint1" = "Un git stash común ignora los archivos sin seguimiento. Buscá la opción que los incluye."
+"stash-3.hint2" = "Escribí: git stash -u"
+"stash-3.check1.fail" = "new.txt todavía está en la carpeta."
+"stash-3.check2.fail" = "No se guardó nada en el stash."

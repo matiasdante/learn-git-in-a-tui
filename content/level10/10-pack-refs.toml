@@ -2,22 +2,9 @@ id = "pack-refs"
 level = 10
 order = 10
 
-[title]
-en = "Packing references: pack-refs"
-es = "Empaquetar referencias: pack-refs"
-
-[theory]
-en = """
-Every branch and tag is normally a tiny file under .git/refs/. With thousands of refs that is slow. `git pack-refs` moves them into a single file, .git/packed-refs.
-
-  git pack-refs --all     branches and tags (default is tags only)"""
-es = """
-Cada rama y cada tag es normalmente un archivito en .git/refs/. Con miles de referencias eso es lento. `git pack-refs` las mueve a un único archivo, .git/packed-refs.
-
-  git pack-refs --all     ramas y tags (por defecto solo los tags)"""
-
 [[exercise]]
 id = "pack-refs-1"
+hints = 1
 solution = ["git pack-refs --all"]
 setup = [
   { do = "git", args = "init" },
@@ -27,11 +14,7 @@ setup = [
   { do = "git", args = "branch dev" },
   { do = "git", args = "tag v1" },
 ]
-prompt = { en = "Move all the branches and tags into .git/packed-refs.", es = "Mové todas las ramas y tags a .git/packed-refs." }
-hints = [
-  { en = "Without --all only tags are packed.", es = "Sin --all solo se empaquetan los tags." },
-]
 checks = [
-  { type = "file_contains", path = ".git/packed-refs", contains = "refs/heads/dev", fail = { en = "The branch dev is not in packed-refs yet. Use --all.", es = "La rama dev todavía no está en packed-refs. Usá --all." } },
-  { type = "file_missing", path = ".git/refs/heads/dev", fail = { en = "The loose file of dev still exists.", es = "El archivo suelto de dev todavía existe." } },
+  { type = "file_contains", path = ".git/packed-refs", contains = "refs/heads/dev" },
+  { type = "file_missing", path = ".git/refs/heads/dev" },
 ]

@@ -2,28 +2,9 @@ id = "show-branch"
 level = 5
 order = 6
 
-[title]
-en = "Comparing branches: show-branch"
-es = "Comparar ramas: show-branch"
-
-[theory]
-en = """
-`git show-branch` draws a compact table: one column per branch, one row per commit, so you see at a glance how branches diverged and where they share history.
-
-  git show-branch main feature
-  git show-branch --all           every branch
-
-Commits marked with * are on the current branch, + on the others; the last rows are the shared ancestors."""
-es = """
-`git show-branch` dibuja una tabla compacta: una columna por rama y una fila por commit, así ves de un vistazo cómo divergieron las ramas y dónde comparten historia.
-
-  git show-branch main feature
-  git show-branch --all           todas las ramas
-
-Los commits marcados con * están en la rama actual, + en las otras; las últimas filas son los ancestros compartidos."""
-
 [[exercise]]
 id = "show-branch-1"
+hints = 1
 solution = ["git show-branch main feature", "echo 2 > answer.txt"]
 setup = [
   { do = "git", args = "init" },
@@ -42,11 +23,7 @@ setup = [
   { do = "git", args = "add m1.txt" },
   { do = "git", args = "commit -m \"Main 1\"" },
 ]
-prompt = { en = "Compare main and feature with git show-branch, then write into answer.txt how many commits feature has that main does not.", es = "Comparé main y feature con git show-branch y escribí en answer.txt cuántos commits tiene feature que main no tiene." }
-hints = [
-  { en = "Run git show-branch main feature and count the rows marked only for feature.", es = "Ejecutá git show-branch main feature y contá las filas marcadas solo para feature." },
-]
 checks = [
-  { type = "ran", any = ["show-branch"], fail = { en = "Use git show-branch to compare the branches first.", es = "Primero usá git show-branch para comparar las ramas." } },
-  { type = "file_content", path = "answer.txt", equals = "2", fail = { en = "answer.txt must contain the number 2.", es = "answer.txt debe contener el número 2." } },
+  { type = "ran", any = ["show-branch"] },
+  { type = "file_content", path = "answer.txt", equals = "2" },
 ]

@@ -1,21 +1,3 @@
 id = "mailsplit"
 level = 6
 order = 9
-
-[title]
-en = "mailsplit (internal)"
-es = "mailsplit (interno)"
-
-[theory]
-en = """
-`git mailsplit` also belongs to the `git am` machinery. A mailbox (mbox) file holds many e-mails one after another; mailsplit cuts it into one numbered file per message (0001, 0002...) in a folder.
-
-  git mailsplit -o folder mailbox.mbox
-
-afterwards `git mailinfo` processes each message."""
-es = """
-`git mailsplit` también es parte de la maquinaria de `git am`. Un archivo de buzón (mbox) tiene muchos e-mails uno atrás de otro; mailsplit lo corta en un archivo numerado por mensaje (0001, 0002...) dentro de una carpeta.
-
-  git mailsplit -o carpeta buzon.mbox
-
-después `git mailinfo` procesa cada mensaje."""

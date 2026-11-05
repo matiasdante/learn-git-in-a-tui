@@ -1,17 +1,3 @@
 id = "checkout-worker"
 level = 9
 order = 26
-
-[title]
-en = "checkout--worker (internal)"
-es = "checkout--worker (interno)"
-
-[theory]
-en = """
-`git checkout--worker` is a helper process used by parallel checkout. When git writes many files at once (a big checkout or clone), it can start several workers that each write a share of the files, which is much faster on fast disks.
-
-The feature is controlled with checkout.workers (0 = all cores, 1 = no parallelism). You never run the helper yourself."""
-es = """
-`git checkout--worker` es un proceso auxiliar del checkout paralelo. Cuando git escribe muchos archivos de una vez (un checkout grande o un clone), puede lanzar varios workers que escriben cada uno una parte de los archivos, lo cual es mucho más rápido en discos veloces.
-
-Se controla con checkout.workers (0 = todos los núcleos, 1 = sin paralelismo). Nunca ejecutás el ayudante vos."""

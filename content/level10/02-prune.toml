@@ -2,24 +2,9 @@ id = "prune"
 level = 10
 order = 2
 
-[title]
-en = "Deleting unreachable objects: prune"
-es = "Borrar objetos inalcanzables: prune"
-
-[theory]
-en = """
-After `git reset --hard` or deleting a branch, some commits become UNREACHABLE: no branch, tag or reflog entry points to them. They stay on disk until pruned. `git prune` deletes them, but only if they are older than an expiry (2 weeks by default) so that nothing in use is lost.
-
-  git fsck --unreachable --no-reflogs     list them
-  git prune --expire=now                  delete them right away (irreversible!)"""
-es = """
-Después de `git reset --hard` o de borrar una rama, algunos commits quedan INALCANZABLES: ninguna rama, tag ni entrada de reflog apunta a ellos. Siguen en el disco hasta que se podan. `git prune` los borra, pero solo si son más viejos que un plazo (2 semanas por defecto) para no perder nada en uso.
-
-  git fsck --unreachable --no-reflogs     los lista
-  git prune --expire=now                  los borra ya (¡irreversible!)"""
-
 [[exercise]]
 id = "prune-1"
+hints = 1
 solution = ["git prune --expire=now"]
 setup = [
   { do = "git", args = "init" },
@@ -32,10 +17,6 @@ setup = [
   { do = "git", args = "reset --hard HEAD~1" },
   { do = "git", args = "reflog expire --expire=now --all" },
 ]
-prompt = { en = "The commit \"Lost work\" is unreachable and you do not want it anymore. Delete every unreachable object right now.", es = "El commit \"Lost work\" es inalcanzable y ya no lo querés. Borrá ahora mismo todos los objetos inalcanzables." }
-hints = [
-  { en = "A plain git prune keeps recent objects. Add --expire=now.", es = "Un git prune común conserva los objetos recientes. Sumá --expire=now." },
-]
 checks = [
-  { type = "git_output", args = "fsck --unreachable --no-reflogs", equals = "", fail = { en = "There are still unreachable objects.", es = "Todavía hay objetos inalcanzables." } },
+  { type = "git_output", args = "fsck --unreachable --no-reflogs", equals = "" },
 ]

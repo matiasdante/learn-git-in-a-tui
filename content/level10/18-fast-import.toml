@@ -2,36 +2,15 @@ id = "fast-import"
 level = 10
 order = 18
 
-[title]
-en = "Importing history: fast-import"
-es = "Importar la historia: fast-import"
-
-[theory]
-en = """
-`git fast-import` reads the stream format that fast-export writes (or that a conversion script generates) and creates the objects and refs directly. It is very fast and works inside an existing or empty repository.
-
-  git fast-import < stream.txt
-
-Each commit gives a ref, a committer, a message (`data <bytes>`) and file changes (`M <mode> inline <path>`)."""
-es = """
-`git fast-import` lee el formato de flujo que escribe fast-export (o que genera un script de conversión) y crea los objetos y las referencias directamente. Es muy rápido y funciona dentro de un repositorio nuevo o existente.
-
-  git fast-import < flujo.txt
-
-Cada commit da una referencia, un committer, un mensaje (`data <bytes>`) y cambios de archivos (`M <modo> inline <ruta>`)."""
-
 [[exercise]]
 id = "fast-import-1"
+hints = 1
 solution = ["git fast-import < stream.txt"]
 setup = [
   { do = "git", args = "init" },
   { do = "write", path = "stream.txt", content = "commit refs/heads/main\ncommitter Ann <ann@example.com> 1704110400 +0000\ndata 13\nHello import\nM 100644 inline hello.txt\ndata 6\nworld\n\n" },
 ]
-prompt = { en = "stream.txt describes one commit in fast-import format. Import it into this empty repository.", es = "stream.txt describe un commit en formato fast-import. Importalo en este repositorio vacío." }
-hints = [
-  { en = "fast-import reads the stream from standard input: use < stream.txt.", es = "fast-import lee el flujo de la entrada estándar: usá < stream.txt." },
-]
 checks = [
-  { type = "git_output", args = "log -1 --format=%s main", equals = "Hello import", fail = { en = "The commit \"Hello import\" is not on main yet.", es = "El commit \"Hello import\" todavía no está en main." } },
-  { type = "git_output", args = "cat-file -p main:hello.txt", equals = "world", fail = { en = "hello.txt does not have the imported content.", es = "hello.txt no tiene el contenido importado." } },
+  { type = "git_output", args = "log -1 --format=%s main", equals = "Hello import" },
+  { type = "git_output", args = "cat-file -p main:hello.txt", equals = "world" },
 ]

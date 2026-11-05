@@ -1,21 +1,3 @@
 id = "merge-recursive-theirs"
 level = 9
 order = 33
-
-[title]
-en = "recursive with -X theirs"
-es = "recursive con -X theirs"
-
-[theory]
-en = """
-`merge-recursive-theirs` is the mirror image: conflicting hunks are resolved in favor of the OTHER branch.
-
-  git merge -X theirs feature
-
-Handy when you know the incoming branch is right (for example, a generated file), but it never replaces reading the conflicts when the code matters."""
-es = """
-`merge-recursive-theirs` es la imagen opuesta: los fragmentos en conflicto se resuelven a favor de la OTRA rama.
-
-  git merge -X theirs feature
-
-Sirve cuando sabés que la rama entrante tiene razón (por ejemplo, un archivo generado), pero no reemplaza leer los conflictos cuando el código importa."""

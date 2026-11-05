@@ -14,7 +14,8 @@ use crate::sandbox::Sandbox;
 pub struct Check {
     #[serde(flatten)]
     pub kind: CheckKind,
-    /// Qué explicarle al usuario si este check falla.
+    /// Qué explicarle al usuario si este check falla (se completa al cargar el contenido).
+    #[serde(skip)]
     pub fail: Text,
     /// Carpeta (relativa a la raíz del sandbox) donde correr el check; si falta, la del ejercicio.
     #[serde(default)]

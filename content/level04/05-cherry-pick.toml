@@ -2,26 +2,9 @@ id = "cherry-pick"
 level = 4
 order = 5
 
-[title]
-en = "Taking one commit: cherry-pick"
-es = "Llevarse un commit: cherry-pick"
-
-[theory]
-en = """
-A fix lives on a branch full of unfinished work. You only want that single fix on main. `git cherry-pick` copies one commit onto the current branch as a new commit.
-
-  git cherry-pick <commit>      copy it
-  git cherry-pick feature       copy the latest commit of a branch
-  git cherry-pick A B           copy several"""
-es = """
-Un arreglo vive en una rama llena de trabajo sin terminar. Solo querés ese arreglo en main. `git cherry-pick` copia un commit a la rama actual como un commit nuevo.
-
-  git cherry-pick <commit>      lo copia
-  git cherry-pick feature       copia el último commit de una rama
-  git cherry-pick A B           copia varios"""
-
 [[exercise]]
 id = "cherry-pick-1"
+hints = 2
 solution = ["git cherry-pick feature"]
 setup = [
   { do = "git", args = "init" },
@@ -37,14 +20,9 @@ setup = [
   { do = "git", args = "commit -m \"Fix c\"" },
   { do = "git", args = "switch main" },
 ]
-prompt = { en = "feature has two commits: \"Add b\" (unfinished) and \"Fix c\". Bring only the latest one (Fix c) into main.", es = "feature tiene dos commits: \"Add b\" (sin terminar) y \"Fix c\". Traé solo el último (Fix c) a main." }
-hints = [
-  { en = "Naming the branch picks its latest commit.", es = "Nombrar la rama elige su último commit." },
-  { en = "Type: git cherry-pick feature", es = "Escribí: git cherry-pick feature" },
-]
 checks = [
-  { type = "branch", name = "main", fail = { en = "You should be on main.", es = "Tendrías que estar en main." } },
-  { type = "file_exists", path = "c.txt", fail = { en = "The fix (c.txt) is not in main yet.", es = "El arreglo (c.txt) todavía no está en main." } },
-  { type = "file_missing", path = "b.txt", fail = { en = "b.txt came along: only the latest commit should be copied.", es = "b.txt vino también: solo se debe copiar el último commit." } },
-  { type = "commit_count", count = 2, fail = { en = "main should have 2 commits: base and the cherry-picked fix.", es = "main debería tener 2 commits: la base y el arreglo copiado." } },
+  { type = "branch", name = "main" },
+  { type = "file_exists", path = "c.txt" },
+  { type = "file_missing", path = "b.txt" },
+  { type = "commit_count", count = 2 },
 ]

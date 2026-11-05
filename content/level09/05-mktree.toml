@@ -2,38 +2,14 @@ id = "mktree"
 level = 9
 order = 5
 
-[title]
-en = "Building a tree by hand: mktree"
-es = "Armar un tree a mano: mktree"
-
-[theory]
-en = """
-`git mktree` reads lines of the form `<mode> <type> <hash><TAB><name>` from the standard input and creates the tree object. It is how you would build a folder without touching any working file.
-
-  git hash-object -w hello.txt            -> the blob hash
-  git mktree                              then type:  100644 blob <hash><TAB>hello.txt   and press Ctrl+D
-
-It prints the hash of the new tree."""
-es = """
-`git mktree` lee líneas con la forma `<modo> <tipo> <hash><TAB><nombre>` de la entrada estándar y crea el objeto tree. Así armarías una carpeta sin tocar ningún archivo de trabajo.
-
-  git hash-object -w hola.txt             -> el hash del blob
-  git mktree                              después escribí:  100644 blob <hash><TAB>hola.txt   y apretá Ctrl+D
-
-Imprime el hash del tree nuevo."""
-
 [[exercise]]
 id = "mktree-1"
+hints = 2
 solution = [{ run = "git mktree > answer.txt", stdin = "100644 blob {{hash-object -w hello.txt}}\thello.txt\n" }]
 setup = [
   { do = "git", args = "init" },
   { do = "write", path = "hello.txt", content = "hello world\n" },
 ]
-prompt = { en = "Create a tree containing the file hello.txt (blob 3b18e512dba79e4c8300dd08aeb37f8e728b8dad, mode 100644) with git mktree, and save the tree hash into answer.txt. Store the blob first.", es = "Creá con git mktree un tree que contenga el archivo hello.txt (blob 3b18e512dba79e4c8300dd08aeb37f8e728b8dad, modo 100644) y guardá el hash del tree en answer.txt. Guardá antes el blob." }
-hints = [
-  { en = "Run git hash-object -w hello.txt first, then git mktree > answer.txt.", es = "Ejecutá primero git hash-object -w hello.txt, después git mktree > answer.txt." },
-  { en = "Type the line with a real TAB between the hash and the name; end with Ctrl+D.", es = "Escribí la línea con un TAB real entre el hash y el nombre; terminá con Ctrl+D." },
-]
 checks = [
-  { type = "git_output", args = "ls-tree --name-only {{file:answer.txt}}", equals = "hello.txt", fail = { en = "answer.txt must contain the hash of a tree with hello.txt in it.", es = "answer.txt debe contener el hash de un tree que tenga hello.txt." } },
+  { type = "git_output", args = "ls-tree --name-only {{file:answer.txt}}", equals = "hello.txt" },
 ]

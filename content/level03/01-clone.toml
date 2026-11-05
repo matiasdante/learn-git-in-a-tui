@@ -2,26 +2,9 @@ id = "clone"
 level = 3
 order = 1
 
-[title]
-en = "Getting a copy: clone"
-es = "Obtener una copia: clone"
-
-[theory]
-en = """
-You join a team and need the project on your machine. `git clone` downloads the whole repository, history included, and remembers where it came from as a remote called origin.
-
-  git clone <url> [folder]
-
-In this practice the server is a bare repository (one without a working folder) in the folder `server.git`, so the "url" is just a path. No network is involved."""
-es = """
-Entrás a un equipo y necesitás el proyecto en tu máquina. `git clone` descarga el repositorio completo, con toda su historia, y recuerda de dónde vino como un remoto llamado origin.
-
-  git clone <url> [carpeta]
-
-En esta práctica el servidor es un repositorio bare (sin carpeta de trabajo) en la carpeta `server.git`, así que la "url" es solo una ruta. No hay red."""
-
 [[exercise]]
 id = "clone-1"
+hints = 2
 solution = ["git clone server.git project"]
 setup = [
   { do = "git", args = "init --bare server.git" },
@@ -36,13 +19,8 @@ setup = [
   { do = "git", args = "push -u origin main", dir = "seed" },
   { do = "rm", path = "seed" },
 ]
-prompt = { en = "The team repository lives in server.git. Clone it into a folder called project.", es = "El repositorio del equipo está en server.git. Clonalo en una carpeta llamada project." }
-hints = [
-  { en = "git clone takes the source and then the folder name.", es = "git clone recibe el origen y después el nombre de la carpeta." },
-  { en = "Type: git clone server.git project", es = "Escribí: git clone server.git project" },
-]
 checks = [
-  { type = "repo_exists", repo = "project", fail = { en = "The folder project is not a repository yet.", es = "La carpeta project todavía no es un repositorio." } },
-  { type = "commit_count", count = 2, repo = "project", fail = { en = "The clone should contain the 2 commits of the server.", es = "El clon debería tener los 2 commits del servidor." } },
-  { type = "git_output", args = "remote", equals = "origin", repo = "project", fail = { en = "The clone should have a remote called origin.", es = "El clon debería tener un remoto llamado origin." } },
+  { type = "repo_exists", repo = "project" },
+  { type = "commit_count", count = 2, repo = "project" },
+  { type = "git_output", args = "remote", equals = "origin", repo = "project" },
 ]

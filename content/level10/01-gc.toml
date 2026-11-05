@@ -2,28 +2,9 @@ id = "gc"
 level = 10
 order = 1
 
-[title]
-en = "Housekeeping: gc"
-es = "Mantenimiento general: gc"
-
-[theory]
-en = """
-Every commit, tree and file version git creates starts as a separate small LOOSE object. Thousands of them make the repository slow and big. `git gc` ("garbage collection") packs loose objects into compressed packfiles, packs refs and removes unreachable leftovers.
-
-  git gc                  do the cleanup
-  git count-objects -v    "count" = loose objects, "packs" = number of packfiles
-
-Git runs `gc --auto` by itself now and then; running it by hand is for after big operations."""
-es = """
-Cada commit, tree y versión de archivo que crea git empieza como un objeto SUELTO chiquito. Miles de ellos hacen al repositorio lento y grande. `git gc` ("recolección de basura") empaqueta los objetos sueltos en packfiles comprimidos, empaqueta las referencias y borra sobrantes inalcanzables.
-
-  git gc                  hace la limpieza
-  git count-objects -v    "count" = objetos sueltos, "packs" = cantidad de packfiles
-
-Git ejecuta `gc --auto` solo de vez en cuando; ejecutarlo a mano es para después de operaciones grandes."""
-
 [[exercise]]
 id = "gc-1"
+hints = 2
 solution = ["git gc"]
 setup = [
   { do = "git", args = "init" },
@@ -37,12 +18,7 @@ setup = [
   { do = "git", args = "add c.txt" },
   { do = "git", args = "commit -m \"Add c\"" },
 ]
-prompt = { en = "Your repository has only loose objects. Run the garbage collection so they end up in a packfile.", es = "Tu repositorio tiene solo objetos sueltos. Ejecutá la recolección de basura para que terminen en un packfile." }
-hints = [
-  { en = "Type: git gc", es = "Escribí: git gc" },
-  { en = "Check with git count-objects -v.", es = "Verificalo con git count-objects -v." },
-]
 checks = [
-  { type = "git_output", args = "count-objects -v", contains = "count: 0", fail = { en = "There are still loose objects.", es = "Todavía hay objetos sueltos." } },
-  { type = "git_output", args = "count-objects -v", contains = "packs: 1", fail = { en = "There should be one packfile.", es = "Tendría que haber un packfile." } },
+  { type = "git_output", args = "count-objects -v", contains = "count: 0" },
+  { type = "git_output", args = "count-objects -v", contains = "packs: 1" },
 ]

@@ -1,21 +1,3 @@
 id = "web-browse"
 level = 11
 order = 18
-
-[title]
-en = "git web--browse"
-es = "git web--browse"
-
-[theory]
-en = """
-`git web--browse` opens a URL or a file in your web browser, choosing the right program for your system (xdg-open, open, start, www-browser...). Other commands use it: `git help --web`, `git instaweb`, `git request-pull` helpers.
-
-  git web--browse https://git-scm.com
-
-You can force a browser with `git config web.browser firefox`. In a terminal-only session or this sandbox there is no browser to open."""
-es = """
-`git web--browse` abre una URL o un archivo en tu navegador web, eligiendo el programa adecuado para tu sistema (xdg-open, open, start, www-browser...). Lo usan otros comandos: `git help --web`, `git instaweb`.
-
-  git web--browse https://git-scm.com
-
-Podés forzar un navegador con `git config web.browser firefox`. En una sesión solo de terminal o en este sandbox no hay navegador para abrir."""

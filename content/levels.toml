@@ -1,43 +1,32 @@
 [[level]]
 id = 1
-title = { en = "Fundamentals", es = "Fundamentos" }
 
 [[level]]
 id = 2
-title = { en = "Branches and tags", es = "Ramas y tags" }
 
 [[level]]
 id = 3
-title = { en = "Remotes", es = "Remotos" }
 
 [[level]]
 id = 4
-title = { en = "Undo and rewrite", es = "Deshacer y reescribir" }
 
 [[level]]
 id = 5
-title = { en = "Investigating history", es = "Investigar la historia" }
 
 [[level]]
 id = 6
-title = { en = "Patches and the e-mail workflow", es = "Parches y flujo por mail" }
 
 [[level]]
 id = 7
-title = { en = "Large and multiple repositories", es = "Repos grandes y múltiples" }
 
 [[level]]
 id = 8
-title = { en = "Configuration, security and automation", es = "Configuración, seguridad y automatización" }
 
 [[level]]
 id = 9
-title = { en = "Plumbing: objects and refs", es = "Plumbing: objetos y referencias" }
 
 [[level]]
 id = 10
-title = { en = "Storage and maintenance", es = "Almacenamiento y mantenimiento" }
 
 [[level]]
 id = 11
-title = { en = "Servers and protocols", es = "Servidores y protocolos" }

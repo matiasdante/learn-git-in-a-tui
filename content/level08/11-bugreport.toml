@@ -2,35 +2,14 @@ id = "bugreport"
 level = 8
 order = 11
 
-[title]
-en = "Reporting a bug: bugreport"
-es = "Reportar un bug: bugreport"
-
-[theory]
-en = """
-When you report a problem to the git project, they need to know your version, platform and settings. `git bugreport` collects that into a text file you can edit and attach.
-
-  git bugreport                     creates git-bugreport-<date>.txt
-  git bugreport -s mybug            creates git-bugreport-mybug.txt
-  git bugreport -o folder           write it somewhere else"""
-es = """
-Cuando reportás un problema al proyecto git, necesitan saber tu versión, plataforma y configuración. `git bugreport` junta eso en un archivo de texto que podés editar y adjuntar.
-
-  git bugreport                     crea git-bugreport-<fecha>.txt
-  git bugreport -s mibug            crea git-bugreport-mibug.txt
-  git bugreport -o carpeta          lo escribe en otro lugar"""
-
 [[exercise]]
 id = "bugreport-1"
+hints = 1
 solution = [{ run = "git bugreport -s mybug", editor = [] }]
 setup = [
   { do = "git", args = "init" },
 ]
-prompt = { en = "Create a bug report file with the suffix mybug (git opens it in the editor: save with Ctrl+S).", es = "Creá un archivo de reporte de bug con el sufijo mybug (git lo abre en el editor: guardá con Ctrl+S)." }
-hints = [
-  { en = "The -s option sets the suffix of the file name.", es = "La opción -s define el sufijo del nombre del archivo." },
-]
 checks = [
-  { type = "file_exists", path = "git-bugreport-mybug.txt", fail = { en = "git-bugreport-mybug.txt does not exist yet.", es = "git-bugreport-mybug.txt todavía no existe." } },
-  { type = "file_contains", path = "git-bugreport-mybug.txt", contains = "git version", fail = { en = "The report should include the git version.", es = "El reporte debería incluir la versión de git." } },
+  { type = "file_exists", path = "git-bugreport-mybug.txt" },
+  { type = "file_contains", path = "git-bugreport-mybug.txt", contains = "git version" },
 ]

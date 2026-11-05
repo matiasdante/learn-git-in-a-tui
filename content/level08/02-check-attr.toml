@@ -2,60 +2,27 @@ id = "check-attr"
 level = 8
 order = 2
 
-[title]
-en = "File attributes: check-attr"
-es = "Atributos de archivos: check-attr"
-
-[theory]
-en = """
-A `.gitattributes` file tells git how to treat files by pattern: line endings, whether a file is binary, how to diff or merge it.
-
-  *.sh   text eol=lf        always use LF line endings
-  *.png  binary             never try to diff or merge it as text
-
-`git check-attr` answers "which attributes apply to this path?":
-
-  git check-attr eol notes.txt        notes.txt: eol: lf
-  git check-attr -a image.png         every attribute that applies"""
-es = """
-Un archivo `.gitattributes` le dice a git cómo tratar los archivos según un patrón: fin de línea, si es binario, cómo compararlo o fusionarlo.
-
-  *.sh   text eol=lf        usar siempre fin de línea LF
-  *.png  binary             nunca intentar compararlo ni fusionarlo como texto
-
-`git check-attr` responde "¿qué atributos se aplican a esta ruta?":
-
-  git check-attr eol notas.txt        notas.txt: eol: lf
-  git check-attr -a imagen.png        todos los atributos que se aplican"""
-
 [[exercise]]
 id = "check-attr-1"
+hints = 1
 solution = ["git check-attr eol notes.txt > answer.txt"]
 setup = [
   { do = "git", args = "init" },
   { do = "write", path = ".gitattributes", content = "*.txt text eol=lf\n*.png binary\n" },
   { do = "write", path = "notes.txt", content = "hi\n" },
 ]
-prompt = { en = "Which end-of-line setting does .gitattributes give to notes.txt? Save the output of git check-attr for the eol attribute into answer.txt.", es = "¿Qué fin de línea le da .gitattributes a notes.txt? Guardá en answer.txt la salida de git check-attr para el atributo eol." }
-hints = [
-  { en = "Pass the attribute name and then the file.", es = "Pasale el nombre del atributo y después el archivo." },
-]
 checks = [
-  { type = "file_equals_git", path = "answer.txt", args = "check-attr eol notes.txt", fail = { en = "answer.txt must contain exactly the output of git check-attr eol notes.txt.", es = "answer.txt debe contener exactamente la salida de git check-attr eol notes.txt." } },
+  { type = "file_equals_git", path = "answer.txt", args = "check-attr eol notes.txt" },
 ]
 
 [[exercise]]
 id = "check-attr-2"
+hints = 2
 solution = ["echo *.png binary > .gitattributes"]
 setup = [
   { do = "git", args = "init" },
   { do = "write", path = "logo.png", content = "not really an image\n" },
 ]
-prompt = { en = "Create a .gitattributes so that every .png file is treated as binary.", es = "Creá un .gitattributes para que todos los archivos .png se traten como binarios." }
-hints = [
-  { en = "One line is enough: the pattern, a space and the word binary.", es = "Alcanza con una línea: el patrón, un espacio y la palabra binary." },
-  { en = "Check it with git check-attr -a logo.png", es = "Verificalo con git check-attr -a logo.png" },
-]
 checks = [
-  { type = "git_output", args = "check-attr diff logo.png", equals = "logo.png: diff: unset", fail = { en = "logo.png is not treated as binary yet.", es = "logo.png todavía no se trata como binario." } },
+  { type = "git_output", args = "check-attr diff logo.png", equals = "logo.png: diff: unset" },
 ]

@@ -2,26 +2,9 @@ id = "revert"
 level = 4
 order = 2
 
-[title]
-en = "Undoing safely: revert"
-es = "Deshacer sin riesgo: revert"
-
-[theory]
-en = """
-A commit that broke production is already pushed and teammates have it. You must not rewrite shared history. `git revert` creates a NEW commit that does the opposite of an old one, so history only grows.
-
-  git revert HEAD              undo the latest commit
-  git revert <commit>          undo any commit, even an old one
-  git revert --no-edit HEAD    skip the message editor"""
-es = """
-Un commit que rompió producción ya está publicado y tus compañeros lo tienen. No podés reescribir historia compartida. `git revert` crea un commit NUEVO que hace lo contrario de uno viejo, así la historia solo crece.
-
-  git revert HEAD              deshace el último commit
-  git revert <commit>          deshace cualquier commit, incluso uno viejo
-  git revert --no-edit HEAD    omite el editor de mensaje"""
-
 [[exercise]]
 id = "revert-1"
+hints = 2
 solution = ["git revert --no-edit HEAD"]
 setup = [
   { do = "git", args = "init" },
@@ -35,19 +18,15 @@ setup = [
   { do = "git", args = "add c.txt" },
   { do = "git", args = "commit -m \"Add c\"" },
 ]
-prompt = { en = "The last commit broke production and was already pushed. Undo it without rewriting history.", es = "El último commit rompió producción y ya se publicó. Deshacelo sin reescribir la historia." }
-hints = [
-  { en = "Do not use reset on shared history. Use the command that adds a new commit.", es = "No uses reset en historia compartida. Usá el comando que agrega un commit nuevo." },
-  { en = "Type: git revert HEAD  (save the message with Ctrl+S)", es = "Escribí: git revert HEAD  (guardá el mensaje con Ctrl+S)" },
-]
 checks = [
-  { type = "commit_count", count = 4, fail = { en = "History should have 4 commits: the 3 old ones plus the revert.", es = "La historia debería tener 4 commits: los 3 viejos más el revert." } },
-  { type = "file_missing", path = "c.txt", fail = { en = "c.txt is still there: the change was not reverted.", es = "c.txt sigue ahí: el cambio no se revirtió." } },
-  { type = "commit_subject", contains = "Revert", fail = { en = "The latest commit should be a revert commit.", es = "El último commit debería ser un commit de revert." } },
+  { type = "commit_count", count = 4 },
+  { type = "file_missing", path = "c.txt" },
+  { type = "commit_subject", contains = "Revert" },
 ]
 
 [[exercise]]
 id = "revert-2"
+hints = 2
 solution = ["git revert --no-edit {{rev-parse HEAD~1}}"]
 setup = [
   { do = "git", args = "init" },
@@ -61,14 +40,9 @@ setup = [
   { do = "git", args = "add c.txt" },
   { do = "git", args = "commit -m \"Add c\"" },
 ]
-prompt = { en = "The commit \"Add b\" (the second one from the top) was a mistake. Revert only that commit, leaving a.txt and c.txt alone.", es = "El commit \"Add b\" (el segundo desde arriba) fue un error. Revertí solo ese commit, sin tocar a.txt ni c.txt." }
-hints = [
-  { en = "revert accepts any commit, for example HEAD~1.", es = "revert acepta cualquier commit, por ejemplo HEAD~1." },
-  { en = "Type: git revert HEAD~1", es = "Escribí: git revert HEAD~1" },
-]
 checks = [
-  { type = "commit_count", count = 4, fail = { en = "History should have 4 commits: the 3 old ones plus the revert.", es = "La historia debería tener 4 commits: los 3 viejos más el revert." } },
-  { type = "file_missing", path = "b.txt", fail = { en = "b.txt is still there.", es = "b.txt sigue ahí." } },
-  { type = "file_exists", path = "a.txt", fail = { en = "a.txt must remain.", es = "a.txt tiene que quedar." } },
-  { type = "file_exists", path = "c.txt", fail = { en = "c.txt must remain.", es = "c.txt tiene que quedar." } },
+  { type = "commit_count", count = 4 },
+  { type = "file_missing", path = "b.txt" },
+  { type = "file_exists", path = "a.txt" },
+  { type = "file_exists", path = "c.txt" },
 ]

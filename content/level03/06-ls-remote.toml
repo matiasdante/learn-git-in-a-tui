@@ -2,31 +2,10 @@ id = "ls-remote"
 level = 3
 order = 6
 
-[title]
-en = "Peeking at a server: ls-remote"
-es = "Espiar un servidor: ls-remote"
-
-[theory]
-en = """
-Sometimes you only want to know what a remote has (its branches, its tags and the commits they point to) without downloading anything.
-
-  git ls-remote origin                  every ref of the server
-  git ls-remote --heads origin          only branches
-  git ls-remote origin refs/heads/main  one specific ref
-
-The output is hash, a tab, and the name of the ref."""
-es = """
-A veces solo querés saber qué tiene un remoto (sus ramas, sus tags y los commits a los que apuntan) sin descargar nada.
-
-  git ls-remote origin                  todas las referencias del servidor
-  git ls-remote --heads origin          solo ramas
-  git ls-remote origin refs/heads/main  una referencia puntual
-
-La salida es el hash, un tabulador y el nombre de la referencia."""
-
 [[exercise]]
 id = "ls-remote-1"
 cwd = "project"
+hints = 2
 solution = ["git ls-remote origin refs/heads/release > answer.txt"]
 setup = [
   { do = "git", args = "init --bare server.git" },
@@ -44,11 +23,6 @@ setup = [
   { do = "git", args = "branch release", dir = "project" },
   { do = "git", args = "push origin release", dir = "project" },
 ]
-prompt = { en = "Ask the server for the commit of its branch release and save the result into answer.txt.", es = "Preguntale al servidor por el commit de su rama release y guardá el resultado en answer.txt." }
-hints = [
-  { en = "ls-remote accepts the name of the ref after the remote.", es = "ls-remote acepta el nombre de la referencia después del remoto." },
-  { en = "Type: git ls-remote origin refs/heads/release > answer.txt", es = "Escribí: git ls-remote origin refs/heads/release > answer.txt" },
-]
 checks = [
-  { type = "file_matches_rev", path = "answer.txt", rev = "origin/release", fail = { en = "answer.txt must start with the hash of the branch release.", es = "answer.txt tiene que empezar con el hash de la rama release." } },
+  { type = "file_matches_rev", path = "answer.txt", rev = "origin/release" },
 ]

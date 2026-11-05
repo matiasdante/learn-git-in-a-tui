@@ -1,0 +1,321 @@
+"cat-file.title" = "读取对象：cat-file"
+"cat-file.theory" = """
+git 保存的一切都是由哈希标识的对象：blob（文件内容）、tree（文件夹）、commit 和 tag。`git cat-file` 可以读取其中任何一种。
+
+  git cat-file -t HEAD            对象的类型（commit）
+  git cat-file -p HEAD            以易读形式显示
+  git cat-file -p HEAD:a.txt      某个提交中某个文件的内容
+  git cat-file -s HEAD:a.txt      它的大小（字节）"""
+"cat-file-1.prompt" = "把 a.txt 在两个提交之前（HEAD~2）的内容保存到 answer.txt，要求直接从对象库中读取。"
+"cat-file-1.hint1" = "cat-file -p 接 修订版本:路径。"
+"cat-file-1.check1.fail" = "answer.txt 必须恰好包含 git cat-file -p HEAD~2:a.txt 的输出。"
+"hash-object.title" = "创建 blob：hash-object"
+"hash-object.theory" = """
+文件的哈希只由它的内容（加上一个很小的头部）计算得出。`git hash-object` 会显示它，加上 -w 还会把对象“写入”仓库。
+
+  git hash-object hello.txt        只计算哈希
+  git hash-object -w hello.txt     计算并保存 blob
+  git hash-object --stdin          对从输入读取的文本计算哈希"""
+"hash-object-1.prompt" = "把 hello.txt 作为 blob 存入对象库（不要暂存它），并把它的哈希保存到 answer.txt。"
+"hash-object-1.hint1" = "-w 会写入对象。"
+"hash-object-1.hint2" = "输入：git hash-object -w hello.txt > answer.txt"
+"hash-object-1.check1.fail" = "blob 不在对象库里。你用了 -w 吗？"
+"hash-object-1.check2.fail" = "answer.txt 必须包含这个 blob 的哈希。"
+"ls-tree.title" = "列出一个 tree：ls-tree"
+"ls-tree.theory" = """
+tree 对象就是一个文件夹：一个由名字、模式和哈希组成的列表。`git ls-tree` 会把它打印出来。
+
+  git ls-tree HEAD                  每个条目的模式、类型、哈希和名字
+  git ls-tree --name-only HEAD      只显示名字
+  git ls-tree -r HEAD               递归，进入子文件夹"""
+"ls-tree-1.prompt" = "把 HEAD~1 的 tree 中各文件的名字保存到 answer.txt。"
+"ls-tree-1.hint1" = "使用 --name-only 并指明提交。"
+"ls-tree-1.check1.fail" = "answer.txt 必须恰好包含 git ls-tree --name-only HEAD~1 的输出。"
+"ls-files.title" = "索引：ls-files"
+"ls-files.theory" = """
+索引（暂存区）是一个路径列表，记录每个路径在下一次提交中将对应的 blob。`git ls-files` 会显示它。
+
+  git ls-files               已跟踪的路径
+  git ls-files --stage       模式、哈希、暂存阶段号和路径
+  git ls-files --others      未跟踪的文件
+  git ls-files --deleted     已跟踪但磁盘上缺失的文件"""
+"ls-files-1.prompt" = "把索引的完整内容（每个文件的模式、哈希和路径）保存到 answer.txt。"
+"ls-files-1.hint1" = "--stage 会加上模式和哈希。"
+"ls-files-1.check1.fail" = "answer.txt 必须恰好包含 git ls-files --stage 的输出。"
+"mktree.title" = "手工构建 tree：mktree"
+"mktree.theory" = """
+`git mktree` 从标准输入读取格式为 `<模式> <类型> <哈希><TAB><名字>` 的行，并创建 tree 对象。这样你就可以不碰任何工作文件，凭空构建出一个文件夹。
+
+  git hash-object -w hello.txt            -> blob 的哈希
+  git mktree                              然后输入：100644 blob <哈希><TAB>hello.txt   并按 Ctrl+D
+
+它会输出新 tree 的哈希。"""
+"mktree-1.prompt" = "用 git mktree 创建一个包含文件 hello.txt 的 tree（blob 3b18e512dba79e4c8300dd08aeb37f8e728b8dad，模式 100644），并把 tree 的哈希保存到 answer.txt。请先保存 blob。"
+"mktree-1.hint1" = "先运行 git hash-object -w hello.txt，再运行 git mktree > answer.txt。"
+"mktree-1.hint2" = "输入那一行时，在哈希和名字之间使用真正的 TAB；用 Ctrl+D 结束。"
+"mktree-1.check1.fail" = "answer.txt 必须包含一个含有 hello.txt 的 tree 的哈希。"
+"write-tree.title" = "从索引到 tree：write-tree"
+"write-tree.theory" = "`git write-tree` 把当前的索引变成一个 tree 对象，并输出它的哈希。这是 `git commit` 所做工作的前半部分（后半部分由 commit-tree 完成，它把这个 tree 包装成一个提交）。"
+"write-tree-1.prompt" = "a.txt 和 b.txt 已暂存。把索引写成一个 tree 对象，并把它的哈希保存到 answer.txt。"
+"write-tree-1.hint1" = "输入：git write-tree > answer.txt"
+"write-tree-1.check1.fail" = "answer.txt 必须包含含有 a.txt 和 b.txt 的 tree 的哈希。"
+"read-tree.title" = "从 tree 到索引：read-tree"
+"read-tree.theory" = """
+`git read-tree <tree-ish>` 与 write-tree 相反：它把一个 tree 载入索引并替换原来的索引。工作文件夹中的文件不会被改动。高层命令 reset 和 checkout 在内部都会用到它。
+
+  git read-tree HEAD~1        现在索引看起来和上一个提交一样"""
+"read-tree-1.prompt" = "让索引变得和上一个提交（HEAD~1）一样，不要动磁盘上的文件。"
+"read-tree-1.hint1" = "输入：git read-tree HEAD~1"
+"read-tree-1.check1.fail" = "索引里应该只有 a.txt。"
+"read-tree-1.check2.fail" = "b.txt 必须保留在磁盘上。"
+"commit-tree.title" = "手工创建提交：commit-tree"
+"commit-tree.theory" = "`git commit-tree <tree> -m \"信息\"` 会为一个 tree 创建提交对象，还可以指定父提交（-p <commit>），并输出它的哈希。它“不会”移动任何分支：提交虽然存在，但在你更新某个引用之前，没有任何东西指向它。\n\n  git commit-tree <tree> -m \"手工提交\"\n  git commit-tree <tree> -p HEAD -m \"HEAD 的子提交\""
+"commit-tree-1.prompt" = "a.txt 已暂存。用索引的 tree 创建一个提交对象，信息为 \"Manual commit\"，并把它的哈希保存到 answer.txt。不能有任何分支移动。"
+"commit-tree-1.hint1" = "先 git write-tree，再 git commit-tree <那个哈希> -m \"Manual commit\"。"
+"commit-tree-1.check1.fail" = "answer.txt 必须包含一个信息为 \"Manual commit\" 的提交的哈希。"
+"commit-tree-1.check2.fail" = "有分支移动了：commit-tree 不应该更新任何分支。"
+"update-ref.title" = "移动引用：update-ref"
+"update-ref.theory" = """
+分支和标签只是里面存着一个哈希的文件（位于 .git/refs/）。`git update-ref` 可以安全地创建和移动它们。
+
+  git update-ref refs/heads/manual HEAD      在 HEAD 处创建 manual 分支
+  git update-ref refs/heads/manual <commit>  移动它
+  git update-ref -d refs/heads/manual        删除它"""
+"update-ref-1.prompt" = "创建一个名为 manual 的分支，指向上一个提交（HEAD~1），要用 update-ref，而不是 git branch。"
+"update-ref-1.hint1" = "分支的完整名字是 refs/heads/<名字>。"
+"update-ref-1.check1.fail" = "分支 manual 没有指向 HEAD~1。"
+"update-ref-1.check2.fail" = "请使用 git update-ref。"
+"symbolic-ref.title" = "HEAD 指向哪里：symbolic-ref"
+"symbolic-ref.theory" = """
+HEAD 通常不是一个哈希，而是一个符号引用：当前分支的名字。`git symbolic-ref` 可以读取和写入它。
+
+  git symbolic-ref HEAD                         refs/heads/main
+  git symbolic-ref --short HEAD                 main
+  git symbolic-ref HEAD refs/heads/other        “不改动文件”就切换当前分支（小心！）"""
+"symbolic-ref-1.prompt" = "通过直接编辑符号引用，让 HEAD 指向 other 分支。"
+"symbolic-ref-1.hint1" = "symbolic-ref 先接名字（HEAD），再接目标引用。"
+"symbolic-ref-1.check1.fail" = "HEAD 还没有指向 refs/heads/other。"
+"rev-parse.title" = "转换名字：rev-parse"
+"rev-parse.theory" = """
+`git rev-parse` 是脚本里的瑞士军刀：它能把任意修订表达式转换成完整的哈希，也能回答有关仓库的问题。
+
+  git rev-parse HEAD~2              完整哈希
+  git rev-parse --short HEAD        短哈希
+  git rev-parse --abbrev-ref HEAD   当前分支的名字
+  git rev-parse --show-toplevel     工作区的根文件夹
+  git rev-parse --is-inside-work-tree"""
+"rev-parse-1.prompt" = "把 HEAD~2 的完整哈希保存到 answer.txt。"
+"rev-parse-1.hint1" = "输入：git rev-parse HEAD~2 > answer.txt"
+"rev-parse-1.check1.fail" = "answer.txt 必须恰好包含 git rev-parse HEAD~2 的输出。"
+"rev-list.title" = "遍历历史：rev-list"
+"rev-list.theory" = """
+`git rev-list` 会输出从某个起点可达的提交哈希，每行一个。它是 `git log` 背后的引擎，非常适合脚本使用。
+
+  git rev-list HEAD                  所有提交
+  git rev-list --count main..feature feature 比 main 多多少个提交
+  git rev-list --max-count=3 HEAD    只要三个
+  git rev-list --merges HEAD         只要合并提交"""
+"rev-list-1.prompt" = "把 feature 比 main 多的提交数量保存到 answer.txt。"
+"rev-list-1.hint1" = "对 main..feature 使用 --count。"
+"rev-list-1.check1.fail" = "answer.txt 必须恰好包含 git rev-list --count main..feature 的输出。"
+"for-each-ref.title" = "按格式列出引用：for-each-ref"
+"for-each-ref.theory" = """
+`git for-each-ref` 按你选择的格式列出分支、标签和其他引用。它的输出是为脚本设计的：稳定，不带任何装饰。
+
+  git for-each-ref refs/heads
+  git for-each-ref --format='%(refname:short)' refs/heads     只显示分支名
+  git for-each-ref --sort=-committerdate refs/heads           最近用过的排在前面"""
+"for-each-ref-1.prompt" = "把所有本地分支的短名字（每行一个，不要其他内容）保存到 answer.txt。"
+"for-each-ref-1.hint1" = "使用 --format=%(refname:short) 和前缀 refs/heads。"
+"for-each-ref-1.check1.fail" = "answer.txt 必须恰好包含 git for-each-ref --format=%(refname:short) refs/heads 的输出。"
+"show-ref.title" = "带哈希的分支和标签：show-ref"
+"show-ref.theory" = """
+`git show-ref` 为每个引用输出 `哈希 引用名`。它也可以用来测试某个引用是否存在：
+
+  git show-ref --heads               分支
+  git show-ref --tags                标签
+  git show-ref --verify refs/heads/main   如果存在，退出码为 0"""
+"show-ref-1.prompt" = "把标签列表（连同它们的哈希）保存到 answer.txt。"
+"show-ref-1.hint1" = "show-ref 有一个 --tags 选项。"
+"show-ref-1.check1.fail" = "answer.txt 必须恰好包含 git show-ref --tags 的输出。"
+"check-ref-format.title" = "有效的名字：check-ref-format"
+"check-ref-format.theory" = """
+并非任何字符串都能当作分支或标签的名字：不能有空格，不能有 `..`，不能有 `~ ^ : ? * [ \\`，也不能以 `.lock` 或 `/` 结尾。`git check-ref-format` 用来测试一个名字；退出码 0 表示有效。
+
+  git check-ref-format refs/heads/feature/login     有效（退出码 0）
+  git check-ref-format refs/heads/feature..login    无效（退出码 1）
+  git check-ref-format --branch feature/login       验证分支名"""
+"check-ref-format-1.prompt" = "feature..login 是有效的分支名吗？用 git check-ref-format 测试（退出码会告诉你），然后把 yes 或 no 写进 answer.txt。"
+"check-ref-format-1.hint1" = "使用完整名字 refs/heads/feature..login。失败时会显示为 [exit code 1]。"
+"check-ref-format-1.check1.fail" = "请用 git check-ref-format 测试这个名字。"
+"check-ref-format-1.check2.fail" = "这个名字无效（.. 是被禁止的）：answer.txt 应该写 no。"
+"diff-files.title" = "工作区对比索引：diff-files"
+"diff-files.theory" = """
+三个底层的 diff 命令分别比较不同的两方：
+
+  git diff-files        工作区    对比  索引          （未暂存的改动）
+  git diff-index HEAD   索引/tree 对比  某个提交      （自 HEAD 以来的全部改动）
+  git diff-tree A B     tree      对比  tree          （两个提交之间）
+
+它们的原始输出对脚本来说很稳定。加上 --name-only 只列出路径。"""
+"diff-files-1.prompt" = "把工作区中已修改但尚未暂存的文件名保存到 answer.txt。"
+"diff-files-1.hint1" = "diff-files 比较的是工作区和索引。"
+"diff-files-1.check1.fail" = "answer.txt 必须恰好包含 git diff-files --name-only 的输出。"
+"diff-index.title" = "与某个提交比较：diff-index"
+"diff-index.theory" = """
+`git diff-index <commit>` 会把一个提交与索引和工作区进行比较。加上 --cached 则只比较该提交和索引（也就是你即将提交的内容）。
+
+  git diff-index --name-only HEAD          与 HEAD 不同的所有文件
+  git diff-index --cached --name-only HEAD 只显示已暂存的"""
+"diff-index-1.prompt" = "只把“已暂存”的文件名（HEAD 和索引之间有差异的）保存到 answer.txt。"
+"diff-index-1.hint1" = "加上 --cached，只比较索引。"
+"diff-index-1.check1.fail" = "answer.txt 必须恰好包含 git diff-index --cached --name-only HEAD 的输出。"
+"diff-tree.title" = "两个 tree 之间：diff-tree"
+"diff-tree.theory" = """
+`git diff-tree` 会比较两个 tree（通常是两个提交），而不碰工作文件夹。只给一个提交时，它会和这个提交的父提交比较。
+
+  git diff-tree --no-commit-id --name-only -r HEAD     最新提交改动的文件
+  git diff-tree -r A B                                  A 和 B 之间有差异的文件"""
+"diff-tree-1.prompt" = "把最新提交所改动的文件名保存到 answer.txt。"
+"diff-tree-1.hint1" = "组合使用 --no-commit-id、--name-only 和 -r。"
+"diff-tree-1.check1.fail" = "answer.txt 必须恰好包含 git diff-tree --no-commit-id --name-only -r HEAD 的输出。"
+"checkout-index.title" = "从索引到磁盘：checkout-index"
+"checkout-index.theory" = """
+`git checkout-index` 把文件从索引复制到工作文件夹。这是把被删除的文件恢复成已暂存版本的方法。
+
+  git checkout-index a.txt        恢复一个文件
+  git checkout-index -a           恢复所有缺失的文件
+  git checkout-index -a -f        连已存在的文件也一并覆盖"""
+"checkout-index-1.prompt" = "a.txt 已从文件夹中被删除，但仍在索引里。把它从索引中取回来。"
+"checkout-index-1.hint1" = "输入：git checkout-index a.txt"
+"checkout-index-1.check1.fail" = "a.txt 还没有回来。"
+"merge-file.title" = "合并三个文件：merge-file"
+"merge-file.theory" = """
+`git merge-file` 对普通文件做三方合并，不涉及任何仓库：你的版本、共同的基础版本和对方的版本。结果会写回到你的版本上。
+
+  git merge-file mine.txt base.txt theirs.txt
+
+如果双方改了相同的行，会插入冲突标记，退出码就是冲突的数量。"""
+"merge-file-1.prompt" = "把 theirs.txt 合并进 mine.txt，用 base.txt 作为共同祖先。两处改动（在不同的行）都必须出现在 mine.txt 里。"
+"merge-file-1.hint1" = "顺序是：你的文件、基础文件、对方的文件。"
+"merge-file-1.check1.fail" = "mine.txt 应该包含两处改动：\"1 mine\" 和 \"3 theirs\"。"
+"merge-tree.title" = "不动任何东西地合并：merge-tree"
+"merge-tree.theory" = """
+`git merge-tree --write-tree A B`（git 2.38+）完全在内存中完成两个提交的合并，并输出结果 tree 的哈希，不改动索引，也不改动工作文件夹。服务器可以用它来判断某个分支能否干净地合并。
+
+  git merge-tree --write-tree main feature     输出 tree（如果有冲突，会列出冲突并以 1 退出）"""
+"merge-tree-1.prompt" = "不真正合并，计算出把 feature 合并进 main 会得到的 tree，并把它的哈希保存到 answer.txt。"
+"merge-tree-1.hint1" = "对两个分支使用 --write-tree，并重定向到 answer.txt。"
+"merge-tree-1.check1.fail" = "answer.txt 必须包含合并后 tree 的哈希（含 base、feature 和 main 的文件）。"
+"merge-tree-1.check2.fail" = "不应该发生真正的合并。"
+"unpack-file.title" = "把 blob 变成临时文件：unpack-file"
+"unpack-file.theory" = """
+`git unpack-file <blob>` 会把 blob 的内容写入当前文件夹里的一个新临时文件（名为 .merge_file_XXXX），并输出它的名字。合并工具用它把冲突文件的三个版本交给你。
+
+  git unpack-file $(git rev-parse HEAD:a.txt)"""
+"unpack-file-1.prompt" = "把 HEAD 中 a.txt 的 blob 提取到一个临时文件，并把 git 输出的文件名保存到 answer.txt。"
+"unpack-file-1.hint1" = "用 git rev-parse HEAD:a.txt 取得 blob 的哈希，再传给 unpack-file。"
+"unpack-file-1.check1.fail" = "answer.txt 必须包含临时文件的名字（.merge_file_...）。"
+"var.title" = "git 自己的变量：var"
+"var.theory" = """
+`git var` 会输出 git 自己计算出来的值：它认为你是谁、会打开哪个编辑器。
+
+  git var GIT_AUTHOR_IDENT       名字 <邮箱> 时间戳 时区
+  git var GIT_COMMITTER_IDENT
+  git var GIT_EDITOR
+  git var -l                     全部"""
+"var-1.prompt" = "把 git 会用作你下一个提交的作者的身份保存到 answer.txt。"
+"var-1.hint1" = "变量是 GIT_AUTHOR_IDENT。"
+"var-1.check1.fail" = "answer.txt 必须恰好包含 git var GIT_AUTHOR_IDENT 的输出。"
+"mktag.title" = "创建 tag 对象：mktag"
+"mktag.theory" = """
+附注标签本身就是一个对象。`git mktag` 根据从标准输入读取的、格式严格的文本来构造它：
+
+  object <提交哈希>
+  type commit
+  tag v1
+  tagger Ann <ann@example.com> 1704110400 +0000
+  <空行>
+  说明
+
+它会输出这个 tag 对象的哈希；想要发布它，你还需要让某个引用指向它（git update-ref refs/tags/v1 <哈希>）。"""
+"mktag-1.prompt" = "用 git mktag 为最新提交创建一个名为 v1 的 tag 对象（tagger Ann <ann@example.com> 1704110400 +0000，说明为 \"First version\"），并把它的哈希保存到 answer.txt。"
+"mktag-1.hint1" = "用 git rev-parse HEAD 取得提交哈希。输入格式要求的各行、一个空行、说明，然后按 Ctrl+D。"
+"mktag-1.check1.fail" = "answer.txt 必须包含一个 tag 对象的哈希。"
+"mktag-1.check2.fail" = "这个 tag 对象必须叫 v1。"
+"update-index.title" = "编辑索引：update-index"
+"update-index.theory" = """
+`git update-index` 直接修改索引。`git add` 和 `git rm --cached` 是它更友好的版本。
+
+  git update-index --add a.txt           把一个新文件放进索引
+  git update-index --chmod=+x run.sh     在索引中把文件设为可执行
+  git update-index --assume-unchanged f  假装某个文件永远不变（小心）"""
+"update-index-1.prompt" = "用 update-index（而不是 git add）把 run.sh 作为可执行文件（模式 100755）放进索引。"
+"update-index-1.hint1" = "你需要 --add（新文件）和 --chmod=+x。"
+"update-index-1.check1.fail" = "run.sh 没有以 100755 模式进入索引。"
+"update-index-1.check2.fail" = "a.txt 应该保持未跟踪。"
+"checkout-worker.title" = "checkout--worker（内部命令）"
+"checkout-worker.theory" = """
+`git checkout--worker` 是并行检出所使用的辅助进程。当 git 一次要写入很多文件时（大型检出或克隆），它可以启动多个 worker，每个负责写入一部分文件，在高速磁盘上快得多。
+
+这个功能通过 checkout.workers 控制（0 = 使用所有核心，1 = 不并行）。你永远不需要自己运行这个辅助程序。"""
+"merge-index.title" = "merge-index"
+"merge-index.theory" = """
+`git merge-index` 会对索引里每个仍未合并的文件运行一个程序。它是合并机制与那些负责逐个解决文件的小程序之间的粘合剂；如今只有旧的合并策略还在用它。
+
+  git merge-index git-merge-one-file -a
+
+在实际工作中，你是通过编辑文件再 git add 来解决冲突的，而不是用这条命令。"""
+"merge-one-file.title" = "merge-one-file"
+"merge-one-file.theory" = """
+`git merge-one-file` 是 `git merge-index` 对每个未合并文件所调用的标准程序。它决定怎么做：如果只有一方新增了这个文件，就采用它；如果一方删除了它而另一方没改过，就删掉它；否则对内容做三方合并（必要时留下冲突标记）。
+
+它是 `resolve` 和 `octopus` 策略底层机制的一部分。"""
+"sh-i18n-envsubst.title" = "sh-i18n--envsubst（内部命令）"
+"sh-i18n-envsubst.theory" = """
+`git sh-i18n--envsubst` 是一个很小的内部程序，用来替换译文中的 `$变量`。git 的 shell 脚本（git-sh-i18n）用它以你的语言输出信息，并填入正确的值。
+
+你永远不会用到它，除非你在翻译 git 本身。"""
+"merge-ours.title" = "策略：ours"
+"merge-ours.theory" = """
+`ours` 会记录一次合并，但“完全”保留你这一边的内容，忽略其他分支的所有改动。当你不想要某个分支的内容、却想把它标记为已合并时很有用。
+
+  git merge -s ours old-branch
+
+不要把它和 -X ours 选项混淆：后者照常合并，只在有冲突的地方偏向你这一边。"""
+"merge-recursive.title" = "策略：recursive（以及 ort）"
+"merge-recursive.theory" = """
+`recursive` 曾是合并两个分支的默认策略：它找出共同祖先，如果有多个，就递归地合并它们来构造一个虚拟祖先。从 git 2.34 起，默认策略是更快的重写版本 `ort`，在几乎所有情况下结果都一样。
+
+  git merge -s recursive feature
+  git merge -s ort feature
+
+你很少会手动选择策略；更常用的是 -X ours / -X theirs 这两个选项。"""
+"merge-recursive-ours.title" = "带 -X ours 的 recursive"
+"merge-recursive-ours.theory" = """
+`merge-recursive-ours` 是 recursive 策略的变体：遇到冲突的片段时，自动偏向“你这一边”；另一个分支中没有冲突的改动仍然会被合并。
+
+  git merge -X ours feature
+
+合并会在不问你任何问题的情况下完成，所以请检查结果：你可能在不知不觉中丢掉了另一个分支的工作。"""
+"merge-recursive-theirs.title" = "带 -X theirs 的 recursive"
+"merge-recursive-theirs.theory" = """
+`merge-recursive-theirs` 是它的镜像：遇到冲突的片段时，偏向“另一个分支”。
+
+  git merge -X theirs feature
+
+当你确定传入的分支是对的（比如一个生成出来的文件）时很方便，但在代码很重要的时候，它永远不能代替你亲自阅读冲突。"""
+"merge-resolve.title" = "策略：resolve"
+"merge-resolve.theory" = """
+`resolve` 是较老的双头策略：一次简单的三方合并，只使用一个共同祖先，也不检测重命名。它更简单，在罕见的交叉合并情形下也更保守。
+
+  git merge -s resolve feature
+
+它为了兼容性而保留；如今 ort 已经涵盖了它的使用场景。"""
+"merge-octopus.title" = "策略：octopus"
+"merge-octopus.theory" = """
+`octopus` 会把“两个以上”的分支合并成一个有很多父提交的提交。当你给 git merge 传入多个分支时，它是默认策略；如果存在需要手动解决的冲突，它会拒绝开始。
+
+  git merge feature-a feature-b feature-c
+
+适合把互不相干、不改动相同行的多个主题分支合并在一起。"""

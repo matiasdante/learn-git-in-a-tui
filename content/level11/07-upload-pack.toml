@@ -1,17 +1,3 @@
 id = "upload-pack"
 level = 11
 order = 7
-
-[title]
-en = "git upload-pack"
-es = "git upload-pack"
-
-[theory]
-en = """
-`git upload-pack` is the SERVER half of fetch and clone. When you run `git fetch origin`, your git starts upload-pack on the other side (through SSH, a local path or the daemon). The two talk: the server announces its refs, the client says what it has and wants, and the server sends a pack.
-
-You do not run it yourself; it appears in process lists on servers."""
-es = """
-`git upload-pack` es la mitad SERVIDOR de fetch y clone. Cuando ejecutás `git fetch origin`, tu git inicia upload-pack del otro lado (por SSH, una ruta local o el daemon). Los dos conversan: el servidor anuncia sus referencias, el cliente dice qué tiene y qué quiere, y el servidor manda un pack.
-
-No lo ejecutás vos; aparece en las listas de procesos de los servidores."""

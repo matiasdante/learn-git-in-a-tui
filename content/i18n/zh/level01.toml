@@ -1,0 +1,184 @@
+"first-steps.title" = "第一步：版本与帮助"
+"first-steps.theory" = """
+同事说：“在我的机器上，git 和文档写的不一样”。先别急，问问他装的是哪个 git 版本：`git switch`、`git restore` 这类命令从 git 2.23 才有。
+
+  git --version        显示已安装的版本
+  git help -a          列出所有可用的子命令
+  git <命令> -h        某个子命令的简短用法（无需联网）
+  git help <命令>      完整的手册页（需要安装 man 页面）
+
+请使用下方的控制台。按 F1 获取提示，觉得做完了就按 F5。"""
+"version-1.prompt" = "查出这台机器上的 git 版本。"
+"version-1.hint1" = "版本由一个以两个短横线开头的选项显示。"
+"version-1.hint2" = "输入：git --version"
+"version-1.check1.fail" = "你还没有向 git 询问版本。请在控制台中运行 git --version。"
+"help-1.prompt" = "列出所有可用的 git 子命令。"
+"help-1.hint1" = "帮助命令有一个表示“全部”的选项。"
+"help-1.hint2" = "输入：git help -a"
+"help-1.check1.fail" = "运行 git help -a 来列出所有子命令。"
+"config.title" = "配置你的身份"
+"config.theory" = """
+每个提交都会记录是谁做的。如果你加入新项目，提交里显示的名字不对，历史记录就很难让人信任。用 `git config` 设置一次你的身份：
+
+  git config --global user.name "Ada Lovelace"
+  git config --global user.email ada@example.com
+  git config --get user.name        读取某个值
+
+`--global` 表示对你的用户生效。放心：这个练习沙盒有自己的配置，你真实的配置绝不会被改动。"""
+"config-1.prompt" = "把你的名字设为 \"Ada Lovelace\"，邮箱设为 ada@example.com。"
+"config-1.hint1" = "使用 git config，配置键为 user.name 和 user.email。"
+"config-1.hint2" = "名字里有空格，要加引号：git config --global user.name \"Ada Lovelace\""
+"config-1.check1.fail" = "user.name 还不是 \"Ada Lovelace\"。"
+"config-1.check2.fail" = "user.email 还不是 ada@example.com。"
+"init.title" = "创建仓库"
+"init.theory" = """
+你在一个空文件夹里开始一个小项目，想记录它的历史。`git init` 会创建一个隐藏的 `.git` 目录（git 把所有东西都存在这里），把当前文件夹变成仓库。
+
+  git init
+
+这里的第一个分支叫 `main`。（`git init-db` 是旧的同义命令，在老脚本里可能还会见到。）"""
+"init-1.prompt" = "把这个空文件夹变成 git 仓库。"
+"init-1.hint1" = "命令就是这个动作的名字：初始化。"
+"init-1.hint2" = "输入：git init"
+"init-1.check1.fail" = "这里还没有仓库。请运行 git init。"
+"init-1.check2.fail" = "仓库已存在，但它的分支不是 main。"
+"add.title" = "状态与暂存区"
+"add.theory" = """
+你修改了好几个文件，但只有一部分要放进下一次提交。git 有一个中间步骤——暂存区（index）：用 `git add` 选择要放进去的内容，用 `git status` 查看一切的状态。
+
+  git status            哪些文件未跟踪、已修改或已暂存
+  git add notes.txt     暂存一个文件
+  git add .             暂存这个文件夹里的所有内容
+
+`git stage` 是 `git add` 的别名：作用相同。"""
+"add-1.prompt" = "先看一下 git status，然后暂存 notes.txt。"
+"add-1.hint1" = "git status 会把 notes.txt 显示为未跟踪。"
+"add-1.hint2" = "输入：git add notes.txt"
+"add-1.check1.fail" = "notes.txt 还没有暂存。请使用 git add notes.txt。"
+"add-2.prompt" = "只暂存 a.txt。b.txt 必须保持未跟踪。"
+"add-2.hint1" = "写出你要的文件名，不要用点号。"
+"add-2.check1.fail" = "a.txt 还没有暂存。"
+"add-2.check2.fail" = "b.txt 本应保持未跟踪，但被暂存了。状态已恢复：请只暂存 a.txt。"
+"commit.title" = "保存快照：commit"
+"commit.theory" = """
+提交就是你所暂存内容的一张快照，附带一条说明原因的信息。好的提交信息能让未来的你（或评审者）不读 diff 也能看懂这次改动。
+
+  git commit -m "Add login page"     提交已暂存的内容
+  git commit -am "Fix typo"          暂存所有已跟踪文件的改动并提交
+
+`-a` 只会包含 git 已经跟踪的文件；新文件仍然需要 `git add`。"""
+"commit-1.prompt" = "用一条信息提交已暂存的文件。"
+"commit-1.hint1" = "用 -m 在同一行里写提交信息。"
+"commit-1.hint2" = "输入：git commit -m \"Add hello\""
+"commit-1.check1.fail" = "还没有任何提交。请运行 git commit -m \"你的信息\"。"
+"commit-1.check2.fail" = "hello.txt 仍有未处理的改动。"
+"commit-2.prompt" = "app.txt 被修改了。用一条命令完成暂存和提交。"
+"commit-2.hint1" = "有一个选项可以在提交时顺便暂存已跟踪的文件。"
+"commit-2.hint2" = "输入：git commit -am \"Update app\""
+"commit-2.check1.fail" = "这次改动还没有提交。"
+"commit-2.check2.fail" = "app.txt 仍有未处理的改动。"
+"log.title" = "查看历史：log"
+"log.theory" = """
+出现了一个 bug，你需要找到引入某个功能的那次提交。`git log` 按从新到旧列出提交。常用选项：
+
+  git log --oneline          每个提交一行
+  git log --graph --oneline  画出分支图
+  git log -3                 只看最近三个
+
+每个提交都有一个哈希值（它的身份）。通常用前 7 个字符就足以指代它。"""
+"log-1.prompt" = "找到提交 \"Add search bar\"，把它的短哈希（7 个字符）写进名为 answer.txt 的文件。"
+"log-1.hint1" = "git log --oneline 会在每条信息旁边显示短哈希。"
+"log-1.hint2" = "用这个写入：echo <哈希> > answer.txt"
+"log-1.check1.fail" = "answer.txt 不存在，或没有包含 \"Add search bar\" 的哈希（从上往下数第二个提交）。"
+"show.title" = "查看一次提交：show"
+"show.theory" = """
+同事问：“你上一次提交改了什么？”`git show` 会显示一次提交：它的信息和所做的改动。
+
+  git show                 最新一次提交
+  git show HEAD~1          再前一次
+  git show --stat          改了哪些文件，附带统计
+  git show --name-only     只显示文件名"""
+"show-1.prompt" = "最近一次提交修改了哪个文件？把文件名写进 answer.txt。"
+"show-1.hint1" = "不带参数的 git show 会显示最新一次提交。"
+"show-1.hint2" = "git show --name-only 只打印文件名。"
+"show-1.check1.fail" = "answer.txt 必须恰好包含最近一次提交所修改的文件名。"
+"diff.title" = "改了什么：diff"
+"diff.theory" = """
+提交之前，先检查自己的工作：`git diff` 显示尚未暂存的改动。以 `+` 开头的行是新增的，以 `-` 开头的行是删除的。
+
+  git diff             工作区 对比 暂存区
+  git diff --staged    暂存区 对比 最新提交
+  git diff HEAD~1      与更早的提交比较"""
+"diff-1.prompt" = "todo.txt 有尚未提交的改动。新增了多少行？把数字写进 answer.txt。"
+"diff-1.hint1" = "运行 git diff，数一数以 + 开头的行。"
+"diff-1.hint2" = "+++ 那一行是文件头，不要算进去。"
+"diff-1.check1.fail" = "answer.txt 只能包含新增行数这个数字。"
+"rm.title" = "删除文件：rm"
+"rm.theory" = """
+用普通的 `rm` 删除文件，会给 git 留下一个尚未暂存的删除操作要处理。`git rm` 则一步完成删除文件并暂存这次删除。
+
+  git rm old.txt             删除文件并暂存删除
+  git rm --cached secret.txt 不再跟踪它，但保留磁盘上的文件
+
+当你误提交了某个文件（本地配置、密码）并想让 git 忘掉它时，就用第二种写法。"""
+"rm-1.prompt" = "把 old.txt 从项目中移除，并暂存这次删除。"
+"rm-1.hint1" = "有一个 git 命令可以一次完成删除和暂存。"
+"rm-1.check1.fail" = "old.txt 的删除还没有暂存。请使用 git rm old.txt。"
+"rm-1.check2.fail" = "old.txt 仍然存在于磁盘上。"
+"rm-2.prompt" = "secret.txt 被误提交了。让 git 不再跟踪它，但保留磁盘上的文件。"
+"rm-2.hint1" = "找找 git rm 里只改动索引的那个选项。"
+"rm-2.hint2" = "输入：git rm --cached secret.txt"
+"rm-2.check1.fail" = "git 仍在跟踪 secret.txt。"
+"rm-2.check2.fail" = "文件被从磁盘上删除了。它本应保留；状态已恢复。"
+"mv.title" = "重命名文件：mv"
+"mv.theory" = """
+手动重命名文件，git 会看成“删除一个文件，再新增一个文件”。`git mv` 一步完成重命名并暂存，而且因为内容相同，git 能识别出这是一次重命名。
+
+  git mv draft.txt final.txt
+  git mv notes.txt docs/notes.txt     也可以在文件夹之间移动"""
+"mv-1.prompt" = "把 draft.txt 重命名为 final.txt，让 git 记录为一次重命名。"
+"mv-1.hint1" = "这个命令和 Unix 里的同名，前面加上 git。"
+"mv-1.check1.fail" = "final.txt 不是 draft.txt 已暂存的重命名。请使用 git mv draft.txt final.txt。"
+"mv-1.check2.fail" = "draft.txt 仍然存在。"
+"restore.title" = "撤销本地改动：restore"
+"restore.theory" = """
+你改坏了一个文件，或者暂存了不想放进提交的内容。`git restore` 能把它们恢复回去，而不动历史记录。
+
+  git restore file.txt            丢弃你的修改（小心：会丢失）
+  git restore --staged file.txt   取消暂存，但保留你的修改"""
+"restore-1.prompt" = "config.txt 被改坏了。丢弃这次修改，恢复到已提交的版本。"
+"restore-1.hint1" = "git status 本身就会提示这个命令。"
+"restore-1.check1.fail" = "config.txt 还没有恢复为已提交的内容（v1）。"
+"restore-1.check2.fail" = "config.txt 仍显示有改动。"
+"restore-2.prompt" = "f.txt 被误暂存了。取消暂存，但在文件里保留你的修改（v2）。"
+"restore-2.hint1" = "你需要那个作用于暂存区的选项。"
+"restore-2.hint2" = "输入：git restore --staged f.txt"
+"restore-2.check1.fail" = "f.txt 应该是已修改但未暂存的状态。"
+"restore-2.check2.fail" = "你的修改（v2）丢失了；状态已恢复。"
+"gitignore.title" = "忽略文件：.gitignore"
+"gitignore.theory" = """
+日志、构建目录和编辑器文件都不该进入历史记录。把匹配规则写进 `.gitignore` 文件，git 就会在 `git status` 中跳过它们。
+
+  *.log        所有以 .log 结尾的文件
+  build/       整个 build 文件夹
+
+想知道某个文件为什么被忽略（或没被忽略），用 `git check-ignore -v <路径>`。"""
+"gitignore-1.prompt" = "创建一个 .gitignore，让 app.log 和 build/ 文件夹被忽略，但 notes.txt 不被忽略。"
+"gitignore-1.hint1" = "用 echo '*.log' > .gitignore 创建文件，再用 >> 追加更多行。喜欢的话也可以用 edit 命令。"
+"gitignore-1.hint2" = "文件夹的规则以斜杠结尾：build/"
+"gitignore-1.check1.fail" = "app.log 还没有被忽略。请添加规则 *.log。"
+"gitignore-1.check2.fail" = "build/ 还没有被忽略。请添加规则 build/。"
+"gitignore-1.check3.fail" = "notes.txt 被忽略了，但它不应该被忽略。"
+"clean.title" = "清理未跟踪的文件：clean"
+"clean.theory" = """
+构建失败之后，你的文件夹里会堆满 git 不跟踪的临时文件。`git clean` 会把它们删掉。这个操作具有破坏性（无法撤销），所以 git 要求加 `-f`，并提供先试运行的选项。
+
+  git clean -n     显示将会删除什么
+  git clean -f     删除未跟踪的文件
+  git clean -fd    同时删除未跟踪的文件夹"""
+"clean-1.prompt" = "删除未跟踪的文件（tmp1.txt 和 tmp2.txt），不要动 a.txt。"
+"clean-1.hint1" = "先用试运行选项预览，再真正执行。"
+"clean-1.hint2" = "输入：git clean -f"
+"clean-1.check1.fail" = "tmp1.txt 仍然存在。git clean 需要加 -f 才会真正删除。"
+"clean-1.check2.fail" = "tmp2.txt 仍然存在。"
+"clean-1.check3.fail" = "a.txt（已跟踪）不能被删除。"

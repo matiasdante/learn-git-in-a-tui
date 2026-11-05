@@ -1,21 +1,3 @@
 id = "merge-recursive-ours"
 level = 9
 order = 32
-
-[title]
-en = "recursive with -X ours"
-es = "recursive con -X ours"
-
-[theory]
-en = """
-`merge-recursive-ours` is the variant of the recursive strategy that resolves conflicting hunks in favor of YOUR side automatically; non-conflicting changes of the other branch are still merged.
-
-  git merge -X ours feature
-
-The merge succeeds without asking you anything, so check the result: you may be silently discarding the other branch's work."""
-es = """
-`merge-recursive-ours` es la variante de la estrategia recursive que resuelve a favor de TU lado, automáticamente, los fragmentos en conflicto; los cambios sin conflicto de la otra rama se fusionan igual.
-
-  git merge -X ours feature
-
-La fusión termina sin preguntarte nada, así que revisá el resultado: podrías estar descartando en silencio el trabajo de la otra rama."""

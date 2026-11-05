@@ -2,26 +2,9 @@ id = "show-ref"
 level = 9
 order = 14
 
-[title]
-en = "Branches and tags with hashes: show-ref"
-es = "Ramas y tags con hashes: show-ref"
-
-[theory]
-en = """
-`git show-ref` prints `hash refname` for each ref. Also useful to test whether a ref exists:
-
-  git show-ref --heads               branches
-  git show-ref --tags                tags
-  git show-ref --verify refs/heads/main   exit code 0 if it exists"""
-es = """
-`git show-ref` imprime `hash nombre` de cada referencia. También sirve para probar si una referencia existe:
-
-  git show-ref --heads               ramas
-  git show-ref --tags                tags
-  git show-ref --verify refs/heads/main   código de salida 0 si existe"""
-
 [[exercise]]
 id = "show-ref-1"
+hints = 1
 solution = ["git show-ref --tags > answer.txt"]
 setup = [
   { do = "git", args = "init" },
@@ -31,10 +14,6 @@ setup = [
   { do = "git", args = "tag v1" },
   { do = "git", args = "branch dev" },
 ]
-prompt = { en = "Save the list of tags with their hashes into answer.txt.", es = "Guardá en answer.txt la lista de tags con sus hashes." }
-hints = [
-  { en = "show-ref has a --tags option.", es = "show-ref tiene una opción --tags." },
-]
 checks = [
-  { type = "file_equals_git", path = "answer.txt", args = "show-ref --tags", fail = { en = "answer.txt must contain exactly the output of git show-ref --tags.", es = "answer.txt debe contener exactamente la salida de git show-ref --tags." } },
+  { type = "file_equals_git", path = "answer.txt", args = "show-ref --tags" },
 ]

@@ -1,17 +1,3 @@
 id = "remote-ext"
 level = 11
 order = 14
-
-[title]
-en = "git remote-ext"
-es = "git remote-ext"
-
-[theory]
-en = """
-A "remote helper" is a program named git-remote-<scheme> that teaches git a new URL scheme. `remote-ext` handles URLs like `ext::ssh -p 2222 server git-upload-pack project.git`: git runs the command you give and talks to it over its input and output.
-
-Because it executes arbitrary commands it is DISABLED by default (protocol.ext.allow). Never enable it for URLs you do not control."""
-es = """
-Un "remote helper" es un programa llamado git-remote-<esquema> que le enseña a git un esquema de URL nuevo. `remote-ext` maneja URL como `ext::ssh -p 2222 servidor git-upload-pack proyecto.git`: git ejecuta el comando que le das y conversa con él por su entrada y salida.
-
-Como ejecuta comandos arbitrarios está DESACTIVADO por defecto (protocol.ext.allow). Nunca lo actives para URL que no controlás."""

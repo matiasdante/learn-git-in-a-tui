@@ -1,0 +1,197 @@
+"config-advanced.title" = "Configuração a fundo: config"
+"config-advanced.theory" = """
+O git lê a configuração em três níveis, e cada um sobrescreve o anterior:
+
+  --system   a máquina inteira        (não usado neste sandbox)
+  --global   seu usuário              (~/.gitconfig)
+  --local    só este repositório      (.git/config)
+
+  git config --local pull.rebase true    só este repositório
+  git config --get user.name             o valor efetivo
+  git config --list --show-origin        cada valor e o arquivo de onde vem
+  git config --unset user.signingkey     remove um valor
+  git config --global alias.st status    agora "git st" funciona"""
+"config-adv-1.prompt" = "Crie um atalho: faça o git st funcionar como o git status."
+"config-adv-1.hint1" = "Atalhos são aliases: a chave é alias.<nome>."
+"config-adv-1.hint2" = "Digite: git config --global alias.st status"
+"config-adv-1.check1.fail" = "O alias st ainda não está definido como status."
+"config-adv-2.prompt" = "Faça o git pull usar rebase por padrão, mas só NESTE repositório."
+"config-adv-2.hint1" = "O --local grava no .git/config do repositório atual."
+"config-adv-2.check1.fail" = "O pull.rebase não é true na configuração local."
+"config-adv-3.prompt" = "Uma chave de assinatura errada foi configurada para o seu usuário. Remova o user.signingkey por completo."
+"config-adv-3.hint1" = "O config tem uma opção --unset."
+"config-adv-3.check1.fail" = "O user.signingkey ainda tem um valor."
+"check-attr.title" = "Atributos de arquivos: check-attr"
+"check-attr.theory" = """
+Um arquivo `.gitattributes` diz ao git como tratar os arquivos por padrão: fim de linha, se o arquivo é binário, como compará-lo ou mesclá-lo.
+
+  *.sh   text eol=lf        sempre usar fim de linha LF
+  *.png  binary             nunca tentar comparar nem mesclar como texto
+
+O `git check-attr` responde "quais atributos se aplicam a este caminho?":
+
+  git check-attr eol notes.txt        notes.txt: eol: lf
+  git check-attr -a image.png         todos os atributos que se aplicam"""
+"check-attr-1.prompt" = "Qual configuração de fim de linha o .gitattributes dá ao notes.txt? Salve em answer.txt a saída do git check-attr para o atributo eol."
+"check-attr-1.hint1" = "Passe o nome do atributo e depois o arquivo."
+"check-attr-1.check1.fail" = "O answer.txt deve conter exatamente a saída de git check-attr eol notes.txt."
+"check-attr-2.prompt" = "Crie um .gitattributes para que todo arquivo .png seja tratado como binário."
+"check-attr-2.hint1" = "Uma linha basta: o padrão, um espaço e a palavra binary."
+"check-attr-2.hint2" = "Confira com git check-attr -a logo.png"
+"check-attr-2.check1.fail" = "O logo.png ainda não é tratado como binário."
+"check-mailmap.title" = "Uma pessoa, várias identidades: mailmap"
+"check-mailmap.theory" = """
+As pessoas mudam de e-mail e escrevem o nome de formas diferentes. Um arquivo `.mailmap` mapeia as identidades antigas para a canônica, assim o shortlog e o blame as agrupam.
+
+  Robert Smith <robert@example.com> <bob@old.example>
+  #  nome e e-mail canônicos          e-mail antigo
+
+O `git check-mailmap` mostra como o git resolve uma identidade:
+
+  git check-mailmap "Bob <bob@old.example>"    ->   Robert Smith <robert@example.com>"""
+"check-mailmap-1.prompt" = "Bob <bob@old.example> agora é Robert Smith <robert@example.com>. Crie o .mailmap que mapeia o endereço antigo para a identidade nova."
+"check-mailmap-1.hint1" = "Formato: Nome Canônico <canonico@email> <antigo@email>"
+"check-mailmap-1.hint2" = "Coloque a linha inteira entre aspas ao fazer o echo."
+"check-mailmap-1.check1.fail" = "O git ainda não resolve Bob <bob@old.example> como Robert Smith <robert@example.com>."
+"hook.title" = "Automatizando com hooks: hook"
+"hook.theory" = """
+Um hook é um script que o git executa em certo momento: antes de um commit, depois de um merge, antes de um push. Eles ficam em `.git/hooks/` e são scripts comuns com o nome do evento, sem extensão e executáveis.
+
+  .git/hooks/pre-commit      roda antes de cada commit; se sair com código diferente de zero, o commit é cancelado
+  .git/hooks/commit-msg      verifica a mensagem
+  .git/hooks/pre-push        última chance antes de enviar
+
+Uso típico: rodar o linter ou os testes para que um commit quebrado nunca aconteça. `git hook run pre-commit` executa um hook à mão, e `git hook list` (git mais novo) mostra os configurados. Os hooks não são copiados pelo clone: compartilhe-os por uma pasta versionada e core.hooksPath."""
+"hook-1.prompt" = "Crie um hook pre-commit que imprima \"No commits today\" e saia com código 1, deixe-o executável e tente fazer um commit para ver ele bloquear você."
+"hook-1.hint1" = "O arquivo é .git/hooks/pre-commit e a primeira linha dele é #!/bin/sh (coloque entre aspas, já que # começa um comentário)."
+"hook-1.hint2" = "Use echo ... > arquivo para a primeira linha, echo ... >> arquivo para o resto e chmod +x para torná-lo executável."
+"hook-1.check1.fail" = "O hook pre-commit não sai com código 1."
+"hook-1.check2.fail" = "O hook precisa de #!/bin/sh como primeira linha."
+"hook-1.check3.fail" = "Agora tente fazer um commit para ver o hook bloquear você."
+"hook-1.check4.fail" = "O commit foi feito: o hook não o bloqueou."
+"notes.title" = "Anotando sem reescrever: notes"
+"notes.theory" = """
+Um commit é imutável, mas às vezes você quer acrescentar informação depois (uma revisão, o número de um ticket, o resultado de testes). O `git notes` anexa texto a um commit SEM mudar o hash dele; as notas vivem em uma ref própria.
+
+  git notes add -m "Revisado por Ana" HEAD     anexa uma nota
+  git notes show HEAD                          lê a nota
+  git log                                      mostra as notas embaixo de cada commit
+  git notes remove HEAD                        apaga a nota"""
+"notes-1.prompt" = "Anexe a nota \"Reviewed by Ana\" ao último commit."
+"notes-1.hint1" = "O notes add usa -m para o texto e recebe o commit."
+"notes-1.hint2" = "Digite: git notes add -m \"Reviewed by Ana\" HEAD"
+"notes-1.check1.fail" = "O último commit não tem a nota \"Reviewed by Ana\"."
+"replace.title" = "Trocando um objeto por outro: replace"
+"replace.theory" = """
+O `git replace` faz o git enxergar um objeto diferente sempre que for ler o original. É um jeito de consertar o histórico localmente sem reescrever hashes: por exemplo, para "enxertar" um histórico antigo ou esconder um commit.
+
+  git replace <original> <substituto>
+  git replace -l                       lista os objetos substituídos
+  git replace -d <original>            remove a substituição
+
+Fica guardado em refs/replace/ e NÃO é compartilhado por padrão: use com cuidado, e principalmente como ferramenta temporária."""
+"replace-1.prompt" = "O commit \"Oops, bad commit\" (HEAD~1) não deveria ser visto. Faça o git ler no lugar dele o commit anterior (HEAD~2), sem reescrever o histórico."
+"replace-1.hint1" = "O replace recebe o objeto a substituir e depois o substituto."
+"replace-1.check1.fail" = "O HEAD~1 ainda não foi substituído."
+"replace-1.check2.fail" = "O git ainda lê o commit ruim: o oops.txt é visível no HEAD~1."
+"credential.title" = "Lembrando senhas: credential"
+"credential.theory" = """
+Quando o git fala com um servidor que pede senha, ele consulta um assistente de credenciais em vez de perguntar toda vez. O `git credential` é a engrenagem por trás disso, e você pode usá-lo diretamente:
+
+  git credential fill       pede uma senha ao assistente (você digita protocolo/host e ele responde)
+  git credential approve    diz ao assistente "essas credenciais funcionaram, guarde-as"
+  git credential reject     diz a ele "falharam, esqueça-as"
+
+A entrada são linhas chave=valor (protocol, host, username, password) terminadas com uma linha vazia ou Ctrl+D. NUNCA digite senhas reais nesta prática; use inventadas."""
+"credential-1.prompt" = "O assistente store está configurado. Salve as credenciais ana / s3cret para https://example.com com git credential approve (digite as quatro linhas e depois aperte Ctrl+D)."
+"credential-1.hint1" = "Linhas: protocol=https, host=example.com, username=ana, password=s3cret."
+"credential-1.hint2" = "Depois da quarta linha, aperte Ctrl+D para fechar a entrada."
+"credential-1.check1.fail" = "As credenciais não foram salvas. Você apertou Ctrl+D depois da última linha?"
+"credential-store.title" = "O assistente store: credential-store"
+"credential-store.theory" = """
+O `credential-store` é o assistente mais simples: guarda as senhas em texto puro em um arquivo (~/.git-credentials). Serve para uma máquina descartável e é perigoso em outras: prefira o chaveiro do seu sistema operacional.
+
+  git config --global credential.helper store            usa ~/.git-credentials
+  git config --global credential.helper "store --file=/lugar/seguro/creds"   outro arquivo
+
+Qualquer pessoa que consiga ler esse arquivo consegue ler suas senhas."""
+"credential-store-1.prompt" = "Configure o git (para o seu usuário) para lembrar senhas com o assistente store."
+"credential-store-1.hint1" = "A chave é credential.helper."
+"credential-store-1.check1.fail" = "O credential.helper ainda não é store."
+"verify-commit.title" = "Commits assinados: verify-commit"
+"verify-commit.theory" = """
+Qualquer pessoa pode digitar qualquer nome em um commit. Uma ASSINATURA prova quem realmente o fez. O git assina com GPG ou, desde a 2.34, com uma chave SSH que você já tem.
+
+  git config gpg.format ssh
+  git config user.signingkey ~/.ssh/id_ed25519
+  git config gpg.ssh.allowedSignersFile allowed_signers    em quem se confia
+  git commit -S -m "mensagem"        assina o commit
+  git verify-commit HEAD             verifica a assinatura
+  git log --show-signature           mostra a assinatura no log
+
+O sandbox já criou uma chave (key / key.pub) e o arquivo allowed_signers para você."""
+"verify-commit-1.prompt" = "O a.txt está preparado e o git está configurado para assinar com SSH. Faça um commit assinado e verifique a assinatura dele."
+"verify-commit-1.hint1" = "Acrescente -S ao git commit."
+"verify-commit-1.hint2" = "Depois execute git verify-commit HEAD."
+"verify-commit-1.check1.fail" = "O último commit não tem uma assinatura válida (%G? não é G)."
+"verify-commit-1.check2.fail" = "Verifique a assinatura com git verify-commit HEAD."
+"verify-tag.title" = "Tags assinadas: verify-tag"
+"verify-tag.theory" = """
+As versões são o mais importante para assinar: quem as usa quer saber que a v1.0 realmente vem de você. Uma tag assinada é uma tag anotada com uma assinatura.
+
+  git tag -s v1.0 -m "Release 1.0"    cria a tag assinada
+  git verify-tag v1.0                 verifica (código de saída 0 = válida)"""
+"verify-tag-1.prompt" = "Marque o commit atual com uma tag assinada v1.0 (mensagem \"Release 1.0\") e verifique-a."
+"verify-tag-1.hint1" = "O -s torna a tag assinada."
+"verify-tag-1.check1.fail" = "Não há uma tag anotada v1.0."
+"verify-tag-1.check2.fail" = "A tag v1.0 não tem uma assinatura válida."
+"verify-tag-1.check3.fail" = "Verifique a tag com git verify-tag v1.0."
+"bugreport.title" = "Reportando um bug: bugreport"
+"bugreport.theory" = """
+Quando você reporta um problema ao projeto git, eles precisam saber sua versão, plataforma e configurações. O `git bugreport` reúne isso em um arquivo de texto que você pode editar e anexar.
+
+  git bugreport                     cria git-bugreport-<data>.txt
+  git bugreport -s meubug           cria git-bugreport-meubug.txt
+  git bugreport -o pasta            grava em outro lugar"""
+"bugreport-1.prompt" = "Crie um arquivo de relatório de bug com o sufixo mybug (o git o abre no editor: salve com Ctrl+S)."
+"bugreport-1.hint1" = "A opção -s define o sufixo do nome do arquivo."
+"bugreport-1.check1.fail" = "O git-bugreport-mybug.txt ainda não existe."
+"bugreport-1.check2.fail" = "O relatório deveria incluir a versão do git."
+"diagnose.title" = "Reunindo diagnósticos: diagnose"
+"diagnose.theory" = """
+Para problemas de desempenho ou de corrupção, quem mantém o git pede mais do que um relatório de bug. O `git diagnose` (git 2.38+) empacota informações úteis do repositório (tamanhos, packfiles, configuração, refs) em um zip, SEM incluir o conteúdo dos seus arquivos.
+
+  git diagnose -s meucaso       cria git-diagnostics-meucaso.zip
+  git diagnose --mode=all       inclui também mais dados (cuidado: pode ter caminhos sensíveis)"""
+"diagnose-1.prompt" = "Reúna os diagnósticos deste repositório em um zip com o sufixo mycase."
+"diagnose-1.hint1" = "A opção -s define o sufixo do zip."
+"diagnose-1.check1.fail" = "O git-diagnostics-mycase.zip ainda não existe."
+"credential-cache.title" = "credential-cache (Linux e macOS)"
+"credential-cache.theory" = """
+O `credential-cache` guarda sua senha na memória por um tempo (15 minutos por padrão) e depois a esquece: mais seguro do que gravá-la no disco.
+
+  git config --global credential.helper 'cache --timeout=3600'
+
+Ele conversa com um pequeno programa em segundo plano por um socket Unix, então NÃO existe no Windows (lá use o Git Credential Manager). Por isso ele é explicado e não praticado."""
+"credential-cache-daemon.title" = "credential-cache--daemon (interno)"
+"credential-cache-daemon.theory" = """
+O `git credential-cache--daemon` é o processo em segundo plano por trás do `credential-cache`. Na primeira vez que o assistente precisa dele, o git o inicia sozinho; ele guarda as senhas na memória, escuta em um socket em ~/.cache/git/credential/ e termina sozinho quando o tempo acaba.
+
+Você nunca o inicia à mão. Para fazê-lo esquecer tudo agora: git credential-cache exit."""
+"fsmonitor-daemon.title" = "fsmonitor--daemon"
+"fsmonitor-daemon.theory" = """
+Em um repositório enorme o `git status` é lento porque o git precisa verificar cada arquivo. O `git fsmonitor--daemon` é um processo em segundo plano que observa o sistema de arquivos e avisa ao git quais arquivos mudaram, para o status olhar só esses.
+
+  git config core.fsmonitor true     liga (o git inicia o daemon)
+  git fsmonitor--daemon status       está rodando?
+  git fsmonitor--daemon stop
+
+Ele deixa um processo rodando e depende de serviços do sistema operacional, por isso esta prática só o explica."""
+"column.title" = "column (disposição da saída)"
+"column.theory" = """
+O `git column` organiza linhas de texto em colunas que cabem no seu terminal. O git usa o mesmo mecanismo em vários comandos, que você controla com as opções column.*:
+
+  git config column.ui auto     listas de branches e tags em colunas quando a saída é um terminal
+  git branch --column
+
+Como filtro independente ele lê a entrada padrão: algum-comando | git column --mode=column. Como esta prática não tem pipes, ele só é explicado."""

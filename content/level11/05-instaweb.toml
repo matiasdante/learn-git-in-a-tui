@@ -1,23 +1,3 @@
 id = "instaweb"
 level = 11
 order = 5
-
-[title]
-en = "git instaweb"
-es = "git instaweb"
-
-[theory]
-en = """
-`git instaweb` starts a local web server with gitweb, a web viewer for your repository (commits, diffs, branches), and opens your browser.
-
-  git instaweb --httpd=lighttpd
-  git instaweb --stop
-
-It needs a web server and Perl installed, and launches a process that stays running, so it is not run in this practice."""
-es = """
-`git instaweb` inicia un servidor web local con gitweb, un visor web de tu repositorio (commits, diffs, ramas), y abre tu navegador.
-
-  git instaweb --httpd=lighttpd
-  git instaweb --stop
-
-Necesita un servidor web y Perl instalados, y deja un proceso corriendo, por eso no se ejecuta en esta práctica."""
