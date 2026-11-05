@@ -1,0 +1,117 @@
+id = "rebase"
+level = 4
+order = 4
+
+[title]
+en = "Rewriting history: rebase"
+es = "Reescribir la historia: rebase"
+
+[theory]
+en = """
+`git rebase` replays your commits on top of another base. Two classic uses:
+
+1) Keep a feature branch up to date without merge commits:
+  git switch feature
+  git rebase main            your commits are replayed after the latest main
+
+2) Clean up before sharing, with the interactive mode:
+  git rebase -i HEAD~3       opens a list of the last 3 commits
+  pick   keep it    squash   merge it into the previous one    drop   delete it    reword   change its message
+
+Edit the list in the editor, save with Ctrl+S, and git does the rest. Never rebase commits that others already have."""
+es = """
+`git rebase` reaplica tus commits sobre otra base. Dos usos clásicos:
+
+1) Mantener una rama de funcionalidad al día sin commits de fusión:
+  git switch feature
+  git rebase main            tus commits se reaplican después del último main
+
+2) Limpiar antes de compartir, con el modo interactivo:
+  git rebase -i HEAD~3       abre una lista de los últimos 3 commits
+  pick   conservarlo    squash   unirlo al anterior    drop   borrarlo    reword   cambiar su mensaje
+
+Editá la lista en el editor, guardá con Ctrl+S y git hace el resto. Nunca rebases commits que otros ya tienen."""
+
+[[exercise]]
+id = "rebase-1"
+solution = ["git rebase main"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "base.txt", content = "base\n" },
+  { do = "git", args = "add base.txt" },
+  { do = "git", args = "commit -m \"Add base\"" },
+  { do = "git", args = "switch -c feature" },
+  { do = "write", path = "feature.txt", content = "f\n" },
+  { do = "git", args = "add feature.txt" },
+  { do = "git", args = "commit -m \"Add feature\"" },
+  { do = "git", args = "switch main" },
+  { do = "write", path = "main.txt", content = "m\n" },
+  { do = "git", args = "add main.txt" },
+  { do = "git", args = "commit -m \"Main work\"" },
+  { do = "git", args = "switch feature" },
+]
+prompt = { en = "You are on feature and main moved ahead. Replay your commit on top of the latest main, keeping the history linear.", es = "Estás en feature y main avanzó. Reaplicá tu commit sobre el último main, manteniendo la historia lineal." }
+hints = [
+  { en = "Run rebase from feature, naming the branch to rebase onto.", es = "Ejecutá rebase desde feature, nombrando la rama sobre la que rebasar." },
+  { en = "Type: git rebase main", es = "Escribí: git rebase main" },
+]
+checks = [
+  { type = "branch", name = "feature", fail = { en = "You should stay on feature.", es = "Tendrías que seguir en feature." } },
+  { type = "git_ok", args = "merge-base --is-ancestor main feature", fail = { en = "feature is not based on the latest main yet.", es = "feature todavía no está basada en el último main." } },
+  { type = "commit_count", count = 3, fail = { en = "History should be linear with 3 commits: base, main work and your feature.", es = "La historia debería ser lineal con 3 commits: base, trabajo de main y tu funcionalidad." } },
+  { type = "git_output", args = "rev-list --merges --count HEAD", equals = "0", fail = { en = "There is a merge commit; rebase should avoid it.", es = "Hay un commit de fusión; rebase debería evitarlo." } },
+]
+
+[[exercise]]
+id = "rebase-2"
+solution = [{ run = "git rebase -i HEAD~3", editor = [{ file = "git-rebase-todo", line_containing = "WIP part 2", from = "pick", to = "squash" }, { file = "git-rebase-todo", line_containing = "Finish feature", from = "pick", to = "squash" }] }]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "write", path = "b.txt", content = "b\n" },
+  { do = "git", args = "add b.txt" },
+  { do = "git", args = "commit -m \"WIP part 1\"" },
+  { do = "write", path = "c.txt", content = "c\n" },
+  { do = "git", args = "add c.txt" },
+  { do = "git", args = "commit -m \"WIP part 2\"" },
+  { do = "write", path = "d.txt", content = "d\n" },
+  { do = "git", args = "add d.txt" },
+  { do = "git", args = "commit -m \"Finish feature\"" },
+]
+prompt = { en = "The last three commits (WIP part 1, WIP part 2, Finish feature) are noise. Squash them into a single commit with an interactive rebase.", es = "Los últimos tres commits (WIP part 1, WIP part 2, Finish feature) son ruido. Aplastalos en un solo commit con un rebase interactivo." }
+hints = [
+  { en = "git rebase -i HEAD~3 shows the last three commits.", es = "git rebase -i HEAD~3 muestra los últimos tres commits." },
+  { en = "Keep the first as pick and change the other two from pick to squash. Save with Ctrl+S; a second editor asks for the final message.", es = "Dejá el primero como pick y cambiá los otros dos de pick a squash. Guardá con Ctrl+S; un segundo editor pide el mensaje final." },
+]
+checks = [
+  { type = "commit_count", count = 2, fail = { en = "History should have 2 commits: the base and the squashed one.", es = "La historia debería tener 2 commits: la base y el aplastado." } },
+  { type = "file_exists", path = "d.txt", fail = { en = "The squashed commit lost its changes (d.txt).", es = "El commit aplastado perdió sus cambios (d.txt)." } },
+]
+
+[[exercise]]
+id = "rebase-3"
+solution = [{ run = "git rebase -i HEAD~2", editor = [{ file = "git-rebase-todo", line_containing = "debug logging", from = "pick", to = "drop" }] }]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "write", path = "debug.txt", content = "print stuff\n" },
+  { do = "git", args = "add debug.txt" },
+  { do = "git", args = "commit -m \"Add debug logging\"" },
+  { do = "write", path = "b.txt", content = "b\n" },
+  { do = "git", args = "add b.txt" },
+  { do = "git", args = "commit -m \"Add b\"" },
+]
+prompt = { en = "The commit \"Add debug logging\" should never reach the team. Remove it from the history with an interactive rebase, keeping \"Add b\".", es = "El commit \"Add debug logging\" nunca debería llegar al equipo. Sacalo de la historia con un rebase interactivo, conservando \"Add b\"." }
+hints = [
+  { en = "In the list, replace pick by drop on that commit's line.", es = "En la lista, reemplazá pick por drop en la línea de ese commit." },
+  { en = "Start with: git rebase -i HEAD~2", es = "Empezá con: git rebase -i HEAD~2" },
+]
+checks = [
+  { type = "file_missing", path = "debug.txt", fail = { en = "debug.txt is still in the project: the commit was not dropped.", es = "debug.txt sigue en el proyecto: el commit no se eliminó." } },
+  { type = "commit_count", count = 2, fail = { en = "History should have 2 commits.", es = "La historia debería tener 2 commits." } },
+  { type = "file_exists", path = "b.txt", fail = { en = "b.txt must remain.", es = "b.txt tiene que quedar." } },
+]

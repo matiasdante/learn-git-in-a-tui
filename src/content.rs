@@ -121,6 +121,8 @@ pub enum SolutionStep {
 /// Qué hace la solución cuando git abre el editor sobre un archivo.
 #[derive(Debug, Deserialize)]
 pub struct EditRule {
+    /// Si está, la regla solo se aplica al archivo con este nombre (`git-rebase-todo`...).
+    pub file: Option<String>,
     /// Reemplaza todo el contenido del archivo.
     pub write: Option<String>,
     /// En las líneas que contienen este texto, cambia `from` por `to`.
@@ -130,7 +132,10 @@ pub struct EditRule {
 }
 
 impl EditRule {
-    pub fn apply(&self, content: &str) -> String {
+    pub fn apply(&self, file_name: &str, content: &str) -> String {
+        if self.file.as_ref().is_some_and(|f| f != file_name) {
+            return content.to_string();
+        }
         if let Some(text) = &self.write {
             return text.clone();
         }

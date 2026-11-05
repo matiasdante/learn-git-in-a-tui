@@ -1,0 +1,62 @@
+id = "amend"
+level = 4
+order = 3
+
+[title]
+en = "Fixing the last commit: amend"
+es = "Corregir el último commit: amend"
+
+[theory]
+en = """
+A typo in the message, or a file you forgot to add. Instead of stacking a "fix" commit, replace the last one:
+
+  git commit --amend -m "New message"   change the message
+  git commit --amend --no-edit          keep the message, add whatever is staged
+
+Amending creates a new commit with a new hash, so only amend commits you have not pushed."""
+es = """
+Un error de tipeo en el mensaje, o un archivo que te olvidaste de agregar. En vez de apilar un commit "arreglo", reemplazá el último:
+
+  git commit --amend -m "Mensaje nuevo"   cambia el mensaje
+  git commit --amend --no-edit            conserva el mensaje y suma lo que esté preparado
+
+Amend crea un commit nuevo con otro hash, así que solo corregí commits que no publicaste."""
+
+[[exercise]]
+id = "amend-1"
+solution = ["git commit --amend -m \"Add login page\""]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "login.txt", content = "x\n" },
+  { do = "git", args = "add login.txt" },
+  { do = "git", args = "commit -m \"Add logn page\"" },
+]
+prompt = { en = "The last commit message has a typo (\"logn\"). Change it to \"Add login page\" without creating another commit.", es = "El mensaje del último commit tiene un error (\"logn\"). Cambialo a \"Add login page\" sin crear otro commit." }
+hints = [
+  { en = "commit has an --amend option.", es = "commit tiene una opción --amend." },
+  { en = "Type: git commit --amend -m \"Add login page\"", es = "Escribí: git commit --amend -m \"Add login page\"" },
+]
+checks = [
+  { type = "git_output", args = "log -1 --format=%s", equals = "Add login page", fail = { en = "The message is not \"Add login page\" yet.", es = "El mensaje todavía no es \"Add login page\"." } },
+  { type = "commit_count", count = 1, fail = { en = "There should still be one commit: amend replaces it.", es = "Tendría que seguir habiendo un commit: amend lo reemplaza." } },
+]
+
+[[exercise]]
+id = "amend-2"
+solution = ["git commit --amend --no-edit"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "write", path = "b.txt", content = "b\n" },
+  { do = "git", args = "add b.txt" },
+]
+prompt = { en = "You forgot to include b.txt (already staged) in the last commit. Add it to that commit, keeping the message.", es = "Te olvidaste de incluir b.txt (ya preparado) en el último commit. Sumalo a ese commit conservando el mensaje." }
+hints = [
+  { en = "--no-edit keeps the message.", es = "--no-edit conserva el mensaje." },
+]
+checks = [
+  { type = "git_ok", args = "cat-file -e HEAD:b.txt", fail = { en = "b.txt is not part of the last commit yet.", es = "b.txt todavía no forma parte del último commit." } },
+  { type = "commit_count", count = 1, fail = { en = "There should still be one commit.", es = "Tendría que seguir habiendo un commit." } },
+]

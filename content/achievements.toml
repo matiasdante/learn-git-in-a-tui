@@ -75,3 +75,27 @@ id = "level-3-no-hints"
 title = { en = "Lone wolf", es = "Lobo solitario" }
 description = { en = "Finish level 3 without using a single hint.", es = "Terminá el nivel 3 sin usar ni una pista." }
 condition = { type = "level_no_hints", level = 3 }
+
+[[achievement]]
+id = "reflog-rescue"
+title = { en = "Reflog rescue", es = "Rescate con reflog" }
+description = { en = "Recover commits you thought were lost.", es = "Recuperá commits que creías perdidos." }
+condition = { type = "exercise_done", exercise = "reflog-1" }
+
+[[achievement]]
+id = "history-editor"
+title = { en = "History editor", es = "Editor de historia" }
+description = { en = "Squash commits with an interactive rebase.", es = "Aplastá commits con un rebase interactivo." }
+condition = { type = "exercise_done", exercise = "rebase-2" }
+
+[[achievement]]
+id = "level-4-done"
+title = { en = "Time traveler", es = "Viajero del tiempo" }
+description = { en = "Finish every exercise of level 4.", es = "Terminá todos los ejercicios del nivel 4." }
+condition = { type = "level_done", level = 4 }
+
+[[achievement]]
+id = "level-4-no-hints"
+title = { en = "No second thoughts", es = "Sin arrepentimientos" }
+description = { en = "Finish level 4 without using a single hint.", es = "Terminá el nivel 4 sin usar ni una pista." }
+condition = { type = "level_no_hints", level = 4 }

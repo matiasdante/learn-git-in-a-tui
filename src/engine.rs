@@ -174,8 +174,12 @@ pub fn run_step(console: &mut Console, step: &SolutionStep) -> Result<(Option<i3
             };
             let mut handler = |path: &Path| -> bool {
                 let mut content = std::fs::read_to_string(path).unwrap_or_default();
+                let name = path
+                    .file_name()
+                    .map(|n| n.to_string_lossy().into_owned())
+                    .unwrap_or_default();
                 for rule in editor {
-                    content = rule.apply(&content);
+                    content = rule.apply(&name, &content);
                 }
                 std::fs::write(path, content).is_ok()
             };

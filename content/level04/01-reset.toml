@@ -1,0 +1,98 @@
+id = "reset"
+level = 4
+order = 1
+
+[title]
+en = "Moving back: reset"
+es = "Volver atrás: reset"
+
+[theory]
+en = """
+You committed too early. `git reset` moves the current branch to another commit, and its mode decides what happens to your changes:
+
+  git reset --soft HEAD~1    branch goes back one commit; the changes stay STAGED
+  git reset HEAD~1           (mixed, the default) changes stay in your files but UNSTAGED
+  git reset --hard HEAD~1    branch goes back and the changes are DISCARDED
+
+Only use reset on commits you have not pushed: it rewrites history. --hard destroys work (though git reflog can often rescue it)."""
+es = """
+Commiteaste demasiado pronto. `git reset` mueve la rama actual a otro commit, y su modo decide qué pasa con tus cambios:
+
+  git reset --soft HEAD~1    la rama retrocede un commit; los cambios quedan PREPARADOS
+  git reset HEAD~1           (mixed, el modo por defecto) los cambios quedan en tus archivos pero SIN PREPARAR
+  git reset --hard HEAD~1    la rama retrocede y los cambios se DESCARTAN
+
+Usá reset solo en commits que no publicaste: reescribe la historia. --hard destruye trabajo (aunque git reflog muchas veces lo rescata)."""
+
+[[exercise]]
+id = "reset-1"
+solution = ["git reset --soft HEAD~1"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "write", path = "b.txt", content = "b\n" },
+  { do = "git", args = "add b.txt" },
+  { do = "git", args = "commit -m \"Add b\"" },
+  { do = "write", path = "c.txt", content = "c\n" },
+  { do = "git", args = "add c.txt" },
+  { do = "git", args = "commit -m \"Add c\"" },
+]
+prompt = { en = "The last commit (Add c) was premature. Undo it but keep its changes staged, ready to commit again.", es = "El último commit (Add c) fue prematuro. Deshacelo pero dejá sus cambios preparados, listos para commitear de nuevo." }
+hints = [
+  { en = "Choose the reset mode that keeps the index.", es = "Elegí el modo de reset que conserva el índice." },
+  { en = "Type: git reset --soft HEAD~1", es = "Escribí: git reset --soft HEAD~1" },
+]
+checks = [
+  { type = "commit_count", count = 2, fail = { en = "The last commit is still there.", es = "El último commit sigue ahí." } },
+  { type = "status", path = "c.txt", xy = "A.", fail = { en = "c.txt should be staged after the reset.", es = "c.txt debería quedar preparado después del reset." } },
+]
+
+[[exercise]]
+id = "reset-2"
+solution = ["git reset HEAD~1"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "write", path = "b.txt", content = "b\n" },
+  { do = "git", args = "add b.txt" },
+  { do = "git", args = "commit -m \"Add b\"" },
+  { do = "write", path = "c.txt", content = "c\n" },
+  { do = "git", args = "add c.txt" },
+  { do = "git", args = "commit -m \"Add c\"" },
+]
+prompt = { en = "Undo the last commit and unstage its changes, but keep the file c.txt on disk.", es = "Deshacé el último commit y sacá sus cambios de lo preparado, pero conservá el archivo c.txt en disco." }
+hints = [
+  { en = "The default reset mode is the one you need.", es = "El modo por defecto de reset es el que necesitás." },
+]
+checks = [
+  { type = "commit_count", count = 2, fail = { en = "The last commit is still there.", es = "El último commit sigue ahí." } },
+  { type = "status", path = "c.txt", xy = "??", fail = { en = "c.txt should exist but be untracked.", es = "c.txt debería existir pero sin seguimiento." } },
+]
+
+[[exercise]]
+id = "reset-3"
+solution = ["git reset --hard HEAD~1"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "write", path = "b.txt", content = "b\n" },
+  { do = "git", args = "add b.txt" },
+  { do = "git", args = "commit -m \"Add b\"" },
+  { do = "write", path = "c.txt", content = "c\n" },
+  { do = "git", args = "add c.txt" },
+  { do = "git", args = "commit -m \"Add c\"" },
+]
+prompt = { en = "Throw away the last commit and everything it changed.", es = "Tirá el último commit y todo lo que cambió." }
+hints = [
+  { en = "This is the destructive mode.", es = "Este es el modo destructivo." },
+]
+checks = [
+  { type = "commit_count", count = 2, fail = { en = "The last commit is still there.", es = "El último commit sigue ahí." } },
+  { type = "file_missing", path = "c.txt", fail = { en = "c.txt is still in the folder. --hard removes it.", es = "c.txt sigue en la carpeta. --hard lo elimina." } },
+]

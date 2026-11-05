@@ -1,0 +1,48 @@
+id = "range-diff"
+level = 4
+order = 7
+
+[title]
+en = "Comparing versions of a branch: range-diff"
+es = "Comparar versiones de una rama: range-diff"
+
+[theory]
+en = """
+You rebased or amended a branch and the reviewer asks "what changed since the previous version?". Comparing the final trees is noisy. `git range-diff` pairs up the commits of the old and the new version and shows only what changed between each pair.
+
+  git range-diff main v1 v2
+
+`=` the commit is the same, `!` it changed, `<` it only exists in the old version, `>` only in the new one."""
+es = """
+Rebaseaste o corregiste una rama y quien revisa pregunta "¿qué cambió desde la versión anterior?". Comparar los árboles finales es ruidoso. `git range-diff` empareja los commits de la versión vieja y de la nueva y muestra solo lo que cambió entre cada par.
+
+  git range-diff main v1 v2
+
+`=` el commit es el mismo, `!` cambió, `<` solo existe en la versión vieja, `>` solo en la nueva."""
+
+[[exercise]]
+id = "range-diff-1"
+solution = ["git range-diff main v1 v2 > answer.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "base.txt", content = "base\n" },
+  { do = "git", args = "add base.txt" },
+  { do = "git", args = "commit -m \"Add base\"" },
+  { do = "git", args = "switch -c v1" },
+  { do = "write", path = "x1.txt", content = "1\n" },
+  { do = "git", args = "add x1.txt" },
+  { do = "git", args = "commit -m \"Add x1\"" },
+  { do = "write", path = "x2.txt", content = "2\n" },
+  { do = "git", args = "add x2.txt" },
+  { do = "git", args = "commit -m \"Add x2\"" },
+  { do = "git", args = "switch -c v2" },
+  { do = "git", args = "commit --amend -m \"Add x2 reworded\"" },
+  { do = "git", args = "switch main" },
+]
+prompt = { en = "v2 is a reworked version of the branch v1 (both start at main). Save the output of git range-diff main v1 v2 into answer.txt.", es = "v2 es una versión retocada de la rama v1 (las dos parten de main). Guardá la salida de git range-diff main v1 v2 en answer.txt." }
+hints = [
+  { en = "range-diff takes the base and the two branches.", es = "range-diff recibe la base y las dos ramas." },
+]
+checks = [
+  { type = "file_equals_git", path = "answer.txt", args = "range-diff main v1 v2", fail = { en = "answer.txt must contain exactly the output of git range-diff main v1 v2.", es = "answer.txt tiene que contener exactamente la salida de git range-diff main v1 v2." } },
+]
