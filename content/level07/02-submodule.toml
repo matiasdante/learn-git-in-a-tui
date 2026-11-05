@@ -1,0 +1,76 @@
+id = "submodule"
+level = 7
+order = 2
+
+[title]
+en = "Repositories inside repositories: submodule"
+es = "Repositorios dentro de repositorios: submodule"
+
+[theory]
+en = """
+Your app depends on a library that lives in its own repository. A submodule embeds it at a fixed commit: your repository records "libs/lib = commit abc123" instead of copying the files.
+
+  git submodule add <url> libs/lib     embed it (creates .gitmodules)
+  git submodule update --init          after cloning: fetch the submodules' content
+  git clone --recurse-submodules <url> clone and fill them in one step
+
+The superproject only stores the commit of the submodule; to move to a newer one you commit inside the submodule and then commit the new pointer in the project."""
+es = """
+Tu app depende de una librería que vive en su propio repositorio. Un submódulo la incrusta en un commit fijo: tu repositorio registra "libs/lib = commit abc123" en vez de copiar los archivos.
+
+  git submodule add <url> libs/lib     la incrusta (crea .gitmodules)
+  git submodule update --init          después de clonar: trae el contenido de los submódulos
+  git clone --recurse-submodules <url> clona y los llena en un paso
+
+El superproyecto solo guarda el commit del submódulo; para pasar a uno más nuevo commiteás dentro del submódulo y después commiteás el nuevo puntero en el proyecto."""
+
+[[exercise]]
+id = "submodule-1"
+cwd = "project"
+solution = ["git submodule add ../lib libs/lib"]
+setup = [
+  { do = "git", args = "init lib" },
+  { do = "write", path = "lib/lib.txt", content = "lib v1\n" },
+  { do = "git", args = "add lib.txt", dir = "lib" },
+  { do = "git", args = "commit -m \"Library v1\"", dir = "lib" },
+  { do = "git", args = "init project" },
+  { do = "write", path = "project/app.txt", content = "app\n" },
+  { do = "git", args = "add app.txt", dir = "project" },
+  { do = "git", args = "commit -m \"Add app\"", dir = "project" },
+]
+prompt = { en = "Embed the repository ../lib as a submodule at libs/lib.", es = "Incrustá el repositorio ../lib como submódulo en libs/lib." }
+hints = [
+  { en = "submodule add takes the URL (here a path) and where to put it.", es = "submodule add recibe la URL (acá una ruta) y dónde ponerlo." },
+  { en = "Type: git submodule add ../lib libs/lib", es = "Escribí: git submodule add ../lib libs/lib" },
+]
+checks = [
+  { type = "file_exists", path = ".gitmodules", fail = { en = ".gitmodules does not exist yet.", es = ".gitmodules todavía no existe." } },
+  { type = "git_output", args = "ls-files --stage libs/lib", contains = "160000", fail = { en = "libs/lib is not registered as a submodule (mode 160000).", es = "libs/lib no está registrado como submódulo (modo 160000)." } },
+  { type = "file_exists", path = "libs/lib/lib.txt", fail = { en = "The content of the library is missing.", es = "Falta el contenido de la librería." } },
+]
+
+[[exercise]]
+id = "submodule-2"
+cwd = "app"
+solution = ["git submodule update --init"]
+setup = [
+  { do = "git", args = "init lib" },
+  { do = "write", path = "lib/lib.txt", content = "lib v1\n" },
+  { do = "git", args = "add lib.txt", dir = "lib" },
+  { do = "git", args = "commit -m \"Library v1\"", dir = "lib" },
+  { do = "git", args = "init project" },
+  { do = "write", path = "project/app.txt", content = "app\n" },
+  { do = "git", args = "add app.txt", dir = "project" },
+  { do = "git", args = "commit -m \"Add app\"", dir = "project" },
+  { do = "git", args = "submodule add ../lib libs/lib", dir = "project" },
+  { do = "git", args = "commit -m \"Add lib submodule\"", dir = "project" },
+  { do = "git", args = "clone project app" },
+]
+prompt = { en = "You cloned the project into app, but libs/lib is empty. Fetch the content of the submodule.", es = "Clonaste el proyecto en app, pero libs/lib está vacío. Traé el contenido del submódulo." }
+hints = [
+  { en = "A submodule must be initialized after a normal clone.", es = "Un submódulo hay que inicializarlo después de un clon normal." },
+  { en = "Type: git submodule update --init", es = "Escribí: git submodule update --init" },
+]
+checks = [
+  { type = "file_exists", path = "libs/lib/lib.txt", fail = { en = "libs/lib is still empty.", es = "libs/lib sigue vacío." } },
+]

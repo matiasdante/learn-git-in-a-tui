@@ -129,3 +129,15 @@ id = "level-6-no-hints"
 title = { en = "Sent without a note", es = "Enviado sin nota" }
 description = { en = "Finish level 6 without using a single hint.", es = "Terminá el nivel 6 sin usar ni una pista." }
 condition = { type = "level_no_hints", level = 6 }
+
+[[achievement]]
+id = "level-7-done"
+title = { en = "Monorepo wrangler", es = "Domador de monorepos" }
+description = { en = "Finish every exercise of level 7.", es = "Terminá todos los ejercicios del nivel 7." }
+condition = { type = "level_done", level = 7 }
+
+[[achievement]]
+id = "level-7-no-hints"
+title = { en = "Nested and unassisted", es = "Anidado y sin ayuda" }
+description = { en = "Finish level 7 without using a single hint.", es = "Terminá el nivel 7 sin usar ni una pista." }
+condition = { type = "level_no_hints", level = 7 }

@@ -1,0 +1,41 @@
+id = "archive"
+level = 7
+order = 5
+
+[title]
+en = "Packaging a release: archive"
+es = "Empaquetar una versión: archive"
+
+[theory]
+en = """
+To ship a version you want a clean file with the tracked files only: no .git, no build junk, no untracked notes. `git archive` makes a tar or zip of any commit or tag.
+
+  git archive -o release.tar HEAD            tarball of the current commit
+  git archive -o v1.zip v1.0                 zip of a tag (the format comes from the extension)
+  git archive --prefix=app-1.0/ -o app.tar HEAD   everything inside a top folder"""
+es = """
+Para entregar una versión querés un archivo limpio solo con los archivos seguidos: sin .git, sin basura de build, sin notas sin seguimiento. `git archive` arma un tar o zip de cualquier commit o tag.
+
+  git archive -o release.tar HEAD            tarball del commit actual
+  git archive -o v1.zip v1.0                 zip de un tag (el formato sale de la extensión)
+  git archive --prefix=app-1.0/ -o app.tar HEAD   todo dentro de una carpeta superior"""
+
+[[exercise]]
+id = "archive-1"
+solution = ["git archive -o release.tar HEAD"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "app.txt", content = "app\n" },
+  { do = "git", args = "add app.txt" },
+  { do = "git", args = "commit -m \"Add app\"" },
+  { do = "write", path = "notes.txt", content = "private notes\n" },
+]
+prompt = { en = "Create release.tar with the contents of the current commit.", es = "Creá release.tar con el contenido del commit actual." }
+hints = [
+  { en = "archive takes -o for the output file and the commit to pack.", es = "archive usa -o para el archivo de salida y el commit a empaquetar." },
+  { en = "Type: git archive -o release.tar HEAD", es = "Escribí: git archive -o release.tar HEAD" },
+]
+checks = [
+  { type = "file_exists", path = "release.tar", fail = { en = "release.tar does not exist yet.", es = "release.tar todavía no existe." } },
+  { type = "ran", any = ["git archive"], fail = { en = "Create the file with git archive.", es = "Creá el archivo con git archive." } },
+]

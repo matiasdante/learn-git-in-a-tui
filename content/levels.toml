@@ -21,3 +21,7 @@ title = { en = "Investigating history", es = "Investigar la historia" }
 [[level]]
 id = 6
 title = { en = "Patches and the e-mail workflow", es = "Parches y flujo por mail" }
+
+[[level]]
+id = 7
+title = { en = "Large and multiple repositories", es = "Repos grandes y múltiples" }
