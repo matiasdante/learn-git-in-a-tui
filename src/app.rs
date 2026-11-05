@@ -5,7 +5,10 @@ use std::sync::mpsc::{self, Receiver, Sender};
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
 use crate::console::{Console, Event, Outcome, Running};
+use crate::content::Content;
 use crate::editor::{EditorAction, EditorState, IpcServer};
+use crate::engine::{self, Verdict};
+use crate::i18n::{Lang, Text, tr};
 use crate::sandbox::Sandbox;
 
 const MAX_LINES: usize = 5000;
@@ -55,7 +58,38 @@ impl Output {
     }
 }
 
+pub enum Screen {
+    Menu,
+    Theory { lesson: usize, scroll: u16 },
+    Exercise(ExerciseState),
+    Free,
+}
+
+pub struct ExerciseState {
+    pub lesson: usize,
+    pub index: usize,
+    pub hints_shown: usize,
+    pub status: ExStatus,
+}
+
+pub enum ExStatus {
+    Doing,
+    Failed(Text),
+    Passed,
+}
+
+/// Una fila seleccionable del menú principal.
+#[derive(Clone, Copy)]
+pub enum MenuItem {
+    Lesson(usize),
+    Free,
+}
+
 pub struct App {
+    pub content: Content,
+    pub lang: Lang,
+    pub screen: Screen,
+    pub menu_selected: usize,
     pub console: Console,
     ipc: IpcServer,
     pub output: Output,
@@ -74,17 +108,16 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(sandbox: Sandbox) -> Self {
+    pub fn new(sandbox: Sandbox, content: Content) -> Self {
         let (tx, rx) = mpsc::channel();
-        let mut output = Output::new();
-        output.push_line("Free mode: a real git sandbox. Your own git config is never touched.");
-        output.push_line(
-            "Commands: git, ls, cat, cd, pwd, mkdir, touch, rm, echo > / >>, edit, clear",
-        );
         Self {
+            content,
+            lang: Lang::default(),
+            screen: Screen::Menu,
+            menu_selected: 0,
             ipc: IpcServer::new(sandbox.ipc_dir()),
             console: Console::new(sandbox),
-            output,
+            output: Output::new(),
             input: String::new(),
             cursor: 0,
             history: Vec::new(),
@@ -144,11 +177,150 @@ impl App {
         }
     }
 
+    pub fn menu_items(&self) -> Vec<MenuItem> {
+        let mut items: Vec<MenuItem> = (0..self.content.lessons.len())
+            .map(MenuItem::Lesson)
+            .collect();
+        items.push(MenuItem::Free);
+        items
+    }
+
     pub fn on_key(&mut self, key: KeyEvent) {
         if self.editor.is_some() {
             self.on_editor_key(key);
             return;
         }
+        match self.screen {
+            Screen::Menu => self.on_menu_key(key),
+            Screen::Theory { .. } => self.on_theory_key(key),
+            Screen::Exercise(_) | Screen::Free => self.on_console_key(key),
+        }
+    }
+
+    fn on_menu_key(&mut self, key: KeyEvent) {
+        let items = self.menu_items();
+        let ctrl = key.modifiers.contains(KeyModifiers::CONTROL);
+        match key.code {
+            KeyCode::Char('q') | KeyCode::Esc => self.quit = true,
+            KeyCode::Char('c') if ctrl => self.quit = true,
+            KeyCode::Char('l') => self.lang = self.lang.toggle(),
+            KeyCode::Up => self.menu_selected = self.menu_selected.saturating_sub(1),
+            KeyCode::Down => self.menu_selected = (self.menu_selected + 1).min(items.len() - 1),
+            KeyCode::Enter => match items[self.menu_selected] {
+                MenuItem::Lesson(lesson) => self.screen = Screen::Theory { lesson, scroll: 0 },
+                MenuItem::Free => self.enter_free_mode(),
+            },
+            _ => {}
+        }
+    }
+
+    fn on_theory_key(&mut self, key: KeyEvent) {
+        let Screen::Theory { lesson, scroll } = &mut self.screen else {
+            return;
+        };
+        let lesson = *lesson;
+        match key.code {
+            KeyCode::Esc | KeyCode::Char('q') => self.screen = Screen::Menu,
+            KeyCode::Char('l') => self.lang = self.lang.toggle(),
+            KeyCode::Up => *scroll = scroll.saturating_sub(1),
+            KeyCode::Down => *scroll += 1,
+            KeyCode::PageUp => *scroll = scroll.saturating_sub(10),
+            KeyCode::PageDown => *scroll += 10,
+            KeyCode::Enter if !self.content.lessons[lesson].exercises.is_empty() => {
+                self.start_exercise(lesson, 0);
+            }
+            _ => {}
+        }
+    }
+
+    fn enter_free_mode(&mut self) {
+        self.screen = Screen::Free;
+        self.reset();
+    }
+
+    fn leave_console(&mut self) {
+        if let Some(running) = self.running.take() {
+            running.kill();
+        }
+        self.clear_input();
+        self.confirm_reset = false;
+        self.screen = Screen::Menu;
+    }
+
+    fn start_exercise(&mut self, lesson: usize, index: usize) {
+        if let Some(running) = self.running.take() {
+            running.kill();
+        }
+        self.clear_input();
+        self.scroll = 0;
+        self.output.clear();
+        let exercise = &self.content.lessons[lesson].exercises[index];
+        match engine::start(&mut self.console, exercise) {
+            Ok(()) => self.output.push_line(tr(
+                self.lang,
+                "Sandbox ready. Work in the console, then press F5 to check.",
+                "Sandbox listo. Trabajá en la consola y apretá F5 para verificar.",
+            )),
+            Err(e) => self.output.push_line(&format!("error: {e:#}")),
+        }
+        self.screen = Screen::Exercise(ExerciseState {
+            lesson,
+            index,
+            hints_shown: 0,
+            status: ExStatus::Doing,
+        });
+    }
+
+    fn verify_exercise(&mut self) {
+        let Screen::Exercise(state) = &mut self.screen else {
+            return;
+        };
+        if self.running.is_some() {
+            return;
+        }
+        let exercise = &self.content.lessons[state.lesson].exercises[state.index];
+        match engine::verify(&mut self.console, exercise) {
+            Ok(Verdict::Pass) => {
+                state.status = ExStatus::Passed;
+                self.output.push_line(tr(
+                    self.lang,
+                    "✓ Correct! Press F6 to continue.",
+                    "✓ ¡Correcto! Apretá F6 para continuar.",
+                ));
+            }
+            Ok(Verdict::Fail(why)) => {
+                self.output.push_line(&format!(
+                    "✗ {} {}",
+                    why.get(self.lang),
+                    tr(
+                        self.lang,
+                        "(sandbox restored to the start of the exercise)",
+                        "(el sandbox volvió al inicio del ejercicio)"
+                    )
+                ));
+                state.status = ExStatus::Failed(why);
+            }
+            Err(e) => self.output.push_line(&format!("error: {e:#}")),
+        }
+        self.scroll = 0;
+    }
+
+    fn next_exercise(&mut self) {
+        let Screen::Exercise(state) = &self.screen else {
+            return;
+        };
+        if !matches!(state.status, ExStatus::Passed) {
+            return;
+        }
+        let (lesson, next) = (state.lesson, state.index + 1);
+        if next < self.content.lessons[lesson].exercises.len() {
+            self.start_exercise(lesson, next);
+        } else {
+            self.leave_console();
+        }
+    }
+
+    fn on_console_key(&mut self, key: KeyEvent) {
         if self.confirm_reset {
             self.confirm_reset = false;
             if key.code == KeyCode::Char('y') {
@@ -168,7 +340,21 @@ impl App {
                     running.close_stdin();
                 }
             }
-            KeyCode::Char('r') if ctrl => self.confirm_reset = true,
+            KeyCode::Char('r') if ctrl => match &self.screen {
+                Screen::Exercise(state) => self.start_exercise(state.lesson, state.index),
+                _ => self.confirm_reset = true,
+            },
+            KeyCode::Esc => self.leave_console(),
+            KeyCode::F(1) => {
+                if let Screen::Exercise(state) = &mut self.screen {
+                    let total = self.content.lessons[state.lesson].exercises[state.index]
+                        .hints
+                        .len();
+                    state.hints_shown = (state.hints_shown + 1).min(total);
+                }
+            }
+            KeyCode::F(5) => self.verify_exercise(),
+            KeyCode::F(6) => self.next_exercise(),
             KeyCode::Char(c) if !ctrl && !key.modifiers.contains(KeyModifiers::ALT) => {
                 self.insert(c)
             }
@@ -217,8 +403,13 @@ impl App {
         match self.console.reset() {
             Ok(()) => {
                 self.output.clear();
+                self.output.push_line(tr(
+                    self.lang,
+                    "Free mode: a real git sandbox. Your own git config is never touched.",
+                    "Modo libre: un sandbox de git real. Tu configuración de git nunca se toca.",
+                ));
                 self.output
-                    .push_line("Sandbox reset: empty repo and default git config.");
+                    .push_line("git, ls, cat, cd, pwd, mkdir, touch, rm, echo > / >>, edit, clear");
             }
             Err(e) => self.output.push_line(&format!("error: {e:#}")),
         }

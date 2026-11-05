@@ -1,0 +1,61 @@
+id = "commit"
+level = 1
+order = 5
+
+[title]
+en = "Saving a snapshot: commit"
+es = "Guardar una foto: commit"
+
+[theory]
+en = """
+A commit is a snapshot of what you staged, with a message that explains why. A good message lets your future self (or a reviewer) understand the change without reading the diff.
+
+  git commit -m "Add login page"     commit what is staged
+  git commit -am "Fix typo"          stage every already-tracked change and commit
+
+`-a` only picks up files git already tracks; new files still need `git add`."""
+es = """
+Un commit es una foto de lo que preparaste, con un mensaje que explica el porqué. Un buen mensaje permite que vos mismo en el futuro (o quien revise) entienda el cambio sin leer el diff.
+
+  git commit -m "Agrego login"       commitea lo preparado
+  git commit -am "Corrijo typo"      prepara todo lo ya seguido y commitea
+
+`-a` solo toma archivos que git ya sigue; los archivos nuevos todavía necesitan `git add`."""
+
+[[exercise]]
+id = "commit-1"
+solution = ["git commit -m \"Add hello\""]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "hello.txt", content = "hello\n" },
+  { do = "git", args = "add hello.txt" },
+]
+prompt = { en = "Commit the staged file with a message.", es = "Commiteá el archivo preparado con un mensaje." }
+hints = [
+  { en = "Use -m to give the message on the same line.", es = "Usá -m para dar el mensaje en la misma línea." },
+  { en = "Type: git commit -m \"Add hello\"", es = "Escribí: git commit -m \"Add hello\"" },
+]
+checks = [
+  { type = "commit_count", count = 1, fail = { en = "There is no commit yet. Run git commit -m \"your message\".", es = "Todavía no hay ningún commit. Ejecutá git commit -m \"tu mensaje\"." } },
+  { type = "status", path = "hello.txt", xy = "..", fail = { en = "hello.txt still has pending changes.", es = "hello.txt todavía tiene cambios pendientes." } },
+]
+
+[[exercise]]
+id = "commit-2"
+solution = ["git commit -am \"Update app\""]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "app.txt", content = "v1\n" },
+  { do = "git", args = "add app.txt" },
+  { do = "git", args = "commit -m \"Add app\"" },
+  { do = "write", path = "app.txt", content = "v2\n" },
+]
+prompt = { en = "app.txt was modified. Stage and commit that change in a single command.", es = "app.txt fue modificado. Prepará y commiteá ese cambio con un solo comando." }
+hints = [
+  { en = "There is a flag that stages tracked files while committing.", es = "Hay una opción que prepara los archivos seguidos mientras commitea." },
+  { en = "Type: git commit -am \"Update app\"", es = "Escribí: git commit -am \"Update app\"" },
+]
+checks = [
+  { type = "commit_count", count = 2, fail = { en = "The change is not committed yet.", es = "El cambio todavía no está commiteado." } },
+  { type = "status", path = "app.txt", xy = "..", fail = { en = "app.txt still has pending changes.", es = "app.txt todavía tiene cambios pendientes." } },
+]

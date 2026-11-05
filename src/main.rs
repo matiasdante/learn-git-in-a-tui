@@ -5,6 +5,7 @@ use std::time::Duration;
 
 use anyhow::{Result, bail};
 use learn_git_tui::app::App;
+use learn_git_tui::content::Content;
 use learn_git_tui::editor;
 use learn_git_tui::sandbox::Sandbox;
 use learn_git_tui::ui;
@@ -40,7 +41,7 @@ fn run_tui() -> Result<()> {
         bail!("git was not found in PATH. Install git (2.34 or newer) and try again.");
     }
     let sandbox = Sandbox::new(Sandbox::default_root()?, env::current_exe()?)?;
-    let mut app = App::new(sandbox);
+    let mut app = App::new(sandbox, Content::load()?);
     let mut terminal = ratatui::init();
     let result = event_loop(&mut terminal, &mut app);
     app.shutdown();
