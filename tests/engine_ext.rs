@@ -31,6 +31,11 @@ fn chmod_makes_a_hook_runnable() {
     h.run("echo #!/bin/sh > .git/hooks/pre-commit");
     h.run("echo echo hook-ran >> .git/hooks/pre-commit");
     h.run("chmod +x .git/hooks/pre-commit");
+    eprintln!("DEBUG hook content: {:?}", h.run("cat .git/hooks/pre-commit"));
+    eprintln!("DEBUG ls hooks: {:?}", h.run("ls -a .git/hooks"));
+    eprintln!("DEBUG PATH: {:?}", std::env::var_os("PATH"));
+    eprintln!("DEBUG exec-path: {:?}", std::process::Command::new("git").arg("--exec-path").output().map(|o| String::from_utf8_lossy(&o.stdout).into_owned()));
+    eprintln!("DEBUG git version: {:?}", h.run("git --version"));
     // Los hooks que dispara git (acá, commit) corren con sh también en Windows.
     assert!(
         h.run("git commit --allow-empty -m first")
