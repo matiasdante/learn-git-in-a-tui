@@ -1,0 +1,46 @@
+id = "patch-id"
+level = 6
+order = 4
+
+[title]
+en = "Same change, different commit: patch-id"
+es = "El mismo cambio, otro commit: patch-id"
+
+[theory]
+en = """
+After a cherry-pick or a rebase the same change lives in commits with different hashes. `git patch-id` computes a fingerprint of the CHANGE itself (ignoring line numbers and whitespace), so equal patches give equal ids.
+
+  git show <commit> | git patch-id      (here: git show X > p.txt; git patch-id < p.txt)
+
+git cherry and git rebase use this idea to skip commits that are already applied."""
+es = """
+Después de un cherry-pick o un rebase, el mismo cambio vive en commits con hashes distintos. `git patch-id` calcula una huella del CAMBIO en sí (ignorando números de línea y espacios), así parches iguales dan ids iguales.
+
+  git show <commit> | git patch-id      (acá: git show X > p.txt; git patch-id < p.txt)
+
+git cherry y git rebase usan esta idea para saltear commits que ya están aplicados."""
+
+[[exercise]]
+id = "patch-id-1"
+solution = ["git show main > p1.txt", "git show feature > p2.txt", "git patch-id < p1.txt", "git patch-id < p2.txt", "echo same > answer.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "base.txt", content = "base\n" },
+  { do = "git", args = "add base.txt" },
+  { do = "git", args = "commit -m \"Add base\"" },
+  { do = "git", args = "switch -c feature" },
+  { do = "write", path = "f.txt", content = "f\n" },
+  { do = "git", args = "add f.txt" },
+  { do = "git", args = "commit -m \"Add f\"" },
+  { do = "git", args = "switch main" },
+  { do = "git", args = "cherry-pick feature" },
+]
+prompt = { en = "The commit \"Add f\" exists on main and on feature with different hashes. Save git show of each in a file, compute their patch ids, and write same or different into answer.txt.", es = "El commit \"Add f\" existe en main y en feature con hashes distintos. Guardá git show de cada uno en un archivo, calculá sus patch id y escribí same o different en answer.txt." }
+hints = [
+  { en = "git patch-id reads a patch from its standard input: use < file.", es = "git patch-id lee un parche de su entrada estándar: usá < archivo." },
+  { en = "Compare the first column of both outputs.", es = "Compará la primera columna de las dos salidas." },
+]
+checks = [
+  { type = "ran", any = ["patch-id"], fail = { en = "Use git patch-id to compare the two changes.", es = "Usá git patch-id para comparar los dos cambios." } },
+  { type = "file_content", path = "answer.txt", equals = "same", fail = { en = "answer.txt must say same: both commits carry the same patch.", es = "answer.txt debe decir same: los dos commits tienen el mismo parche." } },
+]
