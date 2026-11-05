@@ -1,0 +1,17 @@
+id = "http-push"
+level = 11
+order = 4
+
+[title]
+en = "git http-push"
+es = "git http-push"
+
+[theory]
+en = """
+`git http-push` pushes over WebDAV to a dumb HTTP server. It is rarely used today and was removed in recent git versions: smart HTTP (git http-backend) replaced it.
+
+You may meet it in old documentation. If a tutorial tells you to use it, prefer pushing over SSH or smart HTTP."""
+es = """
+`git http-push` hace push por WebDAV a un servidor HTTP tonto. Hoy casi no se usa y se quitó de las versiones recientes de git: el HTTP inteligente (git http-backend) lo reemplazó.
+
+Podés encontrarlo en documentación vieja. Si un tutorial te dice que lo uses, preferí hacer push por SSH o HTTP inteligente."""

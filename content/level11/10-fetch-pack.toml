@@ -1,0 +1,21 @@
+id = "fetch-pack"
+level = 11
+order = 10
+
+[title]
+en = "git fetch-pack"
+es = "git fetch-pack"
+
+[theory]
+en = """
+`git fetch-pack` is the CLIENT half of fetch: it talks to an `upload-pack`, negotiates which commits you already have and receives the pack. `git fetch` and `git clone` use it internally.
+
+  git fetch-pack ../server.git main
+
+It only downloads objects and prints the hashes; it does not update branches. For daily work use git fetch."""
+es = """
+`git fetch-pack` es la mitad CLIENTE de fetch: conversa con un `upload-pack`, negocia qué commits ya tenés y recibe el pack. `git fetch` y `git clone` lo usan por dentro.
+
+  git fetch-pack ../server.git main
+
+Solo descarga objetos e imprime los hashes; no actualiza ramas. Para el trabajo diario usá git fetch."""

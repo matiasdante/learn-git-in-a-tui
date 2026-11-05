@@ -83,3 +83,19 @@ fn exam_has_two_questions_for_each_of_levels_1_to_5() {
     }
     assert_eq!(content.exam.len(), 10);
 }
+
+#[test]
+fn the_course_covers_the_eleven_levels_of_the_plan() {
+    let content = Content::load().unwrap();
+    assert_eq!(content.levels.len(), 11);
+    for level in 1..=11u8 {
+        assert!(
+            content.lessons.iter().any(|l| l.level == level),
+            "level {level} has no lessons"
+        );
+    }
+    assert!(
+        content.lessons.len() > 100,
+        "the plan promises 100+ lessons"
+    );
+}

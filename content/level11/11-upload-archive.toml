@@ -1,0 +1,21 @@
+id = "upload-archive"
+level = 11
+order = 11
+
+[title]
+en = "git upload-archive"
+es = "git upload-archive"
+
+[theory]
+en = """
+`git upload-archive` is the server side of `git archive --remote=<url>`: it lets you download a tarball of a commit without cloning the whole repository.
+
+  git archive --remote=git@server:project.git HEAD -o snapshot.tar
+
+Many hosting services disable it; if you control the server you enable it with uploadarchive.allowUnreachable and by allowing the command."""
+es = """
+`git upload-archive` es el lado servidor de `git archive --remote=<url>`: permite descargar un tarball de un commit sin clonar todo el repositorio.
+
+  git archive --remote=git@servidor:proyecto.git HEAD -o foto.tar
+
+Muchos servicios de alojamiento lo desactivan; si controlás el servidor lo habilitás con uploadarchive.allowUnreachable y permitiendo el comando."""
