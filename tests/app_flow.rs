@@ -113,7 +113,7 @@ fn perfect_exam_places_at_the_highest_available_level_and_a_mistake_places_lower
         d.press(KeyCode::Enter); // resultado
         assert!(matches!(d.app.screen, Screen::Map));
         let expected = match mistake_at {
-            None => content.max_level(), // 6 pedido, recortado al contenido disponible
+            None => 6.min(content.max_level()), // todo bien arranca en el 6, recortado al contenido disponible
             Some(i) => content.exam[i].level,
         };
         assert_eq!(d.app.progress.placement, Some(expected));
