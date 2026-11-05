@@ -1,0 +1,59 @@
+id = "restore"
+level = 1
+order = 11
+
+[title]
+en = "Undoing local changes: restore"
+es = "Deshacer cambios locales: restore"
+
+[theory]
+en = """
+You edited a file and broke it. Or you staged something you did not want in the commit. `git restore` brings things back without touching history.
+
+  git restore file.txt            discard your edits (careful: they are lost)
+  git restore --staged file.txt   unstage, keeping your edits"""
+es = """
+Editaste un archivo y lo rompiste. O preparaste algo que no querías en el commit. `git restore` devuelve las cosas atrás sin tocar la historia.
+
+  git restore archivo.txt            descarta tus ediciones (ojo: se pierden)
+  git restore --staged archivo.txt   saca de lo preparado, conservando tus ediciones"""
+
+[[exercise]]
+id = "restore-1"
+solution = ["git restore config.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "config.txt", content = "v1\n" },
+  { do = "git", args = "add ." },
+  { do = "git", args = "commit -m \"Add config\"" },
+  { do = "write", path = "config.txt", content = "v2 broken\n" },
+]
+prompt = { en = "config.txt was edited and broken. Discard the edit and get the committed version back.", es = "config.txt se editó y se rompió. Descartá la edición y recuperá la versión commiteada." }
+hints = [
+  { en = "git status itself suggests the command.", es = "El propio git status sugiere el comando." },
+]
+checks = [
+  { type = "file_content", path = "config.txt", equals = "v1", fail = { en = "config.txt does not have the committed content (v1) yet.", es = "config.txt todavía no tiene el contenido commiteado (v1)." } },
+  { type = "status", path = "config.txt", xy = "..", fail = { en = "config.txt still shows changes.", es = "config.txt todavía muestra cambios." } },
+]
+
+[[exercise]]
+id = "restore-2"
+solution = ["git restore --staged f.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "f.txt", content = "v1\n" },
+  { do = "git", args = "add ." },
+  { do = "git", args = "commit -m \"Add f\"" },
+  { do = "write", path = "f.txt", content = "v2\n" },
+  { do = "git", args = "add f.txt" },
+]
+prompt = { en = "f.txt was staged by mistake. Unstage it but keep your edit (v2) in the file.", es = "f.txt se preparó por error. Sacalo de lo preparado pero conservá tu edición (v2) en el archivo." }
+hints = [
+  { en = "You need the option that targets the staging area.", es = "Necesitás la opción que apunta al área de preparación." },
+  { en = "Type: git restore --staged f.txt", es = "Escribí: git restore --staged f.txt" },
+]
+checks = [
+  { type = "status", path = "f.txt", xy = ".M", fail = { en = "f.txt should be modified but not staged.", es = "f.txt debería estar modificado pero no preparado." } },
+  { type = "file_content", path = "f.txt", equals = "v2", fail = { en = "Your edit (v2) was lost; the state was restored.", es = "Se perdió tu edición (v2); se restauró el estado." } },
+]

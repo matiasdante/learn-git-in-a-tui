@@ -1,0 +1,44 @@
+id = "show"
+level = 1
+order = 7
+
+[title]
+en = "Inspecting one commit: show"
+es = "Inspeccionar un commit: show"
+
+[theory]
+en = """
+A colleague asks "what did your last commit change?". `git show` displays one commit: its message and the changes it made.
+
+  git show                 the latest commit
+  git show HEAD~1          the one before
+  git show --stat          which files, with a summary
+  git show --name-only     just the file names"""
+es = """
+Un colega pregunta "¿qué cambió tu último commit?". `git show` muestra un commit: su mensaje y los cambios que hizo.
+
+  git show                 el último commit
+  git show HEAD~1          el anterior
+  git show --stat          qué archivos, con un resumen
+  git show --name-only     solo los nombres de archivo"""
+
+[[exercise]]
+id = "show-1"
+solution = ["git show --name-only", "echo style.css > answer.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "index.html", content = "<h1>Hi</h1>\n" },
+  { do = "write", path = "style.css", content = "h1 { color: red; }\n" },
+  { do = "git", args = "add ." },
+  { do = "git", args = "commit -m \"Add site\"" },
+  { do = "write", path = "style.css", content = "h1 { color: blue; }\n" },
+  { do = "git", args = "commit -am \"Change color\"" },
+]
+prompt = { en = "Which file did the latest commit change? Write its name into answer.txt.", es = "¿Qué archivo cambió el último commit? Escribí su nombre en answer.txt." }
+hints = [
+  { en = "git show without arguments shows the latest commit.", es = "git show sin argumentos muestra el último commit." },
+  { en = "git show --name-only prints just the file names.", es = "git show --name-only imprime solo los nombres de archivo." },
+]
+checks = [
+  { type = "file_content", path = "answer.txt", equals = "style.css", fail = { en = "answer.txt should contain exactly the file name changed by the latest commit.", es = "answer.txt debería contener exactamente el nombre del archivo que cambió el último commit." } },
+]

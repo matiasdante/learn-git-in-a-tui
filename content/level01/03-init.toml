@@ -1,0 +1,34 @@
+id = "init"
+level = 1
+order = 3
+
+[title]
+en = "Creating a repository"
+es = "Crear un repositorio"
+
+[theory]
+en = """
+You start a small side project in an empty folder and want to track its history. `git init` turns the current folder into a repository by creating a hidden `.git` directory where git keeps everything.
+
+  git init
+
+The first branch is called `main` here. (`git init-db` is an old synonym you may still see in old scripts.)"""
+es = """
+Empezás un proyecto chico en una carpeta vacía y querés seguir su historia. `git init` convierte la carpeta actual en un repositorio creando un directorio oculto `.git` donde git guarda todo.
+
+  git init
+
+La primera rama se llama `main` acá. (`git init-db` es un sinónimo viejo que todavía vas a ver en scripts antiguos.)"""
+
+[[exercise]]
+id = "init-1"
+solution = ["git init"]
+prompt = { en = "Turn the empty folder into a git repository.", es = "Convertí la carpeta vacía en un repositorio git." }
+hints = [
+  { en = "The command is the name of the action: initialize.", es = "El comando es el nombre de la acción: inicializar." },
+  { en = "Type: git init", es = "Escribí: git init" },
+]
+checks = [
+  { type = "repo_exists", fail = { en = "There is no repository here yet. Run git init.", es = "Todavía no hay un repositorio acá. Ejecutá git init." } },
+  { type = "branch", name = "main", fail = { en = "The repository exists but its branch is not main.", es = "El repositorio existe pero su rama no es main." } },
+]

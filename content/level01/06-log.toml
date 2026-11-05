@@ -1,0 +1,49 @@
+id = "log"
+level = 1
+order = 6
+
+[title]
+en = "Reading the history: log"
+es = "Leer la historia: log"
+
+[theory]
+en = """
+A bug appeared and you need to find the commit that introduced a feature. `git log` lists commits from newest to oldest. Handy options:
+
+  git log --oneline          one line per commit
+  git log --graph --oneline  draw the branches
+  git log -3                 only the last three
+
+Every commit has a hash (its identity). The first 7 characters are usually enough to refer to it."""
+es = """
+Apareció un bug y necesitás encontrar el commit que introdujo una funcionalidad. `git log` lista los commits del más nuevo al más viejo. Opciones útiles:
+
+  git log --oneline          una línea por commit
+  git log --graph --oneline  dibuja las ramas
+  git log -3                 solo los últimos tres
+
+Cada commit tiene un hash (su identidad). Los primeros 7 caracteres suelen alcanzar para nombrarlo."""
+
+[[exercise]]
+id = "log-1"
+solution = ["git log --oneline", "echo {{rev-parse --short HEAD~1}} > answer.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add login page\"" },
+  { do = "write", path = "b.txt", content = "b\n" },
+  { do = "git", args = "add b.txt" },
+  { do = "git", args = "commit -m \"Add search bar\"" },
+  { do = "write", path = "c.txt", content = "c\n" },
+  { do = "git", args = "add c.txt" },
+  { do = "git", args = "commit -m \"Fix typo in footer\"" },
+]
+prompt = { en = "Find the commit \"Add search bar\" and write its short hash (7 characters) into a file called answer.txt.", es = "Encontrá el commit \"Add search bar\" y escribí su hash corto (7 caracteres) en un archivo llamado answer.txt." }
+hints = [
+  { en = "git log --oneline shows the short hash next to each message.", es = "git log --oneline muestra el hash corto junto a cada mensaje." },
+  { en = "Write it with: echo <hash> > answer.txt", es = "Escribilo con: echo <hash> > answer.txt" },
+]
+checks = [
+  { type = "file_matches_rev", path = "answer.txt", rev = "HEAD~1", fail = { en = "answer.txt is missing or does not contain the hash of \"Add search bar\" (the second commit from the top).", es = "answer.txt no existe o no tiene el hash de \"Add search bar\" (el segundo commit desde arriba)." } },
+]

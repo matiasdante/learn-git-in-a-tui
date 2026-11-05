@@ -1,0 +1,43 @@
+id = "gitignore"
+level = 1
+order = 12
+
+[title]
+en = "Ignoring files: .gitignore"
+es = "Ignorar archivos: .gitignore"
+
+[theory]
+en = """
+Logs, build folders and editor files should not be in the history. List patterns in a `.gitignore` file and git will skip them in `git status`.
+
+  *.log        every file ending in .log
+  build/       the whole build folder
+
+To ask why a file is ignored (or not), use `git check-ignore -v <path>`."""
+es = """
+Los logs, las carpetas de build y los archivos del editor no deberían estar en la historia. Listá patrones en un archivo `.gitignore` y git los saltea en `git status`.
+
+  *.log        todos los archivos que terminan en .log
+  build/       toda la carpeta build
+
+Para preguntar por qué un archivo se ignora (o no), usá `git check-ignore -v <ruta>`."""
+
+[[exercise]]
+id = "gitignore-1"
+solution = ["echo *.log > .gitignore", "echo build/ >> .gitignore"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "app.log", content = "noise\n" },
+  { do = "write", path = "notes.txt", content = "real work\n" },
+  { do = "write", path = "build/out.bin", content = "binary\n" },
+]
+prompt = { en = "Create a .gitignore so that app.log and the build/ folder are ignored, but notes.txt is not.", es = "Creá un .gitignore para que app.log y la carpeta build/ se ignoren, pero notes.txt no." }
+hints = [
+  { en = "Create the file with echo '*.log' > .gitignore and add more lines with >>. Use the edit command if you prefer.", es = "Creá el archivo con echo '*.log' > .gitignore y agregá líneas con >>. Usá el comando edit si preferís." },
+  { en = "The folder pattern ends with a slash: build/", es = "El patrón de carpeta termina con una barra: build/" },
+]
+checks = [
+  { type = "ignored", path = "app.log", fail = { en = "app.log is not ignored yet. Add the pattern *.log.", es = "app.log todavía no se ignora. Agregá el patrón *.log." } },
+  { type = "ignored", path = "build/out.bin", fail = { en = "build/ is not ignored yet. Add the pattern build/.", es = "build/ todavía no se ignora. Agregá el patrón build/." } },
+  { type = "not_ignored", path = "notes.txt", fail = { en = "notes.txt is being ignored but it should not be.", es = "notes.txt se está ignorando pero no debería." } },
+]
