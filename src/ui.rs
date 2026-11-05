@@ -314,26 +314,60 @@ fn draw_achievements(frame: &mut Frame, app: &App) {
     draw_help(frame, help, tr(app.lang, "Esc: back", "Esc: volver"));
 }
 
-fn draw_theory(frame: &mut Frame, app: &App, lesson: usize, scroll: u16) {
-    let lesson = &app.content.lessons[lesson];
+fn draw_theory(frame: &mut Frame, app: &App, lesson_index: usize, scroll: u16) {
+    let lesson = &app.content.lessons[lesson_index];
     let [body, help] =
         Layout::vertical([Constraint::Min(3), Constraint::Length(1)]).areas(frame.area());
     let block = Block::bordered().title(format!(" {} ", lesson.title.get(app.lang)));
+    let mut lines: Vec<Line> = lesson
+        .theory
+        .get(app.lang)
+        .lines()
+        .map(|l| Line::raw(l.to_string()))
+        .collect();
+    let missing = &app.unavailable[lesson_index];
+    if !missing.is_empty() {
+        lines.push(Line::raw(""));
+        lines.push(Line::styled(
+            format!(
+                "{} {}",
+                tr(
+                    app.lang,
+                    "Explanation only: this machine is missing",
+                    "Solo explicación: a esta máquina le falta"
+                ),
+                missing.join(", ")
+            ),
+            Style::new().add_modifier(Modifier::BOLD),
+        ));
+    } else if lesson.exercises.is_empty() {
+        lines.push(Line::raw(""));
+        lines.push(Line::styled(
+            tr(
+                app.lang,
+                "This topic is explained without an exercise.",
+                "Este tema se explica sin ejercicio.",
+            ),
+            dim(),
+        ));
+    }
     frame.render_widget(
-        Paragraph::new(lesson.theory.get(app.lang).to_string())
+        Paragraph::new(lines)
             .block(block)
             .wrap(Wrap { trim: false })
             .scroll((scroll, 0)),
         body,
     );
+    let can_practice = !lesson.exercises.is_empty() && missing.is_empty();
     draw_help(
         frame,
         help,
-        tr(
-            app.lang,
-            "↑/↓ scroll · Enter start exercises · L language · Esc back",
-            "↑/↓ desplazar · Enter empezar ejercicios · L idioma · Esc volver",
-        ),
+        match (can_practice, app.lang) {
+            (true, Lang::En) => "↑/↓ scroll · Enter start exercises · L language · Esc back",
+            (true, Lang::Es) => "↑/↓ desplazar · Enter empezar ejercicios · L idioma · Esc volver",
+            (false, Lang::En) => "↑/↓ scroll · L language · Esc back",
+            (false, Lang::Es) => "↑/↓ desplazar · L idioma · Esc volver",
+        },
     );
 }
 

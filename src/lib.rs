@@ -6,5 +6,6 @@ pub mod editor;
 pub mod engine;
 pub mod i18n;
 pub mod progress;
+pub mod requirements;
 pub mod sandbox;
 pub mod ui;

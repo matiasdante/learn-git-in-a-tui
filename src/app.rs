@@ -11,6 +11,7 @@ use crate::editor::{EditorAction, EditorState, IpcServer};
 use crate::engine::{self, Verdict};
 use crate::i18n::{Lang, Text, tr};
 use crate::progress::Progress;
+use crate::requirements;
 use crate::sandbox::Sandbox;
 
 const MAX_LINES: usize = 5000;
@@ -105,6 +106,8 @@ pub enum MapItem {
 
 pub struct App {
     pub content: Content,
+    /// Por lección: qué le falta a esta máquina (vacío = disponible).
+    pub unavailable: Vec<Vec<String>>,
     pub progress: Progress,
     progress_path: Option<PathBuf>,
     pub lang: Lang,
@@ -143,7 +146,9 @@ impl App {
             (Some(_), false) => Screen::ExamOffer { selected: 0 },
             (Some(_), true) => Screen::Map,
         };
+        let unavailable = requirements::missing_for_all(&content, &sandbox);
         let mut app = Self {
+            unavailable,
             content,
             progress,
             progress_path,
@@ -434,7 +439,10 @@ impl App {
             KeyCode::Down => *scroll += 1,
             KeyCode::PageUp => *scroll = scroll.saturating_sub(10),
             KeyCode::PageDown => *scroll += 10,
-            KeyCode::Enter if !self.content.lessons[lesson].exercises.is_empty() => {
+            KeyCode::Enter
+                if !self.content.lessons[lesson].exercises.is_empty()
+                    && self.unavailable[lesson].is_empty() =>
+            {
                 self.start_exercise(lesson, 0);
             }
             _ => {}
