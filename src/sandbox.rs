@@ -11,7 +11,7 @@ use anyhow::{Context, Result};
 /// Fecha fija para que los hashes sean estables entre corridas.
 const FIXED_DATE: &str = "2024-01-01 12:00:00 +0000";
 
-const GITCONFIG: &str = "\
+const GITCONFIG_BASE: &str = "\
 [user]
 	name = Learner
 	email = learner@example.com
@@ -27,6 +27,17 @@ const GITCONFIG: &str = "\
 	gpgsign = false
 [protocol \"file\"]
 	allow = always
+[mergetool]
+	prompt = false
+	keepBackup = false
+[merge]
+	tool = learn
+[difftool]
+	prompt = false
+[diff]
+	tool = learn
+[difftool \"learn\"]
+	cmd = diff -u \"$LOCAL\" \"$REMOTE\"
 ";
 
 /// Variables del entorno real que git necesita para funcionar (sobre todo en Windows).
@@ -120,7 +131,7 @@ impl Sandbox {
             fs::create_dir_all(&dir)
                 .with_context(|| format!("could not create {}", dir.display()))?;
         }
-        fs::write(self.gitconfig_path(), GITCONFIG)
+        fs::write(self.gitconfig_path(), self.gitconfig())
             .context("could not write the sandbox gitconfig")?;
         // Señales del editor que pudieron quedar de una corrida anterior.
         for entry in fs::read_dir(self.ipc_dir())?.flatten() {
@@ -156,6 +167,16 @@ impl Sandbox {
             .env("GIT_SEQUENCE_EDITOR", &editor)
             .env("LEARN_GIT_IPC", self.ipc_dir());
         cmd
+    }
+
+    /// Config global del sandbox. El mergetool "learn" abre el editor integrado sobre el
+    /// archivo en conflicto (no se usan herramientas externas).
+    fn gitconfig(&self) -> String {
+        let cmd = format!("{} \"$MERGED\"", self.editor_command());
+        let escaped = cmd.replace('\\', "\\\\").replace('"', "\\\"");
+        format!(
+            "{GITCONFIG_BASE}[mergetool \"learn\"]\n\tcmd = \"{escaped}\"\n\ttrustExitCode = true\n"
+        )
     }
 
     /// Git interpreta el editor con sh: comillas simples y barras `/` (también en Windows).

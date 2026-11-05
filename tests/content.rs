@@ -1,8 +1,9 @@
 use std::path::PathBuf;
 
-use learn_git_tui::console::{Console, run_blocking};
+use learn_git_tui::console::Console;
 use learn_git_tui::content::Content;
 use learn_git_tui::engine::{self, Verdict};
+use learn_git_tui::requirements;
 use learn_git_tui::sandbox::{Sandbox, remove_dir_all_force};
 
 #[test]
@@ -38,8 +39,13 @@ fn every_exercise_fails_untouched_and_passes_with_its_solution() {
     let exe = PathBuf::from(env!("CARGO_BIN_EXE_learn-git-tui"));
     let mut console = Console::new(Sandbox::new(root.clone(), exe).unwrap());
 
+    let missing = requirements::missing_for_all(&content, console.sandbox());
     let mut count = 0;
-    for lesson in &content.lessons {
+    for (lesson, missing) in content.lessons.iter().zip(&missing) {
+        if !missing.is_empty() {
+            eprintln!("skipping lesson '{}': missing {missing:?}", lesson.id);
+            continue;
+        }
         for ex in &lesson.exercises {
             let ctx = format!("exercise '{}'", ex.id);
 
@@ -50,14 +56,12 @@ fn every_exercise_fails_untouched_and_passes_with_its_solution() {
             );
 
             engine::start(&mut console, ex).unwrap();
-            for line in &ex.solution {
-                let line = engine::expand_solution(&console, line)
-                    .unwrap_or_else(|e| panic!("{ctx}: {e:#}"));
+            for step in &ex.solution {
                 let (code, output) =
-                    run_blocking(&mut console, &line).unwrap_or_else(|e| panic!("{ctx}: {e:#}"));
+                    engine::run_step(&mut console, step).unwrap_or_else(|e| panic!("{ctx}: {e:#}"));
                 assert!(
                     code.is_none_or(|c| c == 0),
-                    "{ctx}: `{line}` failed: {output}"
+                    "{ctx}: {step:?} failed: {output}"
                 );
             }
             if let Verdict::Fail(why) = engine::verify(&mut console, ex).unwrap() {

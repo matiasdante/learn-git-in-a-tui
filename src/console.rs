@@ -54,6 +54,13 @@ impl Running {
     }
 }
 
+#[derive(Default)]
+struct Redirects {
+    stdin: Option<PathBuf>,
+    /// Archivo y si se agrega al final (`>>`).
+    stdout: Option<(PathBuf, bool)>,
+}
+
 const OUTSIDE: &str = "path is outside the sandbox";
 
 pub struct Console {
@@ -71,6 +78,20 @@ impl Console {
             cwd,
             history: Vec::new(),
         }
+    }
+
+    pub fn cwd(&self) -> &std::path::Path {
+        &self.cwd
+    }
+
+    /// Cambia el directorio actual a una carpeta del sandbox (la usa el motor al empezar).
+    pub fn set_cwd(&mut self, rel: &str) -> Result<()> {
+        let target = self.resolve(rel)?;
+        if !target.is_dir() {
+            bail!("{rel} is not a directory");
+        }
+        self.cwd = target;
+        Ok(())
     }
 
     pub fn history(&self) -> &[String] {
@@ -126,9 +147,10 @@ impl Console {
             "mkdir" => self.mkdir(args)?,
             "touch" => self.touch(args)?,
             "rm" => self.rm(args)?,
+            "chmod" => self.chmod(args)?,
             "echo" => self.echo(args)?,
             other => bail!(
-                "unknown command '{other}'. Available: git, ls, cat, cd, pwd, mkdir, touch, rm, echo, edit, clear"
+                "unknown command '{other}'. Available: git, ls, cat, cd, pwd, mkdir, touch, rm, chmod, echo, edit, clear"
             ),
         };
         if !text.is_empty() {
@@ -325,6 +347,21 @@ impl Console {
         Ok(String::new())
     }
 
+    /// Solo `chmod +x archivo` / `chmod -x archivo` (sirve para los hooks de git).
+    fn chmod(&self, args: &[String]) -> Result<String> {
+        let [mode, files @ ..] = args else {
+            bail!("usage: chmod +x file...");
+        };
+        if !matches!(mode.as_str(), "+x" | "-x") || files.is_empty() {
+            bail!("usage: chmod +x file...   (only +x and -x are supported)");
+        }
+        for file in files {
+            set_executable(&self.resolve(file)?, mode == "+x")
+                .with_context(|| format!("chmod: {file}"))?;
+        }
+        Ok(String::new())
+    }
+
     fn echo(&self, args: &[String]) -> Result<String> {
         let Some(pos) = args.iter().position(|a| a == ">" || a == ">>") else {
             return Ok(format!("{}\n", args.join(" ")));
@@ -364,31 +401,54 @@ impl Console {
     // ---------- git ----------
 
     fn run_git(&self, args: &[String], tx: &Sender<Event>) -> Result<Outcome> {
-        let args = self.guard_git_args(args)?;
-        let mut child = self
-            .sandbox
-            .git(&self.cwd)
-            .args(&args)
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .stderr(Stdio::piped())
-            .spawn()
-            .map_err(|e| match e.kind() {
-                ErrorKind::NotFound => anyhow!("git was not found in PATH"),
-                _ => anyhow!("could not start git: {e}"),
-            })?;
+        let (args, redirects) = self.split_redirects(args)?;
+        let args = self.guard_git_args(&args)?;
+        let mut cmd = self.sandbox.git(&self.cwd);
+        cmd.args(&args).stderr(Stdio::piped());
+        match redirects.stdin {
+            Some(path) => {
+                let file = fs::File::open(&path)
+                    .with_context(|| format!("cannot read {}", path.display()))?;
+                cmd.stdin(Stdio::from(file));
+            }
+            None => {
+                cmd.stdin(Stdio::piped());
+            }
+        }
+        match redirects.stdout {
+            Some((path, append)) => {
+                let mut options = OpenOptions::new();
+                options.create(true);
+                if append {
+                    options.append(true);
+                } else {
+                    options.write(true).truncate(true);
+                }
+                let file = options
+                    .open(&path)
+                    .with_context(|| format!("cannot write {}", path.display()))?;
+                cmd.stdout(Stdio::from(file));
+            }
+            None => {
+                cmd.stdout(Stdio::piped());
+            }
+        }
+        let mut child = cmd.spawn().map_err(|e| match e.kind() {
+            ErrorKind::NotFound => anyhow!("git was not found in PATH"),
+            _ => anyhow!("could not start git: {e}"),
+        })?;
         let stdin = child.stdin.take();
-        let stdout = child.stdout.take().context("git has no stdout")?;
+        let stdout = child.stdout.take();
         let stderr = child.stderr.take().context("git has no stderr")?;
         let kill = Arc::new(AtomicBool::new(false));
 
         let tx = tx.clone();
         let kill_flag = Arc::clone(&kill);
         thread::spawn(move || {
-            let readers = [
-                spawn_pump(Box::new(stdout), tx.clone()),
-                spawn_pump(Box::new(stderr), tx.clone()),
-            ];
+            let mut readers = vec![spawn_pump(Box::new(stderr), tx.clone())];
+            if let Some(stdout) = stdout {
+                readers.push(spawn_pump(Box::new(stdout), tx.clone()));
+            }
             let mut killed = false;
             let code = loop {
                 match child.try_wait() {
@@ -416,6 +476,29 @@ impl Console {
         });
 
         Ok(Outcome::Running(Running { stdin, kill }))
+    }
+
+    /// Separa `< archivo`, `> archivo` y `>> archivo` de los argumentos de git.
+    fn split_redirects(&self, args: &[String]) -> Result<(Vec<String>, Redirects)> {
+        let mut clean = Vec::new();
+        let mut redirects = Redirects::default();
+        let mut iter = args.iter();
+        while let Some(arg) = iter.next() {
+            match arg.as_str() {
+                op @ ("<" | ">" | ">>") => {
+                    let target = iter
+                        .next()
+                        .ok_or_else(|| anyhow!("missing file after '{op}'"))?;
+                    let path = self.resolve(target)?;
+                    match op {
+                        "<" => redirects.stdin = Some(path),
+                        _ => redirects.stdout = Some((path, op == ">>")),
+                    }
+                }
+                _ => clean.push(arg.clone()),
+            }
+        }
+        Ok((clean, redirects))
     }
 
     /// Bloquea que `git` salga del sandbox con `-C`, `--git-dir`, `--work-tree` o
@@ -507,6 +590,17 @@ fn spawn_pump(mut reader: Box<dyn Read + Send>, tx: Sender<Event>) -> thread::Jo
 /// Ejecuta una línea y espera a que termine (sin editor ni stdin). Lo usan el motor de
 /// lecciones y los tests de contenido. Devuelve el código de salida y la salida combinada.
 pub fn run_blocking(console: &mut Console, line: &str) -> Result<(Option<i32>, String)> {
+    run_with(console, line, None, &mut |_| false)
+}
+
+/// Como `run_blocking`, pero puede alimentar el stdin del comando y contestar los pedidos
+/// del editor de git (`on_editor` recibe el archivo y devuelve si se acepta).
+pub fn run_with(
+    console: &mut Console,
+    line: &str,
+    stdin: Option<&str>,
+    on_editor: &mut dyn FnMut(&std::path::Path) -> bool,
+) -> Result<(Option<i32>, String)> {
     let (tx, rx) = std::sync::mpsc::channel();
     let mut running = match console.execute(line, &tx)? {
         Outcome::Running(running) => running,
@@ -525,7 +619,11 @@ pub fn run_blocking(console: &mut Console, line: &str) -> Result<(Option<i32>, S
             return Ok((None, output));
         }
     };
+    if let Some(input) = stdin {
+        let _ = running.send_line(input.trim_end_matches('\n'));
+    }
     running.close_stdin();
+    let ipc = crate::editor::IpcServer::new(console.sandbox().ipc_dir());
     let deadline = std::time::Instant::now() + Duration::from_secs(30);
     let mut output = String::new();
     loop {
@@ -533,10 +631,33 @@ pub fn run_blocking(console: &mut Console, line: &str) -> Result<(Option<i32>, S
             running.kill();
             bail!("`{line}` timed out (does it wait for an editor or for input?)");
         }
-        match rx.recv_timeout(Duration::from_millis(50)) {
+        if let Some(path) = ipc.poll_request() {
+            let accepted = on_editor(&path);
+            ipc.respond(accepted)?;
+        }
+        match rx.recv_timeout(Duration::from_millis(20)) {
             Ok(Event::Output(text)) => output.push_str(&text),
             Ok(Event::Finished(code)) => return Ok((code, output)),
             Err(_) => {}
         }
     }
+}
+
+/// En Windows no existe el bit de ejecución: git ejecuta los hooks igual.
+#[cfg(unix)]
+pub fn set_executable(path: &std::path::Path, executable: bool) -> std::io::Result<()> {
+    use std::os::unix::fs::PermissionsExt;
+    let mut perms = fs::metadata(path)?.permissions();
+    let mode = perms.mode();
+    perms.set_mode(if executable {
+        mode | 0o111
+    } else {
+        mode & !0o111
+    });
+    fs::set_permissions(path, perms)
+}
+
+#[cfg(not(unix))]
+pub fn set_executable(path: &std::path::Path, _executable: bool) -> std::io::Result<()> {
+    fs::metadata(path).map(|_| ())
 }

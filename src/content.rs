@@ -73,6 +73,10 @@ pub struct Lesson {
     pub order: u32,
     /// Versión mínima de git (`"2.38"`); si no alcanza, la lección es solo explicación.
     pub min_git: Option<String>,
+    /// Herramientas que la lección necesita: `"git:subtree"` (subcomando de git) o
+    /// `"bin:ssh-keygen"` (programa en el PATH). Si falta alguna, pasa a ser explicación.
+    #[serde(default)]
+    pub requires: Vec<String>,
     pub title: Text,
     pub theory: Text,
     #[serde(default, rename = "exercise")]
@@ -88,17 +92,93 @@ pub struct Exercise {
     #[serde(default)]
     pub hints: Vec<Text>,
     pub checks: Vec<Check>,
-    /// Comandos de la consola que resuelven el ejercicio (los usa el test de contenido).
-    pub solution: Vec<String>,
+    /// Carpeta (relativa a la raíz del sandbox) donde arranca la consola y donde se verifican
+    /// los checks. Vacía = la raíz.
+    #[serde(default)]
+    pub cwd: String,
+    /// Pasos que resuelven el ejercicio (los usa el test de contenido).
+    pub solution: Vec<SolutionStep>,
+}
+
+/// Un paso de la solución de referencia: una línea de consola, o una línea con stdin
+/// y/o respuestas para el editor de git.
+#[derive(Debug, Deserialize)]
+#[serde(untagged)]
+pub enum SolutionStep {
+    Line(String),
+    Full {
+        run: String,
+        #[serde(default)]
+        stdin: Option<String>,
+        #[serde(default)]
+        editor: Vec<EditRule>,
+    },
+}
+
+/// Qué hace la solución cuando git abre el editor sobre un archivo.
+#[derive(Debug, Deserialize)]
+pub struct EditRule {
+    /// Reemplaza todo el contenido del archivo.
+    pub write: Option<String>,
+    /// En las líneas que contienen este texto, cambia `from` por `to`.
+    pub line_containing: Option<String>,
+    pub from: Option<String>,
+    pub to: Option<String>,
+}
+
+impl EditRule {
+    pub fn apply(&self, content: &str) -> String {
+        if let Some(text) = &self.write {
+            return text.clone();
+        }
+        let (Some(needle), Some(from), Some(to)) = (&self.line_containing, &self.from, &self.to)
+        else {
+            return content.to_string();
+        };
+        let mut out: Vec<String> = content
+            .lines()
+            .map(|line| {
+                if line.contains(needle.as_str()) {
+                    line.replacen(from.as_str(), to, 1)
+                } else {
+                    line.to_string()
+                }
+            })
+            .collect();
+        out.push(String::new());
+        out.join("\n")
+    }
 }
 
 /// Preparación del estado inicial: acciones del motor, nunca una shell.
 #[derive(Debug, Deserialize)]
 #[serde(tag = "do", rename_all = "snake_case")]
 pub enum Action {
-    Write { path: String, content: String },
-    Mkdir { path: String },
-    Git { args: String },
+    Write {
+        path: String,
+        content: String,
+        #[serde(default)]
+        executable: bool,
+    },
+    Mkdir {
+        path: String,
+    },
+    /// `dir` es relativo a la raíz del sandbox. Con `allow_fail` el setup sigue aunque git
+    /// termine con error (por ejemplo un merge que deja un conflicto a propósito).
+    Git {
+        args: String,
+        #[serde(default)]
+        dir: String,
+        #[serde(default)]
+        allow_fail: bool,
+    },
+    /// Programas auxiliares permitidos (solo `ssh-keygen`).
+    Exec {
+        program: String,
+        args: String,
+        #[serde(default)]
+        dir: String,
+    },
 }
 
 impl Lesson {

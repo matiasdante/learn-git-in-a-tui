@@ -7,7 +7,7 @@ use anyhow::{Context, Result, bail};
 
 use crate::checks::Ctx;
 use crate::console::Console;
-use crate::content::{Action, Exercise};
+use crate::content::{Action, Exercise, SolutionStep};
 use crate::i18n::Text;
 
 pub enum Verdict {
@@ -24,17 +24,26 @@ pub fn start(console: &mut Console, exercise: &Exercise) -> Result<()> {
         apply(console, &work, action)
             .with_context(|| format!("setup of exercise '{}' failed", exercise.id))?;
     }
-    console.sandbox().snapshot()
+    console.sandbox().snapshot()?;
+    if !exercise.cwd.is_empty() {
+        console.set_cwd(&exercise.cwd)?;
+    }
+    Ok(())
 }
 
 /// Corre los checks en orden. Si alguno falla, devuelve su explicación y
 /// restaura el snapshot del inicio del ejercicio.
 pub fn verify(console: &mut Console, exercise: &Exercise) -> Result<Verdict> {
-    let ctx = Ctx {
-        sandbox: console.sandbox(),
-        history: console.history(),
-    };
-    let failed = exercise.checks.iter().find(|check| !check.passes(&ctx));
+    let work = console.sandbox().work_dir();
+    let failed = exercise.checks.iter().find(|check| {
+        let rel = check.repo.as_deref().unwrap_or(&exercise.cwd);
+        let ctx = Ctx {
+            sandbox: console.sandbox(),
+            dir: safe_join(&work, rel).unwrap_or_else(|_| work.clone()),
+            history: console.history(),
+        };
+        !check.passes(&ctx)
+    });
     match failed {
         None => Ok(Verdict::Pass),
         Some(check) => {
@@ -47,26 +56,58 @@ pub fn verify(console: &mut Console, exercise: &Exercise) -> Result<Verdict> {
 
 fn apply(console: &Console, work: &Path, action: &Action) -> Result<()> {
     match action {
-        Action::Write { path, content } => {
+        Action::Write {
+            path,
+            content,
+            executable,
+        } => {
             let target = safe_join(work, path)?;
             if let Some(parent) = target.parent() {
                 std::fs::create_dir_all(parent)?;
             }
             std::fs::write(&target, content)?;
+            if *executable {
+                crate::console::set_executable(&target, true)?;
+            }
         }
         Action::Mkdir { path } => std::fs::create_dir_all(safe_join(work, path)?)?,
-        Action::Git { args } => {
+        Action::Git {
+            args,
+            dir,
+            allow_fail,
+        } => {
             let args = shell_words::split(args)?;
+            let cwd = safe_join(work, dir)?;
+            std::fs::create_dir_all(&cwd)?;
             let out = console
                 .sandbox()
-                .git(work)
+                .git(&cwd)
                 .args(&args)
                 .stdin(Stdio::null())
                 .output()?;
-            if !out.status.success() {
+            if !out.status.success() && !allow_fail {
                 bail!(
                     "git {} failed: {}",
                     args.join(" "),
+                    String::from_utf8_lossy(&out.stderr).trim()
+                );
+            }
+        }
+        Action::Exec { program, args, dir } => {
+            if program != "ssh-keygen" {
+                bail!("setup cannot run '{program}'");
+            }
+            let cwd = safe_join(work, dir)?;
+            std::fs::create_dir_all(&cwd)?;
+            let out = std::process::Command::new(program)
+                .args(shell_words::split(args)?)
+                .current_dir(&cwd)
+                .stdin(Stdio::null())
+                .output()
+                .with_context(|| format!("could not run {program}"))?;
+            if !out.status.success() {
+                bail!(
+                    "{program} failed: {}",
                     String::from_utf8_lossy(&out.stderr).trim()
                 );
             }
@@ -98,7 +139,7 @@ pub fn expand_solution(console: &Console, line: &str) -> Result<String> {
         let args = shell_words::split(&rest[start + 2..end])?;
         let result = console
             .sandbox()
-            .git(&console.sandbox().work_dir())
+            .git(console.cwd())
             .args(&args)
             .stdin(Stdio::null())
             .output()?;
@@ -110,4 +151,29 @@ pub fn expand_solution(console: &Console, line: &str) -> Result<String> {
     }
     out.push_str(rest);
     Ok(out)
+}
+
+/// Ejecuta un paso de la solución de referencia, contestando el editor de git si hace falta.
+pub fn run_step(console: &mut Console, step: &SolutionStep) -> Result<(Option<i32>, String)> {
+    match step {
+        SolutionStep::Line(line) => {
+            let line = expand_solution(console, line)?;
+            crate::console::run_blocking(console, &line)
+        }
+        SolutionStep::Full { run, stdin, editor } => {
+            let line = expand_solution(console, run)?;
+            let stdin = match stdin {
+                Some(text) => Some(expand_solution(console, text)?),
+                None => None,
+            };
+            let mut handler = |path: &Path| -> bool {
+                let mut content = std::fs::read_to_string(path).unwrap_or_default();
+                for rule in editor {
+                    content = rule.apply(&content);
+                }
+                std::fs::write(path, content).is_ok()
+            };
+            crate::console::run_with(console, &line, stdin.as_deref(), &mut handler)
+        }
+    }
 }

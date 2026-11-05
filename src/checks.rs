@@ -16,6 +16,9 @@ pub struct Check {
     pub kind: CheckKind,
     /// Qué explicarle al usuario si este check falla.
     pub fail: Text,
+    /// Carpeta (relativa a la raíz del sandbox) donde correr el check; si falta, la del ejercicio.
+    #[serde(default)]
+    pub repo: Option<String>,
 }
 
 fn head() -> String {
@@ -74,6 +77,34 @@ pub enum CheckKind {
         key: String,
         value: String,
     },
+    BranchExists {
+        name: String,
+    },
+    /// Con `annotated` exige un tag anotado (objeto tag) y no uno liviano.
+    TagExists {
+        name: String,
+        #[serde(default)]
+        annotated: bool,
+    },
+    FileContains {
+        path: String,
+        contains: String,
+    },
+    /// Escape para checks específicos: corre git (solo plumbing o formatos de máquina) y
+    /// compara su salida con `equals` o con la salida de otro git (`same_as`).
+    GitOutput {
+        args: String,
+        #[serde(default)]
+        equals: Option<String>,
+        #[serde(default)]
+        same_as: Option<String>,
+    },
+    GitOk {
+        args: String,
+    },
+    GitFails {
+        args: String,
+    },
     /// Para temas sin estado que verificar (help, version): se mira lo que se tipeó.
     Ran {
         any: Vec<String>,
@@ -82,13 +113,36 @@ pub enum CheckKind {
 
 pub struct Ctx<'a> {
     pub sandbox: &'a Sandbox,
+    /// Carpeta donde se corren los checks.
+    pub dir: PathBuf,
     /// Líneas que el usuario ejecutó en la consola desde que empezó el ejercicio.
     pub history: &'a [String],
 }
 
 impl Ctx<'_> {
     fn work(&self) -> PathBuf {
-        self.sandbox.work_dir()
+        self.dir.clone()
+    }
+
+    fn git_args(&self, args: &str) -> Option<Vec<String>> {
+        shell_words::split(args).ok()
+    }
+
+    fn run_args(&self, args: &str) -> Option<std::process::Output> {
+        let args = self.git_args(args)?;
+        self.sandbox
+            .git(&self.work())
+            .args(&args)
+            .stdin(Stdio::null())
+            .output()
+            .ok()
+    }
+
+    fn out_of(&self, args: &str) -> Option<String> {
+        let out = self.run_args(args)?;
+        out.status
+            .success()
+            .then(|| String::from_utf8_lossy(&out.stdout).trim().to_string())
     }
 
     fn git_ok(&self, args: &[&str]) -> Option<std::process::Output> {
@@ -158,6 +212,39 @@ impl Check {
             CheckKind::Config { key, value } => {
                 ctx.git_out(&["config", "--get", key]).as_deref() == Some(value)
             }
+            CheckKind::BranchExists { name } => ctx.git_success(&[
+                "show-ref",
+                "--verify",
+                "--quiet",
+                &format!("refs/heads/{name}"),
+            ]),
+            CheckKind::TagExists { name, annotated } => {
+                let reference = format!("refs/tags/{name}");
+                ctx.git_success(&["show-ref", "--verify", "--quiet", &reference])
+                    && (!annotated
+                        || ctx.git_out(&["cat-file", "-t", &reference]).as_deref() == Some("tag"))
+            }
+            CheckKind::FileContains { path, contains } => ctx
+                .read(path)
+                .is_some_and(|c| c.contains(contains.as_str())),
+            CheckKind::GitOutput {
+                args,
+                equals,
+                same_as,
+            } => {
+                let Some(actual) = ctx.out_of(args) else {
+                    return false;
+                };
+                match (equals, same_as) {
+                    (Some(expected), _) => actual == expected.trim(),
+                    (None, Some(other)) => ctx.out_of(other).is_some_and(|o| o == actual),
+                    (None, None) => false,
+                }
+            }
+            CheckKind::GitOk { args } => ctx.run_args(args).is_some_and(|o| o.status.success()),
+            CheckKind::GitFails { args } => ctx
+                .run_args(args)
+                .is_some_and(|o| !o.status.success() && o.status.code().is_some()),
             CheckKind::Ran { any } => ctx
                 .history
                 .iter()
