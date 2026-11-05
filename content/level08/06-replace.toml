@@ -1,0 +1,49 @@
+id = "replace"
+level = 8
+order = 6
+
+[title]
+en = "Swapping an object: replace"
+es = "Cambiar un objeto por otro: replace"
+
+[theory]
+en = """
+`git replace` makes git see a different object whenever it would read the original one. It is a way to fix history locally without rewriting hashes: for example, to "graft" an old history or to hide a commit.
+
+  git replace <original> <replacement>
+  git replace -l                       list replaced objects
+  git replace -d <original>            remove the replacement
+
+It is stored in refs/replace/ and is NOT shared by default: use it with caution, and mostly as a temporary tool."""
+es = """
+`git replace` hace que git vea un objeto distinto cada vez que fuera a leer el original. Sirve para arreglar la historia localmente sin reescribir hashes: por ejemplo para "injertar" una historia vieja o para ocultar un commit.
+
+  git replace <original> <reemplazo>
+  git replace -l                       lista los objetos reemplazados
+  git replace -d <original>            quita el reemplazo
+
+Se guarda en refs/replace/ y por defecto NO se comparte: usalo con cuidado, y sobre todo como herramienta temporal."""
+
+[[exercise]]
+id = "replace-1"
+solution = ["git replace HEAD~1 HEAD~2"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "write", path = "oops.txt", content = "mistake\n" },
+  { do = "git", args = "add oops.txt" },
+  { do = "git", args = "commit -m \"Oops, bad commit\"" },
+  { do = "write", path = "c.txt", content = "c\n" },
+  { do = "git", args = "add c.txt" },
+  { do = "git", args = "commit -m \"Add c\"" },
+]
+prompt = { en = "The commit \"Oops, bad commit\" (HEAD~1) should not be seen. Make git read the commit before it (HEAD~2) in its place, without rewriting history.", es = "El commit \"Oops, bad commit\" (HEAD~1) no debería verse. Hacé que git lea en su lugar el commit anterior (HEAD~2), sin reescribir la historia." }
+hints = [
+  { en = "replace takes the object to replace and then its replacement.", es = "replace recibe el objeto a reemplazar y después su reemplazo." },
+]
+checks = [
+  { type = "git_output", args = "replace -l", same_as = "--no-replace-objects rev-parse HEAD~1", fail = { en = "HEAD~1 is not replaced yet.", es = "HEAD~1 todavía no está reemplazado." } },
+  { type = "git_fails", args = "cat-file -e HEAD~1:oops.txt", fail = { en = "git still reads the bad commit: oops.txt is visible in HEAD~1.", es = "git todavía lee el commit malo: oops.txt se ve en HEAD~1." } },
+]

@@ -94,7 +94,7 @@ impl Sandbox {
         self.root.join("ipc")
     }
 
-    fn home_dir(&self) -> PathBuf {
+    pub fn home_dir(&self) -> PathBuf {
         self.root.join("home")
     }
 

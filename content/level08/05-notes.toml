@@ -1,0 +1,41 @@
+id = "notes"
+level = 8
+order = 5
+
+[title]
+en = "Annotating without rewriting: notes"
+es = "Anotar sin reescribir: notes"
+
+[theory]
+en = """
+A commit is immutable, but sometimes you want to add information afterwards (a review, a ticket number, a test result). `git notes` attaches text to a commit WITHOUT changing its hash; the notes live in their own ref.
+
+  git notes add -m "Reviewed by Ana" HEAD     attach a note
+  git notes show HEAD                         read it
+  git log                                     shows notes under each commit
+  git notes remove HEAD                       delete it"""
+es = """
+Un commit es inmutable, pero a veces querés agregar información después (una revisión, un número de ticket, un resultado de tests). `git notes` adjunta texto a un commit SIN cambiar su hash; las notas viven en su propia referencia.
+
+  git notes add -m "Revisado por Ana" HEAD    adjunta una nota
+  git notes show HEAD                         la lee
+  git log                                     muestra las notas debajo de cada commit
+  git notes remove HEAD                       la borra"""
+
+[[exercise]]
+id = "notes-1"
+solution = ["git notes add -m \"Reviewed by Ana\" HEAD"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+]
+prompt = { en = "Attach the note \"Reviewed by Ana\" to the latest commit.", es = "Adjuntá la nota \"Reviewed by Ana\" al último commit." }
+hints = [
+  { en = "notes add takes -m for the text and the commit.", es = "notes add usa -m para el texto y el commit." },
+  { en = "Type: git notes add -m \"Reviewed by Ana\" HEAD", es = "Escribí: git notes add -m \"Reviewed by Ana\" HEAD" },
+]
+checks = [
+  { type = "git_output", args = "notes show HEAD", equals = "Reviewed by Ana", fail = { en = "The latest commit does not have the note \"Reviewed by Ana\".", es = "El último commit no tiene la nota \"Reviewed by Ana\"." } },
+]

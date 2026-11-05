@@ -1,0 +1,42 @@
+id = "check-mailmap"
+level = 8
+order = 3
+
+[title]
+en = "One person, many identities: mailmap"
+es = "Una persona, varias identidades: mailmap"
+
+[theory]
+en = """
+People change e-mail addresses and spell their names differently. A `.mailmap` file maps the old identities to the canonical one, so shortlog and blame group them together.
+
+  Robert Smith <robert@example.com> <bob@old.example>
+  #  canonical name and e-mail          old e-mail
+
+`git check-mailmap` shows how git resolves an identity:
+
+  git check-mailmap "Bob <bob@old.example>"    ->   Robert Smith <robert@example.com>"""
+es = """
+Las personas cambian de dirección de e-mail y escriben su nombre distinto. Un archivo `.mailmap` mapea las identidades viejas a la canónica, así shortlog y blame las agrupan.
+
+  Robert Smith <robert@example.com> <bob@old.example>
+  #  nombre y e-mail canónicos          e-mail viejo
+
+`git check-mailmap` muestra cómo resuelve git una identidad:
+
+  git check-mailmap "Bob <bob@old.example>"    ->   Robert Smith <robert@example.com>"""
+
+[[exercise]]
+id = "check-mailmap-1"
+solution = ["echo \"Robert Smith <robert@example.com> <bob@old.example>\" > .mailmap"]
+setup = [
+  { do = "git", args = "init" },
+]
+prompt = { en = "Bob <bob@old.example> is now Robert Smith <robert@example.com>. Create the .mailmap that maps the old address to the new identity.", es = "Bob <bob@old.example> ahora es Robert Smith <robert@example.com>. Creá el .mailmap que mapea la dirección vieja a la identidad nueva." }
+hints = [
+  { en = "Format: Canonical Name <canonical@email> <old@email>", es = "Formato: Nombre Canónico <canonico@email> <viejo@email>" },
+  { en = "Quote the whole line when you echo it.", es = "Poné la línea entera entre comillas al hacer echo." },
+]
+checks = [
+  { type = "git_output", args = "check-mailmap \"Bob <bob@old.example>\"", equals = "Robert Smith <robert@example.com>", fail = { en = "git does not resolve Bob <bob@old.example> to Robert Smith <robert@example.com> yet.", es = "git todavía no resuelve Bob <bob@old.example> como Robert Smith <robert@example.com>." } },
+]

@@ -141,3 +141,27 @@ id = "level-7-no-hints"
 title = { en = "Nested and unassisted", es = "Anidado y sin ayuda" }
 description = { en = "Finish level 7 without using a single hint.", es = "Terminá el nivel 7 sin usar ni una pista." }
 condition = { type = "level_no_hints", level = 7 }
+
+[[achievement]]
+id = "signed-commit"
+title = { en = "Trust me", es = "Confiá en mí" }
+description = { en = "Make a commit with a valid SSH signature.", es = "Hacé un commit con una firma SSH válida." }
+condition = { type = "exercise_done", exercise = "verify-commit-1" }
+
+[[achievement]]
+id = "hook-maker"
+title = { en = "Gatekeeper", es = "Portero" }
+description = { en = "Write a hook that blocks commits.", es = "Escribí un hook que bloquea commits." }
+condition = { type = "exercise_done", exercise = "hook-1" }
+
+[[achievement]]
+id = "level-8-done"
+title = { en = "Locked down", es = "Todo asegurado" }
+description = { en = "Finish every exercise of level 8.", es = "Terminá todos los ejercicios del nivel 8." }
+condition = { type = "level_done", level = 8 }
+
+[[achievement]]
+id = "level-8-no-hints"
+title = { en = "Paranoid and proud", es = "Paranoico y orgulloso" }
+description = { en = "Finish level 8 without using a single hint.", es = "Terminá el nivel 8 sin usar ni una pista." }
+condition = { type = "level_no_hints", level = 8 }

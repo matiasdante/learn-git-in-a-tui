@@ -1,0 +1,77 @@
+id = "config-advanced"
+level = 8
+order = 1
+
+[title]
+en = "Configuration in depth: config"
+es = "Configuración a fondo: config"
+
+[theory]
+en = """
+Git reads configuration from three levels, each one overriding the previous:
+
+  --system   the whole machine        (not used in this sandbox)
+  --global   your user                (~/.gitconfig)
+  --local    this repository only     (.git/config)
+
+  git config --local pull.rebase true    only this repository
+  git config --get user.name             the effective value
+  git config --list --show-origin        every value and the file it comes from
+  git config --unset user.signingkey     remove a value
+  git config --global alias.st status    now "git st" works"""
+es = """
+Git lee la configuración de tres niveles, y cada uno pisa al anterior:
+
+  --system   toda la máquina          (no se usa en este sandbox)
+  --global   tu usuario               (~/.gitconfig)
+  --local    solo este repositorio    (.git/config)
+
+  git config --local pull.rebase true    solo este repositorio
+  git config --get user.name             el valor efectivo
+  git config --list --show-origin        cada valor y el archivo de donde sale
+  git config --unset user.signingkey     quita un valor
+  git config --global alias.st status    ahora "git st" funciona"""
+
+[[exercise]]
+id = "config-adv-1"
+solution = ["git config --global alias.st status"]
+setup = [
+  { do = "git", args = "init" },
+]
+prompt = { en = "Create a shortcut: make git st do the same as git status.", es = "Creá un atajo: hacé que git st haga lo mismo que git status." }
+hints = [
+  { en = "Shortcuts are aliases: the key is alias.<name>.", es = "Los atajos son alias: la clave es alias.<nombre>." },
+  { en = "Type: git config --global alias.st status", es = "Escribí: git config --global alias.st status" },
+]
+checks = [
+  { type = "config", key = "alias.st", value = "status", fail = { en = "The alias st is not defined as status yet.", es = "El alias st todavía no está definido como status." } },
+]
+
+[[exercise]]
+id = "config-adv-2"
+solution = ["git config --local pull.rebase true"]
+setup = [
+  { do = "git", args = "init" },
+]
+prompt = { en = "Make git pull rebase by default, but only in THIS repository.", es = "Hacé que git pull rebase por defecto, pero solo en ESTE repositorio." }
+hints = [
+  { en = "--local writes to .git/config of the current repository.", es = "--local escribe en .git/config del repositorio actual." },
+]
+checks = [
+  { type = "git_output", args = "config --local --get pull.rebase", equals = "true", fail = { en = "pull.rebase is not true in the local configuration.", es = "pull.rebase no es true en la configuración local." } },
+]
+
+[[exercise]]
+id = "config-adv-3"
+solution = ["git config --global --unset user.signingkey"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "git", args = "config --global user.signingkey ABC123" },
+]
+prompt = { en = "A wrong signing key was configured for your user. Remove user.signingkey completely.", es = "Se configuró una clave de firma equivocada para tu usuario. Quitá user.signingkey por completo." }
+hints = [
+  { en = "config has an --unset option.", es = "config tiene una opción --unset." },
+]
+checks = [
+  { type = "git_fails", args = "config --get user.signingkey", fail = { en = "user.signingkey still has a value.", es = "user.signingkey todavía tiene un valor." } },
+]

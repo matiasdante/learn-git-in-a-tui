@@ -90,6 +90,11 @@ pub enum CheckKind {
         path: String,
         contains: String,
     },
+    /// Como `file_contains`, pero el archivo está en el HOME del sandbox (`~/.git-credentials`...).
+    HomeFileContains {
+        path: String,
+        contains: String,
+    },
     /// El archivo existe y NO contiene este texto (por ejemplo marcas de conflicto).
     FileNotContains {
         path: String,
@@ -244,6 +249,10 @@ impl Check {
             CheckKind::FileContains { path, contains } => ctx
                 .read(path)
                 .is_some_and(|c| c.contains(contains.as_str())),
+            CheckKind::HomeFileContains { path, contains } => {
+                fs::read_to_string(ctx.sandbox.home_dir().join(path))
+                    .is_ok_and(|c| c.contains(contains.as_str()))
+            }
             CheckKind::FileNotContains { path, text } => {
                 ctx.read(path).is_some_and(|c| !c.contains(text.as_str()))
             }

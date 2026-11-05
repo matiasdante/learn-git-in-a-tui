@@ -1,0 +1,45 @@
+id = "hook"
+level = 8
+order = 4
+
+[title]
+en = "Automating with hooks: hook"
+es = "Automatizar con hooks: hook"
+
+[theory]
+en = """
+A hook is a script that git runs at a certain moment: before a commit, after a merge, before a push. They live in `.git/hooks/` and are plain scripts with the name of the event, with no extension and executable.
+
+  .git/hooks/pre-commit      runs before each commit; if it exits non-zero, the commit is cancelled
+  .git/hooks/commit-msg      checks the message
+  .git/hooks/pre-push        last chance before sending
+
+Typical use: run the linter or the tests so a broken commit never happens. `git hook run pre-commit` runs a hook by hand, and `git hook list` (newer git) shows the configured ones. Hooks are not copied by clone: share them through a tracked folder and core.hooksPath."""
+es = """
+Un hook es un script que git ejecuta en cierto momento: antes de un commit, después de una fusión, antes de un push. Viven en `.git/hooks/` y son scripts comunes con el nombre del evento, sin extensión y ejecutables.
+
+  .git/hooks/pre-commit      corre antes de cada commit; si sale con código distinto de cero, el commit se cancela
+  .git/hooks/commit-msg      revisa el mensaje
+  .git/hooks/pre-push        última oportunidad antes de enviar
+
+Uso típico: correr el linter o los tests para que nunca ocurra un commit roto. `git hook run pre-commit` ejecuta un hook a mano y `git hook list` (git más nuevo) muestra los configurados. Los hooks no se copian con clone: compartilos con una carpeta versionada y core.hooksPath."""
+
+[[exercise]]
+id = "hook-1"
+solution = ["echo \"#!/bin/sh\" > .git/hooks/pre-commit", "echo \"echo No commits today\" >> .git/hooks/pre-commit", "echo \"exit 1\" >> .git/hooks/pre-commit", "chmod +x .git/hooks/pre-commit", { run = "git commit -m \"try\"", allow_fail = true }]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+]
+prompt = { en = "Create a pre-commit hook that prints \"No commits today\" and exits with code 1, make it executable, and try to commit to see it block you.", es = "Creá un hook pre-commit que imprima \"No commits today\" y salga con código 1, hacelo ejecutable y probá commitear para ver cómo te bloquea." }
+hints = [
+  { en = "The file is .git/hooks/pre-commit and its first line is #!/bin/sh (quote it, since # starts a comment).", es = "El archivo es .git/hooks/pre-commit y su primera línea es #!/bin/sh (entrecomillala, porque # empieza un comentario)." },
+  { en = "Use echo ... > file for the first line, echo ... >> file for the rest, and chmod +x to make it executable.", es = "Usá echo ... > archivo para la primera línea, echo ... >> archivo para el resto y chmod +x para hacerlo ejecutable." },
+]
+checks = [
+  { type = "file_contains", path = ".git/hooks/pre-commit", contains = "exit 1", fail = { en = "The hook pre-commit does not exit with code 1.", es = "El hook pre-commit no sale con código 1." } },
+  { type = "file_contains", path = ".git/hooks/pre-commit", contains = "#!/bin/sh", fail = { en = "The hook needs #!/bin/sh as its first line.", es = "El hook necesita #!/bin/sh como primera línea." } },
+  { type = "ran", any = ["git commit"], fail = { en = "Now try to commit to see the hook block you.", es = "Ahora probá commitear para ver cómo el hook te bloquea." } },
+  { type = "commit_count", count = 0, fail = { en = "The commit went through: the hook did not block it.", es = "El commit se hizo: el hook no lo bloqueó." } },
+]

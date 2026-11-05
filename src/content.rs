@@ -184,6 +184,13 @@ pub enum Action {
         #[serde(default)]
         allow_fail: bool,
     },
+    /// Arma un archivo `allowed_signers` de SSH a partir de una clave pública (`key`):
+    /// una línea `principal tipo clave`.
+    AllowedSigners {
+        key: String,
+        principal: String,
+        out: String,
+    },
     /// Programas auxiliares permitidos (solo `ssh-keygen`).
     Exec {
         program: String,
