@@ -1,0 +1,67 @@
+id = "bundle"
+level = 3
+order = 7
+
+[title]
+en = "Moving history by file: bundle"
+es = "Mover la historia por archivo: bundle"
+
+[theory]
+en = """
+No network? A colleague works offline? `git bundle` packs commits into a single file that behaves like a remote: you can clone or fetch from it.
+
+  git bundle create backup.bundle --all   pack every branch and tag
+  git bundle verify backup.bundle         check that the file is valid
+  git clone backup.bundle restored        recover a repository from the file"""
+es = """
+¿Sin red? ¿Un colega trabaja sin conexión? `git bundle` empaqueta commits en un único archivo que se comporta como un remoto: podés clonar o hacer fetch desde él.
+
+  git bundle create backup.bundle --all   empaqueta todas las ramas y tags
+  git bundle verify backup.bundle         verifica que el archivo sea válido
+  git clone backup.bundle restaurado      recupera un repositorio desde el archivo"""
+
+[[exercise]]
+id = "bundle-1"
+cwd = "project"
+solution = ["git bundle create backup.bundle --all"]
+setup = [
+  { do = "git", args = "init project" },
+  { do = "write", path = "project/a.txt", content = "1\n" },
+  { do = "git", args = "add a.txt", dir = "project" },
+  { do = "git", args = "commit -m \"First\"", dir = "project" },
+  { do = "git", args = "branch feature", dir = "project" },
+  { do = "write", path = "project/b.txt", content = "2\n" },
+  { do = "git", args = "add b.txt", dir = "project" },
+  { do = "git", args = "commit -m \"Second\"", dir = "project" },
+]
+prompt = { en = "Make a backup of the whole repository (all branches) in a file called backup.bundle.", es = "Hacé un backup de todo el repositorio (todas las ramas) en un archivo llamado backup.bundle." }
+hints = [
+  { en = "git bundle create takes the file name and what to include.", es = "git bundle create recibe el nombre del archivo y qué incluir." },
+  { en = "Type: git bundle create backup.bundle --all", es = "Escribí: git bundle create backup.bundle --all" },
+]
+checks = [
+  { type = "git_ok", args = "bundle verify backup.bundle", fail = { en = "backup.bundle does not exist or is not a valid bundle.", es = "backup.bundle no existe o no es un bundle válido." } },
+  { type = "git_output", args = "bundle list-heads backup.bundle", contains = "refs/heads/feature", fail = { en = "The bundle should include every branch. Use --all.", es = "El bundle debería incluir todas las ramas. Usá --all." } },
+]
+
+[[exercise]]
+id = "bundle-2"
+solution = ["git clone backup.bundle restored"]
+setup = [
+  { do = "git", args = "init project" },
+  { do = "write", path = "project/a.txt", content = "1\n" },
+  { do = "git", args = "add a.txt", dir = "project" },
+  { do = "git", args = "commit -m \"First\"", dir = "project" },
+  { do = "write", path = "project/b.txt", content = "2\n" },
+  { do = "git", args = "add b.txt", dir = "project" },
+  { do = "git", args = "commit -m \"Second\"", dir = "project" },
+  { do = "git", args = "bundle create ../backup.bundle --all", dir = "project" },
+  { do = "rm", path = "project" },
+]
+prompt = { en = "The project folder was lost, but backup.bundle survived. Recover the repository into a folder called restored.", es = "Se perdió la carpeta del proyecto, pero backup.bundle sobrevivió. Recuperá el repositorio en una carpeta llamada restored." }
+hints = [
+  { en = "A bundle can be cloned like any repository.", es = "Un bundle se puede clonar como cualquier repositorio." },
+]
+checks = [
+  { type = "commit_count", count = 2, repo = "restored", fail = { en = "restored does not contain the 2 commits of the backup.", es = "restored no contiene los 2 commits del backup." } },
+]

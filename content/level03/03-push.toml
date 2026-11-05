@@ -1,0 +1,108 @@
+id = "push"
+level = 3
+order = 3
+
+[title]
+en = "Publishing your work: push"
+es = "Publicar tu trabajo: push"
+
+[theory]
+en = """
+Your commits only exist on your machine until you push them. `git push` uploads a branch to a remote.
+
+  git push -u origin main      first push: also remembers origin/main as the upstream of main
+  git push                     later pushes: uses the remembered upstream
+  git push origin feature      publish another branch
+  git push origin --delete old remove a branch from the server
+
+If someone pushed first, git rejects your push: you must integrate their work (git pull) and push again. Never force it on a shared branch."""
+es = """
+Tus commits solo existen en tu máquina hasta que los subís. `git push` sube una rama a un remoto.
+
+  git push -u origin main      primer push: además recuerda origin/main como upstream de main
+  git push                     pushes siguientes: usa el upstream recordado
+  git push origin feature      publica otra rama
+  git push origin --delete vieja  borra una rama del servidor
+
+Si alguien subió antes que vos, git rechaza tu push: tenés que integrar su trabajo (git pull) y volver a subir. Nunca lo fuerces en una rama compartida."""
+
+[[exercise]]
+id = "push-1"
+cwd = "project"
+solution = ["git push -u origin main"]
+setup = [
+  { do = "git", args = "init --bare server.git" },
+  { do = "git", args = "init project" },
+  { do = "write", path = "project/a.txt", content = "one\n" },
+  { do = "git", args = "add a.txt", dir = "project" },
+  { do = "git", args = "commit -m \"First commit\"", dir = "project" },
+  { do = "git", args = "remote add origin ../server.git", dir = "project" },
+]
+prompt = { en = "Publish your main branch to origin for the first time and remember it as the upstream.", es = "Publicá tu rama main en origin por primera vez y recordala como upstream." }
+hints = [
+  { en = "Use -u so git remembers the relation between main and origin/main.", es = "Usá -u para que git recuerde la relación entre main y origin/main." },
+  { en = "Type: git push -u origin main", es = "Escribí: git push -u origin main" },
+]
+checks = [
+  { type = "git_ok", args = "rev-parse --verify main", repo = "server.git", fail = { en = "The server does not have the branch main yet.", es = "El servidor todavía no tiene la rama main." } },
+  { type = "git_output", args = "rev-parse --abbrev-ref main@{upstream}", equals = "origin/main", fail = { en = "main does not track origin/main yet. Did you use -u?", es = "main todavía no sigue a origin/main. ¿Usaste -u?" } },
+]
+
+[[exercise]]
+id = "push-2"
+cwd = "project"
+solution = ["git push origin feature"]
+setup = [
+  { do = "git", args = "init --bare server.git" },
+  { do = "git", args = "init seed" },
+  { do = "write", path = "seed/a.txt", content = "one\n" },
+  { do = "git", args = "add a.txt", dir = "seed" },
+  { do = "git", args = "commit -m \"First commit\"", dir = "seed" },
+  { do = "write", path = "seed/b.txt", content = "two\n" },
+  { do = "git", args = "add b.txt", dir = "seed" },
+  { do = "git", args = "commit -m \"Second commit\"", dir = "seed" },
+  { do = "git", args = "remote add origin ../server.git", dir = "seed" },
+  { do = "git", args = "push -u origin main", dir = "seed" },
+  { do = "rm", path = "seed" },
+  { do = "git", args = "clone server.git project" },
+  { do = "git", args = "switch -c feature", dir = "project" },
+  { do = "write", path = "project/f.txt", content = "f\n" },
+  { do = "git", args = "add f.txt", dir = "project" },
+  { do = "git", args = "commit -m \"Add f\"", dir = "project" },
+]
+prompt = { en = "You committed on the branch feature. Publish that branch to origin.", es = "Commiteaste en la rama feature. Publicá esa rama en origin." }
+hints = [
+  { en = "Name the remote and then the branch.", es = "Nombrá el remoto y después la rama." },
+]
+checks = [
+  { type = "git_ok", args = "show-ref --verify --quiet refs/heads/feature", repo = "server.git", fail = { en = "The server does not have the branch feature yet.", es = "El servidor todavía no tiene la rama feature." } },
+]
+
+[[exercise]]
+id = "push-3"
+cwd = "project"
+solution = ["git push origin --delete old"]
+setup = [
+  { do = "git", args = "init --bare server.git" },
+  { do = "git", args = "init seed" },
+  { do = "write", path = "seed/a.txt", content = "one\n" },
+  { do = "git", args = "add a.txt", dir = "seed" },
+  { do = "git", args = "commit -m \"First commit\"", dir = "seed" },
+  { do = "write", path = "seed/b.txt", content = "two\n" },
+  { do = "git", args = "add b.txt", dir = "seed" },
+  { do = "git", args = "commit -m \"Second commit\"", dir = "seed" },
+  { do = "git", args = "remote add origin ../server.git", dir = "seed" },
+  { do = "git", args = "push -u origin main", dir = "seed" },
+  { do = "rm", path = "seed" },
+  { do = "git", args = "clone server.git project" },
+  { do = "git", args = "branch old", dir = "project" },
+  { do = "git", args = "push origin old", dir = "project" },
+]
+prompt = { en = "The branch old was published by mistake. Delete it from the server (origin).", es = "La rama old se publicó por error. Borrala del servidor (origin)." }
+hints = [
+  { en = "git push has a --delete option.", es = "git push tiene una opción --delete." },
+  { en = "Type: git push origin --delete old", es = "Escribí: git push origin --delete old" },
+]
+checks = [
+  { type = "git_fails", args = "show-ref --verify --quiet refs/heads/old", repo = "server.git", fail = { en = "The server still has the branch old.", es = "El servidor todavía tiene la rama old." } },
+]

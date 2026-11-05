@@ -166,6 +166,10 @@ pub enum Action {
     Mkdir {
         path: String,
     },
+    /// Borra un archivo o carpeta (por ejemplo un clon auxiliar usado para sembrar un remoto).
+    Rm {
+        path: String,
+    },
     /// `dir` es relativo a la raíz del sandbox. Con `allow_fail` el setup sigue aunque git
     /// termine con error (por ejemplo un merge que deja un conflicto a propósito).
     Git {

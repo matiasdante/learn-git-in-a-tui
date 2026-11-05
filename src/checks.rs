@@ -108,6 +108,8 @@ pub enum CheckKind {
         equals: Option<String>,
         #[serde(default)]
         same_as: Option<String>,
+        #[serde(default)]
+        contains: Option<String>,
     },
     GitOk {
         args: String,
@@ -207,7 +209,12 @@ impl Check {
                 let Some(content) = ctx.read(path) else {
                     return false;
                 };
-                let wanted = content.trim().to_lowercase();
+                // Vale `git ls-remote ... > archivo`: se toma la primera palabra (el hash).
+                let wanted = content
+                    .split_whitespace()
+                    .next()
+                    .unwrap_or("")
+                    .to_lowercase();
                 let full = ctx.git_out(&["rev-parse", rev]);
                 wanted.len() >= 4 && full.is_some_and(|f| f.starts_with(&wanted))
             }
@@ -248,14 +255,16 @@ impl Check {
                 args,
                 equals,
                 same_as,
+                contains,
             } => {
                 let Some(actual) = ctx.out_of(args) else {
                     return false;
                 };
-                match (equals, same_as) {
-                    (Some(expected), _) => actual == expected.trim(),
-                    (None, Some(other)) => ctx.out_of(other).is_some_and(|o| o == actual),
-                    (None, None) => false,
+                match (equals, same_as, contains) {
+                    (Some(expected), _, _) => actual == expected.trim(),
+                    (None, Some(other), _) => ctx.out_of(other).is_some_and(|o| o == actual),
+                    (None, None, Some(text)) => actual.contains(text.as_str()),
+                    (None, None, None) => false,
                 }
             }
             CheckKind::GitOk { args } => ctx.run_args(args).is_some_and(|o| o.status.success()),
