@@ -1,0 +1,45 @@
+id = "get-tar-commit-id"
+level = 7
+order = 6
+
+[title]
+en = "Which commit is this tarball? get-tar-commit-id"
+es = "¿De qué commit es este tarball? get-tar-commit-id"
+
+[theory]
+en = """
+A tarball made by `git archive` from a commit carries that commit's hash in its header. If you find an old release.tar and wonder what source it was built from:
+
+  git get-tar-commit-id < release.tar
+
+It prints the hash, or nothing if the tar was not made by git archive from a commit (a tag or tree gives it too only if it points to a commit)."""
+es = """
+Un tarball hecho por `git archive` a partir de un commit lleva el hash de ese commit en su encabezado. Si encontrás un release.tar viejo y te preguntás de qué código fuente salió:
+
+  git get-tar-commit-id < release.tar
+
+Imprime el hash, o nada si el tar no fue hecho por git archive a partir de un commit."""
+
+[[exercise]]
+id = "get-tar-commit-id-1"
+solution = ["git get-tar-commit-id < release.tar > answer.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "1\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"One\"" },
+  { do = "write", path = "b.txt", content = "2\n" },
+  { do = "git", args = "add b.txt" },
+  { do = "git", args = "commit -m \"Two\"" },
+  { do = "write", path = "c.txt", content = "3\n" },
+  { do = "git", args = "add c.txt" },
+  { do = "git", args = "commit -m \"Three\"" },
+  { do = "git", args = "archive -o release.tar HEAD~1" },
+]
+prompt = { en = "release.tar was built from one of the commits of this repository. Write the hash of that commit into answer.txt.", es = "release.tar se armó a partir de uno de los commits de este repositorio. Escribí el hash de ese commit en answer.txt." }
+hints = [
+  { en = "The command reads the tar from standard input: use < release.tar.", es = "El comando lee el tar de la entrada estándar: usá < release.tar." },
+]
+checks = [
+  { type = "file_matches_rev", path = "answer.txt", rev = "HEAD~1", fail = { en = "answer.txt must contain the hash of the commit the tarball was built from.", es = "answer.txt debe contener el hash del commit del que salió el tarball." } },
+]

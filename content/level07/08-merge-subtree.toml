@@ -1,0 +1,23 @@
+id = "merge-subtree"
+level = 7
+order = 8
+
+[title]
+en = "merge-subtree (merge strategy)"
+es = "merge-subtree (estrategia de fusión)"
+
+[theory]
+en = """
+`subtree` is also a MERGE STRATEGY (the program git-merge-subtree you may see listed). When you merge a project whose files live in a subfolder of yours, it finds by itself the right prefix to compare.
+
+  git merge -s subtree library/main
+  git merge -X subtree=vendor/lib library/main    when git needs the prefix spelled out
+
+`git subtree pull` uses it under the hood. For everyday work prefer the porcelain git subtree commands."""
+es = """
+`subtree` también es una ESTRATEGIA DE FUSIÓN (el programa git-merge-subtree que podés ver en listados). Cuando fusionás un proyecto cuyos archivos viven en una subcarpeta tuya, encuentra solo el prefijo correcto para comparar.
+
+  git merge -s subtree libreria/main
+  git merge -X subtree=vendor/lib libreria/main    cuando git necesita que le indiques el prefijo
+
+`git subtree pull` la usa por dentro. Para el trabajo diario preferí los comandos git subtree."""

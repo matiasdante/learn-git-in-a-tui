@@ -1,0 +1,67 @@
+id = "worktree"
+level = 7
+order = 1
+
+[title]
+en = "Several folders, one repository: worktree"
+es = "Varias carpetas, un repositorio: worktree"
+
+[theory]
+en = """
+You are in the middle of a feature and a hotfix lands. Instead of stashing, `git worktree` gives you a second working folder of the same repository, on another branch, sharing all the history. No second clone, no duplicated objects.
+
+  git worktree add ../hotfix hotfix    new folder ../hotfix with the branch hotfix checked out
+  git worktree list                    all folders of this repository
+  git worktree remove ../hotfix        delete the extra folder when done
+
+A branch can only be checked out in one worktree at a time."""
+es = """
+Estás a mitad de una funcionalidad y entra un hotfix. En vez de usar stash, `git worktree` te da una segunda carpeta de trabajo del mismo repositorio, en otra rama, compartiendo toda la historia. Sin segundo clon, sin objetos duplicados.
+
+  git worktree add ../hotfix hotfix    carpeta nueva ../hotfix con la rama hotfix
+  git worktree list                    todas las carpetas de este repositorio
+  git worktree remove ../hotfix        borra la carpeta extra al terminar
+
+Una rama solo puede estar activa en un worktree a la vez."""
+
+[[exercise]]
+id = "worktree-1"
+cwd = "project"
+solution = ["git worktree add ../hotfix hotfix"]
+setup = [
+  { do = "git", args = "init project" },
+  { do = "write", path = "project/app.txt", content = "app\n" },
+  { do = "git", args = "add app.txt", dir = "project" },
+  { do = "git", args = "commit -m \"Add app\"", dir = "project" },
+  { do = "git", args = "branch hotfix", dir = "project" },
+]
+prompt = { en = "Open a second working folder ../hotfix with the branch hotfix checked out, without leaving your current work.", es = "Abrí una segunda carpeta de trabajo ../hotfix con la rama hotfix, sin dejar tu trabajo actual." }
+hints = [
+  { en = "worktree add takes the new folder and then the branch.", es = "worktree add recibe la carpeta nueva y después la rama." },
+  { en = "Type: git worktree add ../hotfix hotfix", es = "Escribí: git worktree add ../hotfix hotfix" },
+]
+checks = [
+  { type = "branch", name = "hotfix", repo = "hotfix", fail = { en = "The folder ../hotfix does not have the branch hotfix checked out.", es = "La carpeta ../hotfix no tiene la rama hotfix activa." } },
+  { type = "file_exists", path = "app.txt", repo = "hotfix", fail = { en = "../hotfix does not contain the project files.", es = "../hotfix no contiene los archivos del proyecto." } },
+]
+
+[[exercise]]
+id = "worktree-2"
+cwd = "project"
+solution = ["git worktree remove ../hotfix"]
+setup = [
+  { do = "git", args = "init project" },
+  { do = "write", path = "project/app.txt", content = "app\n" },
+  { do = "git", args = "add app.txt", dir = "project" },
+  { do = "git", args = "commit -m \"Add app\"", dir = "project" },
+  { do = "git", args = "branch hotfix", dir = "project" },
+  { do = "git", args = "worktree add ../hotfix hotfix", dir = "project" },
+]
+prompt = { en = "The hotfix is done. Remove the extra working folder ../hotfix (the branch can stay).", es = "El hotfix terminó. Quitá la carpeta de trabajo extra ../hotfix (la rama puede quedar)." }
+hints = [
+  { en = "There is a worktree subcommand to remove.", es = "Hay un subcomando de worktree para quitar." },
+]
+checks = [
+  { type = "file_missing", path = "../hotfix", fail = { en = "The folder ../hotfix still exists.", es = "La carpeta ../hotfix todavía existe." } },
+  { type = "branch_exists", name = "hotfix", fail = { en = "The branch hotfix should be kept.", es = "La rama hotfix tendría que conservarse." } },
+]
