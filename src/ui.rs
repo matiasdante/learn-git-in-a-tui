@@ -6,7 +6,8 @@ use ratatui::style::{Modifier, Style};
 use ratatui::text::{Line, Span};
 use ratatui::widgets::{Block, Paragraph, Wrap};
 
-use crate::app::{App, ExStatus, ExerciseState, MenuItem, Screen};
+use crate::app::{App, ExStatus, ExamState, ExerciseState, MapItem, Screen};
+use crate::i18n::Lang;
 use crate::i18n::tr;
 
 pub fn draw(frame: &mut Frame, app: &App) {
@@ -15,10 +16,15 @@ pub fn draw(frame: &mut Frame, app: &App) {
         return;
     }
     match &app.screen {
-        Screen::Menu => draw_menu(frame, app),
+        Screen::LangSelect => draw_lang(frame, app),
+        Screen::ExamOffer { selected } => draw_exam_offer(frame, app, *selected),
+        Screen::Exam(exam) => draw_exam(frame, app, exam),
+        Screen::Map => draw_map(frame, app),
+        Screen::Level(level) => draw_level(frame, app, *level),
         Screen::Theory { lesson, scroll } => draw_theory(frame, app, *lesson, *scroll),
         Screen::Exercise(state) => draw_exercise(frame, app, state),
         Screen::Free => draw_free(frame, app),
+        Screen::Achievements => draw_achievements(frame, app),
     }
 }
 
@@ -30,55 +36,204 @@ fn draw_help(frame: &mut Frame, area: Rect, text: &str) {
     frame.render_widget(Paragraph::new(text.to_string()).style(dim()), area);
 }
 
-fn draw_menu(frame: &mut Frame, app: &App) {
+fn centered(frame: &Frame, width: u16, height: u16) -> Rect {
+    let area = frame.area();
+    let w = width.min(area.width);
+    let h = height.min(area.height);
+    Rect::new(
+        area.x + (area.width - w) / 2,
+        area.y + (area.height - h) / 2,
+        w,
+        h,
+    )
+}
+
+fn option_line(label: String, selected: bool) -> Line<'static> {
+    if selected {
+        Line::from(Span::styled(
+            format!("  ▶ {label}"),
+            Style::new().add_modifier(Modifier::REVERSED),
+        ))
+    } else {
+        Line::raw(format!("    {label}"))
+    }
+}
+
+fn draw_lang(frame: &mut Frame, app: &App) {
+    let area = centered(frame, 44, 8);
+    let lines = vec![
+        Line::raw("Choose your language / Elegí tu idioma"),
+        Line::raw(""),
+        option_line("1  English".into(), app.lang == Lang::En),
+        option_line("2  Español".into(), app.lang == Lang::Es),
+        Line::raw(""),
+        Line::styled("↑/↓ · Enter", dim()),
+    ];
+    frame.render_widget(
+        Paragraph::new(lines).block(Block::bordered().title(" learn-git-tui ")),
+        area,
+    );
+}
+
+fn draw_exam_offer(frame: &mut Frame, app: &App, selected: usize) {
+    let area = centered(frame, 70, 11);
+    let lines = vec![
+        Line::raw(tr(
+            app.lang,
+            "Do you already know some git? A 10-question placement exam picks your starting level.",
+            "¿Ya sabés algo de git? Un examen de ubicación de 10 preguntas elige tu nivel de arranque.",
+        )),
+        Line::raw(""),
+        option_line(
+            tr(
+                app.lang,
+                "Take the placement exam",
+                "Rendir el examen de ubicación",
+            )
+            .into(),
+            selected == 0,
+        ),
+        option_line(
+            tr(
+                app.lang,
+                "Skip it and start at level 1",
+                "Omitirlo y empezar en el nivel 1",
+            )
+            .into(),
+            selected == 1,
+        ),
+        Line::raw(""),
+        Line::styled(
+            tr(
+                app.lang,
+                "Earlier levels always stay available.  ↑/↓ · Enter · L language",
+                "Los niveles anteriores siempre quedan disponibles.  ↑/↓ · Enter · L idioma",
+            ),
+            dim(),
+        ),
+    ];
+    frame.render_widget(
+        Paragraph::new(lines)
+            .block(Block::bordered().title(tr(
+                app.lang,
+                " Placement exam ",
+                " Examen de ubicación ",
+            )))
+            .wrap(Wrap { trim: false }),
+        area,
+    );
+}
+
+fn draw_exam(frame: &mut Frame, app: &App, exam: &ExamState) {
+    let area = centered(frame, 90, 16);
+    let title = tr(app.lang, " Placement exam ", " Examen de ubicación ");
+    if let Some(level) = exam.result {
+        let name = app
+            .content
+            .level(level)
+            .map_or("", |l| l.title.get(app.lang));
+        let lines = vec![
+            Line::raw(tr(app.lang, "Exam finished.", "Examen terminado.")),
+            Line::raw(""),
+            Line::styled(
+                format!(
+                    "{} {level} — {name}",
+                    tr(app.lang, "You start at level", "Arrancás en el nivel")
+                ),
+                Style::new().add_modifier(Modifier::BOLD),
+            ),
+            Line::raw(""),
+            Line::styled(tr(app.lang, "Enter: continue", "Enter: continuar"), dim()),
+        ];
+        frame.render_widget(
+            Paragraph::new(lines).block(Block::bordered().title(title)),
+            area,
+        );
+        return;
+    }
+    let question = &app.content.exam[exam.question];
+    let mut lines = vec![
+        Line::styled(
+            format!(
+                "{} {}/{}",
+                tr(app.lang, "Question", "Pregunta"),
+                exam.question + 1,
+                app.content.exam.len()
+            ),
+            dim(),
+        ),
+        Line::raw(question.text.get(app.lang).to_string()),
+        Line::raw(""),
+    ];
+    for (i, option) in question.options.iter().enumerate() {
+        lines.push(option_line(
+            format!("{}  {}", i + 1, option.get(app.lang)),
+            i == exam.selected,
+        ));
+    }
+    lines.push(Line::raw(""));
+    lines.push(Line::styled(
+        tr(
+            app.lang,
+            "↑/↓ or 1-4 to choose · Enter to answer",
+            "↑/↓ o 1-4 para elegir · Enter para responder",
+        ),
+        dim(),
+    ));
+    frame.render_widget(
+        Paragraph::new(lines)
+            .block(Block::bordered().title(title))
+            .wrap(Wrap { trim: false }),
+        area,
+    );
+}
+
+fn draw_map(frame: &mut Frame, app: &App) {
     let [body, help] =
         Layout::vertical([Constraint::Min(3), Constraint::Length(1)]).areas(frame.area());
-    let block = Block::bordered().title(" learn-git-tui ");
-    let height = block.inner(body).height as usize;
-
+    let title = format!(
+        " learn-git-tui — {} {} ",
+        app.progress.total_points(),
+        tr(app.lang, "points", "puntos")
+    );
     let mut lines: Vec<Line> = Vec::new();
-    let mut selected_line = 0;
-    let mut last_level = None;
-    for (i, item) in app.menu_items().into_iter().enumerate() {
-        let (level, label) = match item {
-            MenuItem::Lesson(l) => {
-                let lesson = &app.content.lessons[l];
-                (Some(lesson.level), lesson.title.get(app.lang).to_string())
+    for (i, item) in app.map_items().into_iter().enumerate() {
+        let label = match item {
+            MapItem::Level(id) => {
+                let name = app.content.level(id).map_or("", |l| l.title.get(app.lang));
+                let (done, total) = app.content.level_progress(id, &app.progress);
+                let mark = if total > 0 && done == total {
+                    "✓"
+                } else {
+                    " "
+                };
+                let start = if app.progress.placement == Some(id) {
+                    tr(app.lang, "  ← your start", "  ← tu inicio")
+                } else {
+                    ""
+                };
+                format!(
+                    "{mark} {} {id:>2} — {name}  [{done}/{total}]{start}",
+                    tr(app.lang, "Level", "Nivel")
+                )
             }
-            MenuItem::Free => (None, tr(app.lang, "Free mode", "Modo libre").to_string()),
+            MapItem::Free => format!("  {}", tr(app.lang, "Free mode", "Modo libre")),
+            MapItem::Achievements => format!(
+                "  {} ({}/{})",
+                tr(app.lang, "Achievements", "Logros"),
+                app.progress.achievements.len(),
+                app.content.achievements.len()
+            ),
         };
-        if level != last_level {
-            let header = match level {
-                Some(id) => {
-                    let title = app
-                        .content
-                        .level(id)
-                        .map_or("", |lvl| lvl.title.get(app.lang));
-                    format!("{} {id} — {title}", tr(app.lang, "Level", "Nivel"))
-                }
-                None => tr(app.lang, "Practice", "Práctica").to_string(),
-            };
-            if !lines.is_empty() {
-                lines.push(Line::raw(""));
-            }
-            lines.push(Line::styled(
-                header,
-                Style::new().add_modifier(Modifier::BOLD),
-            ));
-            last_level = level;
+        if matches!(item, MapItem::Free) {
+            lines.push(Line::raw(""));
         }
-        if i == app.menu_selected {
-            selected_line = lines.len();
-            lines.push(Line::from(Span::styled(
-                format!("  ▶ {label}"),
-                Style::new().add_modifier(Modifier::REVERSED),
-            )));
-        } else {
-            lines.push(Line::raw(format!("    {label}")));
-        }
+        lines.push(option_line(label, i == app.map_selected));
     }
-    let offset = selected_line.saturating_sub(height.saturating_sub(2)) as u16;
-    frame.render_widget(Paragraph::new(lines).block(block).scroll((offset, 0)), body);
+    frame.render_widget(
+        Paragraph::new(lines).block(Block::bordered().title(title)),
+        body,
+    );
     draw_help(
         frame,
         help,
@@ -88,6 +243,75 @@ fn draw_menu(frame: &mut Frame, app: &App) {
             "↑/↓ mover · Enter abrir · L: English/Español · Q salir",
         ),
     );
+}
+
+fn draw_level(frame: &mut Frame, app: &App, level: u8) {
+    let [body, help] =
+        Layout::vertical([Constraint::Min(3), Constraint::Length(1)]).areas(frame.area());
+    let name = app
+        .content
+        .level(level)
+        .map_or("", |l| l.title.get(app.lang));
+    let mut lines: Vec<Line> = Vec::new();
+    for (pos, (_, lesson)) in app.content.lessons_of(level).enumerate() {
+        let done = !lesson.exercises.is_empty()
+            && lesson.exercises.iter().all(|e| app.progress.is_done(&e.id));
+        let mark = if done { "✓" } else { " " };
+        lines.push(option_line(
+            format!("{mark} {}", lesson.title.get(app.lang)),
+            pos == app.level_selected,
+        ));
+    }
+    if lines.is_empty() {
+        lines.push(Line::raw(tr(app.lang, "Coming soon.", "Próximamente.")));
+    }
+    let block = Block::bordered().title(format!(
+        " {} {level} — {name} ",
+        tr(app.lang, "Level", "Nivel")
+    ));
+    frame.render_widget(Paragraph::new(lines).block(block), body);
+    draw_help(
+        frame,
+        help,
+        tr(
+            app.lang,
+            "↑/↓ move · Enter open lesson · L language · Esc back",
+            "↑/↓ mover · Enter abrir lección · L idioma · Esc volver",
+        ),
+    );
+}
+
+fn draw_achievements(frame: &mut Frame, app: &App) {
+    let [body, help] =
+        Layout::vertical([Constraint::Min(3), Constraint::Length(1)]).areas(frame.area());
+    let mut lines: Vec<Line> = Vec::new();
+    for a in &app.content.achievements {
+        let unlocked = app.progress.achievements.contains(&a.id);
+        let (mark, style) = if unlocked {
+            ("★", Style::new().add_modifier(Modifier::BOLD))
+        } else {
+            ("☆", dim())
+        };
+        lines.push(Line::styled(
+            format!("{mark} {}", a.title.get(app.lang)),
+            style,
+        ));
+        lines.push(Line::styled(
+            format!("    {}", a.description.get(app.lang)),
+            dim(),
+        ));
+    }
+    let title = format!(
+        " {} — {} {} ",
+        tr(app.lang, "Achievements", "Logros"),
+        app.progress.total_points(),
+        tr(app.lang, "points", "puntos")
+    );
+    frame.render_widget(
+        Paragraph::new(lines).block(Block::bordered().title(title)),
+        body,
+    );
+    draw_help(frame, help, tr(app.lang, "Esc: back", "Esc: volver"));
 }
 
 fn draw_theory(frame: &mut Frame, app: &App, lesson: usize, scroll: u16) {
@@ -143,9 +367,13 @@ fn draw_exercise(frame: &mut Frame, app: &App, state: &ExerciseState) {
             lines.push(Line::raw(""));
             lines.push(Line::raw(format!("✗ {}", why.get(app.lang))));
         }
-        ExStatus::Passed => {
+        ExStatus::Passed { points } => {
             lines.push(Line::raw(""));
-            lines.push(Line::raw(tr(app.lang, "✓ Correct!", "✓ ¡Correcto!")));
+            lines.push(Line::raw(format!(
+                "{} +{points} {}",
+                tr(app.lang, "✓ Correct!", "✓ ¡Correcto!"),
+                tr(app.lang, "points", "puntos")
+            )));
         }
     }
     let title = format!(
@@ -175,7 +403,7 @@ fn draw_exercise(frame: &mut Frame, app: &App, state: &ExerciseState) {
             "Enter: send to git · Ctrl+D: close stdin · Ctrl+C: stop git",
             "Enter: enviar a git · Ctrl+D: cerrar stdin · Ctrl+C: detener git",
         )
-    } else if matches!(state.status, ExStatus::Passed) {
+    } else if matches!(state.status, ExStatus::Passed { .. }) {
         tr(
             app.lang,
             "F6: continue · Esc: back to the menu",

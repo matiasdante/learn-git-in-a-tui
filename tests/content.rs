@@ -69,3 +69,13 @@ fn every_exercise_fails_untouched_and_passes_with_its_solution() {
     assert!(count > 0);
     let _ = remove_dir_all_force(&root);
 }
+
+#[test]
+fn exam_has_two_questions_for_each_of_levels_1_to_5() {
+    let content = Content::load().unwrap();
+    for level in 1..=5u8 {
+        let n = content.exam.iter().filter(|q| q.level == level).count();
+        assert_eq!(n, 2, "exam level {level}");
+    }
+    assert_eq!(content.exam.len(), 10);
+}

@@ -1,0 +1,29 @@
+[[achievement]]
+id = "first-repo"
+title = { en = "Day one", es = "Día uno" }
+description = { en = "Create your first repository.", es = "Creá tu primer repositorio." }
+condition = { type = "exercise_done", exercise = "init-1" }
+
+[[achievement]]
+id = "first-commit"
+title = { en = "First commit", es = "Primer commit" }
+description = { en = "Save your first snapshot with git commit.", es = "Guardá tu primera foto con git commit." }
+condition = { type = "exercise_done", exercise = "commit-1" }
+
+[[achievement]]
+id = "keeper-of-secrets"
+title = { en = "Keeper of secrets", es = "Guardián de secretos" }
+description = { en = "Make git forget a file committed by mistake.", es = "Hacé que git olvide un archivo commiteado por error." }
+condition = { type = "exercise_done", exercise = "rm-2" }
+
+[[achievement]]
+id = "level-1-done"
+title = { en = "Fundamentals complete", es = "Fundamentos completos" }
+description = { en = "Finish every exercise of level 1.", es = "Terminá todos los ejercicios del nivel 1." }
+condition = { type = "level_done", level = 1 }
+
+[[achievement]]
+id = "level-1-no-hints"
+title = { en = "No training wheels", es = "Sin rueditas" }
+description = { en = "Finish level 1 without using a single hint.", es = "Terminá el nivel 1 sin usar ni una pista." }
+condition = { type = "level_no_hints", level = 1 }

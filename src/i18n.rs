@@ -1,8 +1,9 @@
 //! Idiomas: cada texto del contenido viaja como `{ en, es }` en el mismo archivo.
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Copy, PartialEq, Eq, Debug, Default)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Default, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
 pub enum Lang {
     #[default]
     En,
