@@ -1,0 +1,37 @@
+id = "merge-file"
+level = 9
+order = 20
+
+[title]
+en = "Merging three files: merge-file"
+es = "Fusionar tres archivos: merge-file"
+
+[theory]
+en = """
+`git merge-file` does a three-way merge of plain files, with no repository involved: your version, the common base and the other version. The result is written over your version.
+
+  git merge-file mine.txt base.txt theirs.txt
+
+If both changed the same lines, conflict markers are inserted and the exit code is the number of conflicts."""
+es = """
+`git merge-file` hace una fusión de tres vías de archivos comunes, sin repositorio de por medio: tu versión, la base común y la otra versión. El resultado se escribe sobre tu versión.
+
+  git merge-file mia.txt base.txt suya.txt
+
+Si ambos cambiaron las mismas líneas se insertan marcas de conflicto y el código de salida es la cantidad de conflictos."""
+
+[[exercise]]
+id = "merge-file-1"
+solution = ["git merge-file mine.txt base.txt theirs.txt"]
+setup = [
+  { do = "write", path = "base.txt", content = "1\n2\n3\n" },
+  { do = "write", path = "mine.txt", content = "1 mine\n2\n3\n" },
+  { do = "write", path = "theirs.txt", content = "1\n2\n3 theirs\n" },
+]
+prompt = { en = "Merge theirs.txt into mine.txt using base.txt as the common ancestor. Both changes (different lines) must end up in mine.txt.", es = "Fusioná theirs.txt en mine.txt usando base.txt como ancestro común. Los dos cambios (en líneas distintas) tienen que quedar en mine.txt." }
+hints = [
+  { en = "The order is: your file, the base, the other file.", es = "El orden es: tu archivo, la base, el otro archivo." },
+]
+checks = [
+  { type = "file_content", path = "mine.txt", equals = "1 mine\n2\n3 theirs", fail = { en = "mine.txt should have both changes: \"1 mine\" and \"3 theirs\".", es = "mine.txt debería tener los dos cambios: \"1 mine\" y \"3 theirs\"." } },
+]

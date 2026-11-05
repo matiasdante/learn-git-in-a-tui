@@ -1,0 +1,54 @@
+id = "rev-list"
+level = 9
+order = 12
+
+[title]
+en = "Walking the history: rev-list"
+es = "Recorrer la historia: rev-list"
+
+[theory]
+en = """
+`git rev-list` prints commit hashes reachable from a starting point, one per line. It is the engine under `git log` and ideal for scripts.
+
+  git rev-list HEAD                  every commit
+  git rev-list --count main..feature how many commits feature has that main lacks
+  git rev-list --max-count=3 HEAD    just three
+  git rev-list --merges HEAD         only merge commits"""
+es = """
+`git rev-list` imprime hashes de los commits alcanzables desde un punto de partida, uno por línea. Es el motor debajo de `git log` e ideal para scripts.
+
+  git rev-list HEAD                  todos los commits
+  git rev-list --count main..feature cuántos commits tiene feature que le faltan a main
+  git rev-list --max-count=3 HEAD    solo tres
+  git rev-list --merges HEAD         solo commits de fusión"""
+
+[[exercise]]
+id = "rev-list-1"
+solution = ["git rev-list --count main..feature > answer.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "base.txt", content = "b\n" },
+  { do = "git", args = "add base.txt" },
+  { do = "git", args = "commit -m \"Base\"" },
+  { do = "git", args = "switch -c feature" },
+  { do = "write", path = "f1.txt", content = "1\n" },
+  { do = "git", args = "add f1.txt" },
+  { do = "git", args = "commit -m \"F1\"" },
+  { do = "write", path = "f2.txt", content = "2\n" },
+  { do = "git", args = "add f2.txt" },
+  { do = "git", args = "commit -m \"F2\"" },
+  { do = "write", path = "f3.txt", content = "3\n" },
+  { do = "git", args = "add f3.txt" },
+  { do = "git", args = "commit -m \"F3\"" },
+  { do = "git", args = "switch main" },
+  { do = "write", path = "m1.txt", content = "1\n" },
+  { do = "git", args = "add m1.txt" },
+  { do = "git", args = "commit -m \"M1\"" },
+]
+prompt = { en = "Save into answer.txt how many commits feature has that main does not.", es = "Guardá en answer.txt cuántos commits tiene feature que main no tiene." }
+hints = [
+  { en = "Use --count with main..feature.", es = "Usá --count con main..feature." },
+]
+checks = [
+  { type = "file_equals_git", path = "answer.txt", args = "rev-list --count main..feature", fail = { en = "answer.txt must contain exactly the output of git rev-list --count main..feature.", es = "answer.txt debe contener exactamente la salida de git rev-list --count main..feature." } },
+]

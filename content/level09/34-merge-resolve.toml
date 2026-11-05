@@ -1,0 +1,21 @@
+id = "merge-resolve"
+level = 9
+order = 34
+
+[title]
+en = "Strategy: resolve"
+es = "Estrategia: resolve"
+
+[theory]
+en = """
+`resolve` is the older two-head strategy: a plain three-way merge that uses only one common ancestor and does not detect renames. It is simpler and, in rare cases of criss-cross merges, more conservative.
+
+  git merge -s resolve feature
+
+It lives on for compatibility; nowadays ort covers its use cases."""
+es = """
+`resolve` es la estrategia vieja de dos cabezas: una fusión de tres vías simple que usa un único ancestro común y no detecta renombres. Es más simple y, en casos raros de fusiones cruzadas, más conservadora.
+
+  git merge -s resolve feature
+
+Sigue existiendo por compatibilidad; hoy ort cubre sus casos de uso."""

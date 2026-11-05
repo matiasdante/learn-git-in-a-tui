@@ -165,3 +165,21 @@ id = "level-8-no-hints"
 title = { en = "Paranoid and proud", es = "Paranoico y orgulloso" }
 description = { en = "Finish level 8 without using a single hint.", es = "Terminá el nivel 8 sin usar ni una pista." }
 condition = { type = "level_no_hints", level = 8 }
+
+[[achievement]]
+id = "hand-made-commit"
+title = { en = "Handmade", es = "Hecho a mano" }
+description = { en = "Create a commit object with commit-tree.", es = "Creá un objeto commit con commit-tree." }
+condition = { type = "exercise_done", exercise = "commit-tree-1" }
+
+[[achievement]]
+id = "level-9-done"
+title = { en = "Under the hood", es = "Bajo el capó" }
+description = { en = "Finish every exercise of level 9.", es = "Terminá todos los ejercicios del nivel 9." }
+condition = { type = "level_done", level = 9 }
+
+[[achievement]]
+id = "level-9-no-hints"
+title = { en = "Plumber's pride", es = "Orgullo de plomero" }
+description = { en = "Finish level 9 without using a single hint.", es = "Terminá el nivel 9 sin usar ni una pista." }
+condition = { type = "level_no_hints", level = 9 }

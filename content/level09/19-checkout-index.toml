@@ -1,0 +1,39 @@
+id = "checkout-index"
+level = 9
+order = 19
+
+[title]
+en = "Index to disk: checkout-index"
+es = "Del índice al disco: checkout-index"
+
+[theory]
+en = """
+`git checkout-index` copies files from the index to the working folder. It is how you restore a deleted file to the staged version.
+
+  git checkout-index a.txt        restore one file
+  git checkout-index -a           restore everything missing
+  git checkout-index -a -f        overwrite files that exist too"""
+es = """
+`git checkout-index` copia archivos del índice a la carpeta de trabajo. Así restaurás un archivo borrado a su versión preparada.
+
+  git checkout-index a.txt        restaura un archivo
+  git checkout-index -a           restaura todo lo que falta
+  git checkout-index -a -f        sobrescribe también los archivos que existen"""
+
+[[exercise]]
+id = "checkout-index-1"
+solution = ["git checkout-index a.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "alpha\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "rm", path = "a.txt" },
+]
+prompt = { en = "a.txt was deleted from the folder but is still in the index. Bring it back from the index.", es = "a.txt se borró de la carpeta pero sigue en el índice. Traelo de vuelta desde el índice." }
+hints = [
+  { en = "Type: git checkout-index a.txt", es = "Escribí: git checkout-index a.txt" },
+]
+checks = [
+  { type = "file_content", path = "a.txt", equals = "alpha", fail = { en = "a.txt is not back yet.", es = "a.txt todavía no volvió." } },
+]

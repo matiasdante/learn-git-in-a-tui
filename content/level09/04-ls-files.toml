@@ -1,0 +1,46 @@
+id = "ls-files"
+level = 9
+order = 4
+
+[title]
+en = "The index: ls-files"
+es = "El índice: ls-files"
+
+[theory]
+en = """
+The index (staging area) is a list of paths with the blob each one will have in the next commit. `git ls-files` shows it.
+
+  git ls-files               tracked paths
+  git ls-files --stage       mode, hash, stage number and path
+  git ls-files --others      untracked files
+  git ls-files --deleted     tracked files missing on disk"""
+es = """
+El índice (área de preparación) es una lista de rutas con el blob que cada una tendrá en el próximo commit. `git ls-files` lo muestra.
+
+  git ls-files               rutas seguidas
+  git ls-files --stage       modo, hash, número de etapa y ruta
+  git ls-files --others      archivos sin seguimiento
+  git ls-files --deleted     archivos seguidos que faltan en disco"""
+
+[[exercise]]
+id = "ls-files-1"
+solution = ["git ls-files --stage > answer.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "alpha\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "write", path = "b.txt", content = "beta\n" },
+  { do = "git", args = "add b.txt" },
+  { do = "git", args = "commit -m \"Add b\"" },
+  { do = "write", path = "c.txt", content = "gamma\n" },
+  { do = "git", args = "add c.txt" },
+  { do = "git", args = "commit -m \"Add c\"" },
+]
+prompt = { en = "Save the full contents of the index (mode, hash and path of every file) into answer.txt.", es = "Guardá en answer.txt el contenido completo del índice (modo, hash y ruta de cada archivo)." }
+hints = [
+  { en = "--stage adds the mode and the hash.", es = "--stage agrega el modo y el hash." },
+]
+checks = [
+  { type = "file_equals_git", path = "answer.txt", args = "ls-files --stage", fail = { en = "answer.txt must contain exactly the output of git ls-files --stage.", es = "answer.txt debe contener exactamente la salida de git ls-files --stage." } },
+]

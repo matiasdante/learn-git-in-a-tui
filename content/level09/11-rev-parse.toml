@@ -1,0 +1,48 @@
+id = "rev-parse"
+level = 9
+order = 11
+
+[title]
+en = "Translating names: rev-parse"
+es = "Traducir nombres: rev-parse"
+
+[theory]
+en = """
+`git rev-parse` is the Swiss army knife of scripts: it turns any revision expression into a full hash and answers questions about the repository.
+
+  git rev-parse HEAD~2              full hash
+  git rev-parse --short HEAD        short hash
+  git rev-parse --abbrev-ref HEAD   current branch name
+  git rev-parse --show-toplevel     root folder of the working tree
+  git rev-parse --is-inside-work-tree"""
+es = """
+`git rev-parse` es la navaja suiza de los scripts: convierte cualquier expresión de revisión en un hash completo y responde preguntas sobre el repositorio.
+
+  git rev-parse HEAD~2              hash completo
+  git rev-parse --short HEAD        hash corto
+  git rev-parse --abbrev-ref HEAD   nombre de la rama actual
+  git rev-parse --show-toplevel     carpeta raíz del árbol de trabajo
+  git rev-parse --is-inside-work-tree"""
+
+[[exercise]]
+id = "rev-parse-1"
+solution = ["git rev-parse HEAD~2 > answer.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "alpha\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "write", path = "b.txt", content = "beta\n" },
+  { do = "git", args = "add b.txt" },
+  { do = "git", args = "commit -m \"Add b\"" },
+  { do = "write", path = "c.txt", content = "gamma\n" },
+  { do = "git", args = "add c.txt" },
+  { do = "git", args = "commit -m \"Add c\"" },
+]
+prompt = { en = "Save the full hash of HEAD~2 into answer.txt.", es = "Guardá el hash completo de HEAD~2 en answer.txt." }
+hints = [
+  { en = "Type: git rev-parse HEAD~2 > answer.txt", es = "Escribí: git rev-parse HEAD~2 > answer.txt" },
+]
+checks = [
+  { type = "file_equals_git", path = "answer.txt", args = "rev-parse HEAD~2", fail = { en = "answer.txt must contain exactly the output of git rev-parse HEAD~2.", es = "answer.txt debe contener exactamente la salida de git rev-parse HEAD~2." } },
+]

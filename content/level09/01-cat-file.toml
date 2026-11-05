@@ -1,0 +1,46 @@
+id = "cat-file"
+level = 9
+order = 1
+
+[title]
+en = "Reading objects: cat-file"
+es = "Leer objetos: cat-file"
+
+[theory]
+en = """
+Everything git stores is an object identified by its hash: blob (file content), tree (folder), commit and tag. `git cat-file` reads any of them.
+
+  git cat-file -t HEAD            the type of the object (commit)
+  git cat-file -p HEAD            pretty-print it
+  git cat-file -p HEAD:a.txt      the content of a file at a commit
+  git cat-file -s HEAD:a.txt      its size in bytes"""
+es = """
+Todo lo que guarda git es un objeto identificado por su hash: blob (contenido de un archivo), tree (carpeta), commit y tag. `git cat-file` lee cualquiera de ellos.
+
+  git cat-file -t HEAD            el tipo del objeto (commit)
+  git cat-file -p HEAD            lo muestra legible
+  git cat-file -p HEAD:a.txt      el contenido de un archivo en un commit
+  git cat-file -s HEAD:a.txt      su tamaño en bytes"""
+
+[[exercise]]
+id = "cat-file-1"
+solution = ["git cat-file -p HEAD~2:a.txt > answer.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "alpha\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "write", path = "b.txt", content = "beta\n" },
+  { do = "git", args = "add b.txt" },
+  { do = "git", args = "commit -m \"Add b\"" },
+  { do = "write", path = "c.txt", content = "gamma\n" },
+  { do = "git", args = "add c.txt" },
+  { do = "git", args = "commit -m \"Add c\"" },
+]
+prompt = { en = "Save the content of a.txt as it was two commits ago (HEAD~2) into answer.txt, reading it directly from the object database.", es = "Guardá en answer.txt el contenido de a.txt como estaba dos commits atrás (HEAD~2), leyéndolo directo de la base de objetos." }
+hints = [
+  { en = "cat-file -p takes revision:path.", es = "cat-file -p recibe revisión:ruta." },
+]
+checks = [
+  { type = "file_equals_git", path = "answer.txt", args = "cat-file -p HEAD~2:a.txt", fail = { en = "answer.txt must contain exactly the output of git cat-file -p HEAD~2:a.txt.", es = "answer.txt debe contener exactamente la salida de git cat-file -p HEAD~2:a.txt." } },
+]

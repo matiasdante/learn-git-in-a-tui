@@ -1,0 +1,30 @@
+id = "write-tree"
+level = 9
+order = 6
+
+[title]
+en = "Index to tree: write-tree"
+es = "Del índice a un tree: write-tree"
+
+[theory]
+en = """
+`git write-tree` turns the current index into a tree object and prints its hash. It is the first half of what `git commit` does (the second half, commit-tree, wraps that tree in a commit)."""
+es = """
+`git write-tree` convierte el índice actual en un objeto tree e imprime su hash. Es la primera mitad de lo que hace `git commit` (la segunda, commit-tree, envuelve ese tree en un commit)."""
+
+[[exercise]]
+id = "write-tree-1"
+solution = ["git write-tree > answer.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "write", path = "b.txt", content = "b\n" },
+  { do = "git", args = "add a.txt b.txt" },
+]
+prompt = { en = "a.txt and b.txt are staged. Write the index as a tree object and save its hash into answer.txt.", es = "a.txt y b.txt están preparados. Escribí el índice como un objeto tree y guardá su hash en answer.txt." }
+hints = [
+  { en = "Type: git write-tree > answer.txt", es = "Escribí: git write-tree > answer.txt" },
+]
+checks = [
+  { type = "git_output", args = "ls-tree --name-only {{file:answer.txt}}", equals = "a.txt\nb.txt", fail = { en = "answer.txt must contain the hash of the tree with a.txt and b.txt.", es = "answer.txt debe contener el hash del tree con a.txt y b.txt." } },
+]

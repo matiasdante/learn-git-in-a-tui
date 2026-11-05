@@ -1,0 +1,17 @@
+id = "merge-one-file"
+level = 9
+order = 28
+
+[title]
+en = "merge-one-file"
+es = "merge-one-file"
+
+[theory]
+en = """
+`git merge-one-file` is the standard program that `git merge-index` calls for each unmerged file. It decides what to do: take the file if only one side added it, delete it if one side deleted it and the other did not change it, or run a three-way merge of the contents (leaving conflict markers when needed).
+
+It is part of the plumbing of the `resolve` and `octopus` strategies."""
+es = """
+`git merge-one-file` es el programa estándar que `git merge-index` llama por cada archivo sin fusionar. Decide qué hacer: tomar el archivo si solo un lado lo agregó, borrarlo si un lado lo borró y el otro no lo cambió, o hacer una fusión de tres vías del contenido (dejando marcas de conflicto si hace falta).
+
+Es parte de la plomería de las estrategias `resolve` y `octopus`."""

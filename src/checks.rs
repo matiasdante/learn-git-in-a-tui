@@ -141,8 +141,21 @@ impl Ctx<'_> {
         self.dir.clone()
     }
 
+    /// Parte los argumentos de un check. `{{file:ruta}}` se reemplaza por el contenido
+    /// (sin espacios en los bordes) de ese archivo: sirve para verificar ids que el usuario
+    /// guardó con `> archivo`.
     fn git_args(&self, args: &str) -> Option<Vec<String>> {
-        shell_words::split(args).ok()
+        let mut expanded = String::new();
+        let mut rest = args;
+        while let Some(start) = rest.find("{{file:") {
+            let end = rest[start..].find("}}")? + start;
+            expanded.push_str(&rest[..start]);
+            let content = self.read(&rest[start + 7..end])?;
+            expanded.push_str(content.trim());
+            rest = &rest[end + 2..];
+        }
+        expanded.push_str(rest);
+        shell_words::split(&expanded).ok()
     }
 
     fn run_args(&self, args: &str) -> Option<std::process::Output> {

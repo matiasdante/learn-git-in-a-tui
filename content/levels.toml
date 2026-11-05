@@ -29,3 +29,7 @@ title = { en = "Large and multiple repositories", es = "Repos grandes y múltipl
 [[level]]
 id = 8
 title = { en = "Configuration, security and automation", es = "Configuración, seguridad y automatización" }
+
+[[level]]
+id = 9
+title = { en = "Plumbing: objects and refs", es = "Plumbing: objetos y referencias" }

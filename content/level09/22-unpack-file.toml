@@ -1,0 +1,34 @@
+id = "unpack-file"
+level = 9
+order = 22
+
+[title]
+en = "A blob as a temporary file: unpack-file"
+es = "Un blob como archivo temporal: unpack-file"
+
+[theory]
+en = """
+`git unpack-file <blob>` writes the content of a blob into a new temporary file in the current folder (named .merge_file_XXXX) and prints its name. Merge tools use it to hand you the three versions of a conflicted file.
+
+  git unpack-file $(git rev-parse HEAD:a.txt)"""
+es = """
+`git unpack-file <blob>` escribe el contenido de un blob en un archivo temporal nuevo de la carpeta actual (llamado .merge_file_XXXX) e imprime su nombre. Las herramientas de fusión lo usan para darte las tres versiones de un archivo en conflicto.
+
+  git unpack-file $(git rev-parse HEAD:a.txt)"""
+
+[[exercise]]
+id = "unpack-file-1"
+solution = ["git unpack-file {{rev-parse HEAD:a.txt}} > answer.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "alpha\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+]
+prompt = { en = "Extract the blob of a.txt at HEAD into a temporary file and save the file name that git prints into answer.txt.", es = "Extraé el blob de a.txt en HEAD a un archivo temporal y guardá en answer.txt el nombre del archivo que imprime git." }
+hints = [
+  { en = "Get the blob hash with git rev-parse HEAD:a.txt, then pass it to unpack-file.", es = "Obtené el hash del blob con git rev-parse HEAD:a.txt y pasaselo a unpack-file." },
+]
+checks = [
+  { type = "file_contains", path = "answer.txt", contains = ".merge_file_", fail = { en = "answer.txt must contain the temporary file name (.merge_file_...).", es = "answer.txt debe contener el nombre del archivo temporal (.merge_file_...)." } },
+]

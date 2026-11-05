@@ -1,0 +1,38 @@
+id = "hash-object"
+level = 9
+order = 2
+
+[title]
+en = "Creating blobs: hash-object"
+es = "Crear blobs: hash-object"
+
+[theory]
+en = """
+The hash of a file is computed from its content only (plus a small header). `git hash-object` shows it, and with -w also WRITES the object to the repository.
+
+  git hash-object hello.txt        just compute the hash
+  git hash-object -w hello.txt     compute and store the blob
+  git hash-object --stdin          hash text read from the input"""
+es = """
+El hash de un archivo se calcula solo a partir de su contenido (más un pequeño encabezado). `git hash-object` lo muestra y, con -w, también ESCRIBE el objeto en el repositorio.
+
+  git hash-object hola.txt        solo calcula el hash
+  git hash-object -w hola.txt     calcula y guarda el blob
+  git hash-object --stdin         calcula el hash de texto leído de la entrada"""
+
+[[exercise]]
+id = "hash-object-1"
+solution = ["git hash-object -w hello.txt > answer.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "hello.txt", content = "hello world\n" },
+]
+prompt = { en = "Store hello.txt as a blob in the object database (without staging it) and save its hash into answer.txt.", es = "Guardá hello.txt como blob en la base de objetos (sin prepararlo) y guardá su hash en answer.txt." }
+hints = [
+  { en = "-w writes the object.", es = "-w escribe el objeto." },
+  { en = "Type: git hash-object -w hello.txt > answer.txt", es = "Escribí: git hash-object -w hello.txt > answer.txt" },
+]
+checks = [
+  { type = "git_ok", args = "cat-file -e 3b18e512dba79e4c8300dd08aeb37f8e728b8dad", fail = { en = "The blob is not in the object database. Did you use -w?", es = "El blob no está en la base de objetos. ¿Usaste -w?" } },
+  { type = "file_content", path = "answer.txt", equals = "3b18e512dba79e4c8300dd08aeb37f8e728b8dad", fail = { en = "answer.txt must contain the hash of the blob.", es = "answer.txt debe contener el hash del blob." } },
+]

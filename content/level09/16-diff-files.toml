@@ -1,0 +1,46 @@
+id = "diff-files"
+level = 9
+order = 16
+
+[title]
+en = "Working tree vs index: diff-files"
+es = "Árbol de trabajo vs índice: diff-files"
+
+[theory]
+en = """
+The three diff plumbing commands compare different pairs:
+
+  git diff-files        working tree  vs  index       (unstaged changes)
+  git diff-index HEAD   index/tree    vs  a commit    (everything since HEAD)
+  git diff-tree A B     tree          vs  tree        (two commits)
+
+Their raw output is stable for scripts. Add --name-only to list just the paths."""
+es = """
+Los tres comandos de plumbing de diff comparan pares distintos:
+
+  git diff-files        árbol de trabajo  vs  índice      (cambios sin preparar)
+  git diff-index HEAD   índice/tree       vs  un commit   (todo desde HEAD)
+  git diff-tree A B     tree              vs  tree        (dos commits)
+
+Su salida cruda es estable para scripts. Agregá --name-only para listar solo las rutas."""
+
+[[exercise]]
+id = "diff-files-1"
+solution = ["git diff-files --name-only > answer.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "write", path = "b.txt", content = "b\n" },
+  { do = "git", args = "add b.txt" },
+  { do = "git", args = "commit -m \"Add b\"" },
+  { do = "write", path = "a.txt", content = "a changed\n" },
+]
+prompt = { en = "Save into answer.txt the names of the files modified in the working tree and not staged yet.", es = "Guardá en answer.txt los nombres de los archivos modificados en el árbol de trabajo y todavía no preparados." }
+hints = [
+  { en = "diff-files compares the working tree with the index.", es = "diff-files compara el árbol de trabajo con el índice." },
+]
+checks = [
+  { type = "file_equals_git", path = "answer.txt", args = "diff-files --name-only", fail = { en = "answer.txt must contain exactly the output of git diff-files --name-only.", es = "answer.txt debe contener exactamente la salida de git diff-files --name-only." } },
+]
