@@ -1,0 +1,47 @@
+id = "unpack-objects"
+level = 10
+order = 6
+
+[title]
+en = "From a pack to loose objects: unpack-objects"
+es = "De un pack a objetos sueltos: unpack-objects"
+
+[theory]
+en = """
+`git unpack-objects` is the opposite of pack-objects: it reads a pack from the standard input and writes every object as a loose file. It is how a repository receives a small push.
+
+  git unpack-objects < my.pack
+
+Run it INSIDE the repository that must receive the objects."""
+es = """
+`git unpack-objects` es lo opuesto de pack-objects: lee un pack de la entrada estándar y escribe cada objeto como archivo suelto. Así recibe un repositorio un push chico.
+
+  git unpack-objects < mi.pack
+
+Ejecutalo ADENTRO del repositorio que tiene que recibir los objetos."""
+
+[[exercise]]
+id = "unpack-objects-1"
+cwd = "project"
+solution = ["git pack-objects --revs --stdout < revs.txt > my.pack", "git init ../copy", "cd ../copy", "git unpack-objects < ../project/my.pack"]
+setup = [
+  { do = "git", args = "init project" },
+  { do = "write", path = "project/a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt", dir = "project" },
+  { do = "git", args = "commit -m \"Add a\"", dir = "project" },
+  { do = "write", path = "project/b.txt", content = "b\n" },
+  { do = "git", args = "add b.txt", dir = "project" },
+  { do = "git", args = "commit -m \"Add b\"", dir = "project" },
+  { do = "write", path = "project/c.txt", content = "c\n" },
+  { do = "git", args = "add c.txt", dir = "project" },
+  { do = "git", args = "commit -m \"Add c\"", dir = "project" },
+  { do = "write", path = "project/revs.txt", content = "HEAD\n" },
+]
+prompt = { en = "Make a pack of HEAD (my.pack), create an empty repository ../copy and unpack the pack inside it, so ../copy receives the 9 objects.", es = "Hacé un pack de HEAD (my.pack), creá un repositorio vacío ../copy y desempaquetalo ahí adentro, para que ../copy reciba los 9 objetos." }
+hints = [
+  { en = "git pack-objects --revs --stdout < revs.txt > my.pack, then git init ../copy and cd ../copy.", es = "git pack-objects --revs --stdout < revs.txt > my.pack, después git init ../copy y cd ../copy." },
+  { en = "Finally: git unpack-objects < ../project/my.pack", es = "Por último: git unpack-objects < ../project/my.pack" },
+]
+checks = [
+  { type = "git_output", args = "count-objects -v", contains = "count: 9", repo = "copy", fail = { en = "../copy does not have the 9 loose objects yet.", es = "../copy todavía no tiene los 9 objetos sueltos." } },
+]

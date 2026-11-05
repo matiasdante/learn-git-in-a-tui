@@ -1,0 +1,40 @@
+id = "fast-export"
+level = 10
+order = 17
+
+[title]
+en = "Exporting history: fast-export"
+es = "Exportar la historia: fast-export"
+
+[theory]
+en = """
+`git fast-export` writes the whole history as a text stream of simple commands (blobs, commits, resets). It is the standard way to convert a repository to or from other systems, or to rewrite history with a script.
+
+  git fast-export --all > history.txt"""
+es = """
+`git fast-export` escribe toda la historia como un flujo de texto de comandos simples (blobs, commits, resets). Es la forma estándar de convertir un repositorio hacia o desde otros sistemas, o de reescribir la historia con un script.
+
+  git fast-export --all > historia.txt"""
+
+[[exercise]]
+id = "fast-export-1"
+solution = ["git fast-export --all > history.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "write", path = "b.txt", content = "b\n" },
+  { do = "git", args = "add b.txt" },
+  { do = "git", args = "commit -m \"Add b\"" },
+  { do = "write", path = "c.txt", content = "c\n" },
+  { do = "git", args = "add c.txt" },
+  { do = "git", args = "commit -m \"Add c\"" },
+]
+prompt = { en = "Export the whole history of all branches into history.txt.", es = "Exportá toda la historia de todas las ramas a history.txt." }
+hints = [
+  { en = "Type: git fast-export --all > history.txt", es = "Escribí: git fast-export --all > history.txt" },
+]
+checks = [
+  { type = "file_equals_git", path = "history.txt", args = "fast-export --all", fail = { en = "history.txt must contain the output of git fast-export --all.", es = "history.txt debe contener la salida de git fast-export --all." } },
+]

@@ -1,0 +1,43 @@
+id = "commit-graph"
+level = 10
+order = 13
+
+[title]
+en = "Faster history: commit-graph"
+es = "Historia más rápida: commit-graph"
+
+[theory]
+en = """
+In a repository with hundreds of thousands of commits, git log and merge-base spend most of their time reading commit objects. A commit-graph file stores the parents and dates of all commits in a compact form so they are answered in memory.
+
+  git commit-graph write --reachable    build it (.git/objects/info/commit-graph)
+  git commit-graph verify               check it"""
+es = """
+En un repositorio con cientos de miles de commits, git log y merge-base pasan casi todo el tiempo leyendo objetos commit. Un archivo commit-graph guarda los padres y las fechas de todos los commits en forma compacta para responder desde memoria.
+
+  git commit-graph write --reachable    lo arma (.git/objects/info/commit-graph)
+  git commit-graph verify               lo verifica"""
+
+[[exercise]]
+id = "commit-graph-1"
+solution = ["git commit-graph write --reachable"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "write", path = "b.txt", content = "b\n" },
+  { do = "git", args = "add b.txt" },
+  { do = "git", args = "commit -m \"Add b\"" },
+  { do = "write", path = "c.txt", content = "c\n" },
+  { do = "git", args = "add c.txt" },
+  { do = "git", args = "commit -m \"Add c\"" },
+]
+prompt = { en = "Build the commit-graph file for all the reachable commits.", es = "Armá el archivo commit-graph con todos los commits alcanzables." }
+hints = [
+  { en = "Type: git commit-graph write --reachable", es = "Escribí: git commit-graph write --reachable" },
+]
+checks = [
+  { type = "file_exists", path = ".git/objects/info/commit-graph", fail = { en = "The commit-graph file does not exist yet.", es = "El archivo commit-graph todavía no existe." } },
+  { type = "git_ok", args = "commit-graph verify", fail = { en = "The commit-graph is not valid.", es = "El commit-graph no es válido." } },
+]

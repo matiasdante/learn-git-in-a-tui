@@ -1,0 +1,47 @@
+id = "pack-objects"
+level = 10
+order = 5
+
+[title]
+en = "Building a pack: pack-objects"
+es = "Armar un pack: pack-objects"
+
+[theory]
+en = """
+`git pack-objects` is what runs behind every push, fetch and repack: it receives a list of objects (or revisions with --revs) on its standard input and writes a pack.
+
+  git pack-objects --revs mypack < revs.txt     writes mypack-<hash>.pack and .idx; prints <hash>
+  git pack-objects --revs --stdout < revs.txt > my.pack    one stream to a file
+
+Here revs.txt holds revisions, one per line (HEAD)."""
+es = """
+`git pack-objects` es lo que corre detrás de cada push, fetch y repack: recibe una lista de objetos (o de revisiones con --revs) por su entrada estándar y escribe un pack.
+
+  git pack-objects --revs mipack < revs.txt     escribe mipack-<hash>.pack y .idx; imprime <hash>
+  git pack-objects --revs --stdout < revs.txt > mi.pack    un solo flujo a un archivo
+
+Acá revs.txt tiene revisiones, una por línea (HEAD)."""
+
+[[exercise]]
+id = "pack-objects-1"
+solution = ["git pack-objects --revs mypack < revs.txt > hash.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "write", path = "b.txt", content = "b\n" },
+  { do = "git", args = "add b.txt" },
+  { do = "git", args = "commit -m \"Add b\"" },
+  { do = "write", path = "c.txt", content = "c\n" },
+  { do = "git", args = "add c.txt" },
+  { do = "git", args = "commit -m \"Add c\"" },
+  { do = "write", path = "revs.txt", content = "HEAD\n" },
+]
+prompt = { en = "Pack everything reachable from HEAD (the revisions listed in revs.txt) into files that start with mypack, and save the hash that pack-objects prints into hash.txt.", es = "Empaquetá todo lo alcanzable desde HEAD (las revisiones de revs.txt) en archivos que empiecen con mypack y guardá en hash.txt el hash que imprime pack-objects." }
+hints = [
+  { en = "Use --revs, the prefix mypack, < revs.txt and > hash.txt.", es = "Usá --revs, el prefijo mypack, < revs.txt y > hash.txt." },
+]
+checks = [
+  { type = "git_ok", args = "verify-pack mypack-{{file:hash.txt}}.idx", fail = { en = "No valid pack named mypack-<hash> was found. Did you save the hash into hash.txt?", es = "No se encontró un pack válido llamado mypack-<hash>. ¿Guardaste el hash en hash.txt?" } },
+]

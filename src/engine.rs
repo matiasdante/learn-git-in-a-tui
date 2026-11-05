@@ -159,17 +159,8 @@ pub fn expand_solution(console: &Console, line: &str) -> Result<String> {
             .context("unclosed {{ in solution")?
             + start;
         out.push_str(&rest[..start]);
-        let args = shell_words::split(&rest[start + 2..end])?;
-        let result = console
-            .sandbox()
-            .git(console.cwd())
-            .args(&args)
-            .stdin(Stdio::null())
-            .output()?;
-        if !result.status.success() {
-            bail!("solution placeholder failed: git {}", args.join(" "));
-        }
-        out.push_str(String::from_utf8_lossy(&result.stdout).trim());
+        let inner = rest[start + 2..end].trim();
+        out.push_str(&expand_placeholder(console, inner)?);
         rest = &rest[end + 2..];
     }
     out.push_str(rest);
@@ -210,4 +201,53 @@ pub fn run_step(console: &mut Console, step: &SolutionStep) -> Result<(Option<i3
             Ok((if *allow_fail { Some(0) } else { code }, output))
         }
     }
+}
+
+/// Un marcador `{{...}}` de una solución:
+///   `{{file:ruta}}`          contenido (recortado) de un archivo
+///   `{{first:carpeta:.ext}}` primer archivo de la carpeta que termina en .ext
+///   `{{last:args de git}}`   última palabra de la salida de ese git
+///   `{{args de git}}`        salida (recortada) de ese git
+fn expand_placeholder(console: &Console, inner: &str) -> Result<String> {
+    if let Some(path) = inner.strip_prefix("file:") {
+        let content = std::fs::read_to_string(console.cwd().join(path))
+            .with_context(|| format!("placeholder: cannot read {path}"))?;
+        return Ok(content.trim().to_string());
+    }
+    if let Some(spec) = inner.strip_prefix("first:") {
+        let (dir, suffix) = spec
+            .split_once(':')
+            .context("placeholder first: needs dir:suffix")?;
+        let mut names: Vec<String> = std::fs::read_dir(console.cwd().join(dir))?
+            .flatten()
+            .map(|e| e.file_name().to_string_lossy().into_owned())
+            .filter(|n| n.ends_with(suffix))
+            .collect();
+        names.sort();
+        let first = names
+            .first()
+            .with_context(|| format!("no *{suffix} file in {dir}"))?;
+        return Ok(format!("{dir}/{first}"));
+    }
+    let (git_args, last_word) = match inner.strip_prefix("last:") {
+        Some(args) => (args, true),
+        None => (inner, false),
+    };
+    let args = shell_words::split(git_args)?;
+    let result = console
+        .sandbox()
+        .git(console.cwd())
+        .args(&args)
+        .stdin(Stdio::null())
+        .output()?;
+    if !result.status.success() {
+        bail!("solution placeholder failed: git {}", args.join(" "));
+    }
+    let text = String::from_utf8_lossy(&result.stdout);
+    let text = text.trim();
+    Ok(if last_word {
+        text.split_whitespace().last().unwrap_or("").to_string()
+    } else {
+        text.to_string()
+    })
 }
