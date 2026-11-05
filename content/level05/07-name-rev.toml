@@ -1,0 +1,47 @@
+id = "name-rev"
+level = 5
+order = 7
+
+[title]
+en = "Human names for hashes: name-rev"
+es = "Nombres humanos para hashes: name-rev"
+
+[theory]
+en = """
+Given a hash from a log or an error report, `git name-rev` tells you where it is relative to a branch or tag.
+
+  git name-rev <hash>              e.g. 3f9a1c2 main~3
+  git name-rev --name-only <hash>  just the name
+  git name-rev --tags <hash>       relative to tags"""
+es = """
+Dado un hash de un log o de un reporte de error, `git name-rev` te dice dónde está en relación con una rama o un tag.
+
+  git name-rev <hash>              p. ej. 3f9a1c2 main~3
+  git name-rev --name-only <hash>  solo el nombre
+  git name-rev --tags <hash>       relativo a los tags"""
+
+[[exercise]]
+id = "name-rev-1"
+solution = ["git name-rev --name-only HEAD~2 > answer.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "1\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"One\"" },
+  { do = "write", path = "b.txt", content = "2\n" },
+  { do = "git", args = "add b.txt" },
+  { do = "git", args = "commit -m \"Two\"" },
+  { do = "write", path = "c.txt", content = "3\n" },
+  { do = "git", args = "add c.txt" },
+  { do = "git", args = "commit -m \"Three\"" },
+  { do = "write", path = "d.txt", content = "4\n" },
+  { do = "git", args = "add d.txt" },
+  { do = "git", args = "commit -m \"Four\"" },
+]
+prompt = { en = "Save into answer.txt the name that git name-rev gives (name only) to the commit HEAD~2.", es = "Guardá en answer.txt el nombre que git name-rev le da (solo el nombre) al commit HEAD~2." }
+hints = [
+  { en = "Use --name-only and redirect with > answer.txt.", es = "Usá --name-only y redirigí con > answer.txt." },
+]
+checks = [
+  { type = "file_equals_git", path = "answer.txt", args = "name-rev --name-only HEAD~2", fail = { en = "answer.txt must contain exactly the output of git name-rev --name-only HEAD~2.", es = "answer.txt debe contener exactamente la salida de git name-rev --name-only HEAD~2." } },
+]

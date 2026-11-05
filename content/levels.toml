@@ -13,3 +13,7 @@ title = { en = "Remotes", es = "Remotos" }
 [[level]]
 id = 4
 title = { en = "Undo and rewrite", es = "Deshacer y reescribir" }
+
+[[level]]
+id = 5
+title = { en = "Investigating history", es = "Investigar la historia" }
