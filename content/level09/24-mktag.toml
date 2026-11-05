@@ -1,0 +1,49 @@
+id = "mktag"
+level = 9
+order = 24
+
+[title]
+en = "Creating a tag object: mktag"
+es = "Crear un objeto tag: mktag"
+
+[theory]
+en = """
+An annotated tag is an object of its own. `git mktag` builds one from a strictly formatted text read from the standard input:
+
+  object <commit hash>
+  type commit
+  tag v1
+  tagger Ann <ann@example.com> 1704110400 +0000
+  <blank line>
+  message
+
+It prints the hash of the tag object; to publish it you still have to point a ref to it (git update-ref refs/tags/v1 <hash>)."""
+es = """
+Un tag anotado es un objeto propio. `git mktag` arma uno a partir de un texto con formato estricto leído de la entrada estándar:
+
+  object <hash del commit>
+  type commit
+  tag v1
+  tagger Ann <ann@example.com> 1704110400 +0000
+  <línea en blanco>
+  mensaje
+
+Imprime el hash del objeto tag; para publicarlo todavía tenés que apuntarle una referencia (git update-ref refs/tags/v1 <hash>)."""
+
+[[exercise]]
+id = "mktag-1"
+solution = [{ run = "git mktag > answer.txt", stdin = "object {{rev-parse HEAD}}\ntype commit\ntag v1\ntagger Ann <ann@example.com> 1704110400 +0000\n\nFirst version\n" }]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+]
+prompt = { en = "Create a tag object named v1 for the latest commit with git mktag (tagger Ann <ann@example.com> 1704110400 +0000, message \"First version\") and save its hash into answer.txt.", es = "Creá con git mktag un objeto tag llamado v1 para el último commit (tagger Ann <ann@example.com> 1704110400 +0000, mensaje \"First version\") y guardá su hash en answer.txt." }
+hints = [
+  { en = "Get the commit hash with git rev-parse HEAD. Type the lines of the format, a blank line, the message, then Ctrl+D.", es = "Obtené el hash del commit con git rev-parse HEAD. Escribí las líneas del formato, una línea en blanco, el mensaje y Ctrl+D." },
+]
+checks = [
+  { type = "git_output", args = "cat-file -t {{file:answer.txt}}", equals = "tag", fail = { en = "answer.txt must contain the hash of a tag object.", es = "answer.txt debe contener el hash de un objeto tag." } },
+  { type = "git_output", args = "cat-file -p {{file:answer.txt}}", contains = "tag v1", fail = { en = "The tag object must be named v1.", es = "El objeto tag debe llamarse v1." } },
+]

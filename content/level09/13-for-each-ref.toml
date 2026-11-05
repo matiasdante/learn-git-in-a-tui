@@ -1,0 +1,40 @@
+id = "for-each-ref"
+level = 9
+order = 13
+
+[title]
+en = "Listing refs with a format: for-each-ref"
+es = "Listar referencias con formato: for-each-ref"
+
+[theory]
+en = """
+`git for-each-ref` lists branches, tags and other refs with a format you choose. Output designed for scripts: stable and without decoration.
+
+  git for-each-ref refs/heads
+  git for-each-ref --format='%(refname:short)' refs/heads     branch names only
+  git for-each-ref --sort=-committerdate refs/heads           most recently used first"""
+es = """
+`git for-each-ref` lista ramas, tags y otras referencias con el formato que elijas. Es una salida pensada para scripts: estable y sin decoración.
+
+  git for-each-ref refs/heads
+  git for-each-ref --format='%(refname:short)' refs/heads     solo los nombres de rama
+  git for-each-ref --sort=-committerdate refs/heads           primero la usada más recientemente"""
+
+[[exercise]]
+id = "for-each-ref-1"
+solution = ["git for-each-ref --format=%(refname:short) refs/heads > answer.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "git", args = "branch beta" },
+  { do = "git", args = "branch alpha" },
+]
+prompt = { en = "Save the short names of all local branches (one per line, nothing else) into answer.txt.", es = "Guardá en answer.txt los nombres cortos de todas las ramas locales (uno por línea, nada más)." }
+hints = [
+  { en = "Use --format=%(refname:short) and the prefix refs/heads.", es = "Usá --format=%(refname:short) y el prefijo refs/heads." },
+]
+checks = [
+  { type = "file_equals_git", path = "answer.txt", args = "for-each-ref --format=%(refname:short) refs/heads", fail = { en = "answer.txt must contain exactly the output of git for-each-ref --format=%(refname:short) refs/heads.", es = "answer.txt debe contener exactamente la salida de git for-each-ref --format=%(refname:short) refs/heads." } },
+]

@@ -1,0 +1,44 @@
+id = "merge-tree"
+level = 9
+order = 21
+min_git = "2.38"
+
+[title]
+en = "Merging without touching anything: merge-tree"
+es = "Fusionar sin tocar nada: merge-tree"
+
+[theory]
+en = """
+`git merge-tree --write-tree A B` (git 2.38+) performs the merge of two commits entirely in memory and prints the hash of the resulting tree, without changing the index or the working folder. A server can use it to check whether a branch merges cleanly.
+
+  git merge-tree --write-tree main feature     prints the tree (and, if there are conflicts, lists them and exits with 1)"""
+es = """
+`git merge-tree --write-tree A B` (git 2.38+) realiza la fusión de dos commits enteramente en memoria e imprime el hash del tree resultante, sin cambiar el índice ni la carpeta de trabajo. Un servidor puede usarlo para saber si una rama se fusiona limpia.
+
+  git merge-tree --write-tree main feature     imprime el tree (y, si hay conflictos, los lista y sale con 1)"""
+
+[[exercise]]
+id = "merge-tree-1"
+solution = ["git merge-tree --write-tree main feature > answer.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "base.txt", content = "b\n" },
+  { do = "git", args = "add base.txt" },
+  { do = "git", args = "commit -m \"Base\"" },
+  { do = "git", args = "switch -c feature" },
+  { do = "write", path = "feature.txt", content = "f\n" },
+  { do = "git", args = "add feature.txt" },
+  { do = "git", args = "commit -m \"Feature\"" },
+  { do = "git", args = "switch main" },
+  { do = "write", path = "main.txt", content = "m\n" },
+  { do = "git", args = "add main.txt" },
+  { do = "git", args = "commit -m \"Main\"" },
+]
+prompt = { en = "Compute, without merging for real, the tree that merging feature into main would produce, and save its hash into answer.txt.", es = "Calculá, sin fusionar de verdad, el tree que produciría fusionar feature en main, y guardá su hash en answer.txt." }
+hints = [
+  { en = "Use --write-tree with the two branches and redirect to answer.txt.", es = "Usá --write-tree con las dos ramas y redirigí a answer.txt." },
+]
+checks = [
+  { type = "git_output", args = "ls-tree --name-only {{file:answer.txt}}", equals = "base.txt\nfeature.txt\nmain.txt", fail = { en = "answer.txt must contain the hash of the merged tree (base, feature and main files).", es = "answer.txt debe contener el hash del tree fusionado (archivos de base, feature y main)." } },
+  { type = "git_output", args = "rev-list --count HEAD", equals = "2", fail = { en = "No real merge should have happened.", es = "No debería haberse hecho una fusión real." } },
+]
