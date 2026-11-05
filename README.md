@@ -190,3 +190,7 @@ git push origin v1.0.0
 - Real remotes over a network, a macOS binary, mouse support, external merge tools, an auto-updater and ANSI colors are out of scope.
 - The terminal needs about 100 columns for the long screens. The title banner needs at least 66 columns (and a tall window on the level map); otherwise it falls back to plain text.
 - Chinese needs a terminal font with CJK glyphs.
+
+## License
+
+[MIT](LICENSE). Anyone can use, copy, modify and distribute this project, for free, as long as the copyright notice is kept: **© 2026 Matias Dante Sarco**, creator of learn-git-tui.

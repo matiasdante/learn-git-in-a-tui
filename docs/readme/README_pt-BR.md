@@ -193,3 +193,7 @@ git push origin v1.0.0
 - Fora de escopo: remotos reais pela rede, um binário para macOS, mouse, ferramentas de merge externas, atualizador automático e cores ANSI.
 - O terminal precisa de cerca de 100 colunas para as telas longas. O banner do título precisa de pelo menos 66 colunas (e uma janela alta no mapa de níveis); se não couber, aparece texto simples.
 - O chinês precisa de uma fonte de terminal com caracteres CJK.
+
+## Licença
+
+[MIT](../../LICENSE). Qualquer pessoa pode usar, copiar, modificar e distribuir este projeto, de graça, desde que mantenha o aviso de copyright: **© 2026 Matias Dante Sarco**, criador do learn-git-tui.
