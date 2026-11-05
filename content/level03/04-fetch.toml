@@ -1,0 +1,55 @@
+id = "fetch"
+level = 3
+order = 4
+
+[title]
+en = "Looking before merging: fetch"
+es = "Mirar antes de fusionar: fetch"
+
+[theory]
+en = """
+`git fetch` downloads new commits from the remote but does NOT touch your branches or your files. They land in remote-tracking branches such as origin/main, so you can review them first.
+
+  git fetch                 update all remote-tracking branches of origin
+  git log main..origin/main what is new on the server
+  git fetch --prune         also forget remote branches deleted on the server"""
+es = """
+`git fetch` descarga commits nuevos del remoto pero NO toca tus ramas ni tus archivos. Quedan en ramas de seguimiento remoto como origin/main, así podés revisarlos antes.
+
+  git fetch                 actualiza las ramas de seguimiento remoto de origin
+  git log main..origin/main qué hay de nuevo en el servidor
+  git fetch --prune         olvida también las ramas remotas borradas en el servidor"""
+
+[[exercise]]
+id = "fetch-1"
+cwd = "project"
+solution = ["git fetch"]
+setup = [
+  { do = "git", args = "init --bare server.git" },
+  { do = "git", args = "init seed" },
+  { do = "write", path = "seed/a.txt", content = "one\n" },
+  { do = "git", args = "add a.txt", dir = "seed" },
+  { do = "git", args = "commit -m \"First commit\"", dir = "seed" },
+  { do = "write", path = "seed/b.txt", content = "two\n" },
+  { do = "git", args = "add b.txt", dir = "seed" },
+  { do = "git", args = "commit -m \"Second commit\"", dir = "seed" },
+  { do = "git", args = "remote add origin ../server.git", dir = "seed" },
+  { do = "git", args = "push -u origin main", dir = "seed" },
+  { do = "rm", path = "seed" },
+  { do = "git", args = "clone server.git project" },
+  { do = "git", args = "clone server.git other" },
+  { do = "write", path = "other/c.txt", content = "three\n" },
+  { do = "git", args = "add c.txt", dir = "other" },
+  { do = "git", args = "commit -m \"Team commit\"", dir = "other" },
+  { do = "git", args = "push", dir = "other" },
+  { do = "rm", path = "other" },
+]
+prompt = { en = "A teammate pushed a commit. Download it without changing your own main branch.", es = "Un compañero subió un commit. Descargalo sin cambiar tu propia rama main." }
+hints = [
+  { en = "One command downloads but does not merge.", es = "Un comando descarga pero no fusiona." },
+  { en = "Type: git fetch", es = "Escribí: git fetch" },
+]
+checks = [
+  { type = "git_output", args = "rev-list --count origin/main", equals = "3", fail = { en = "origin/main does not have the new commit yet.", es = "origin/main todavía no tiene el commit nuevo." } },
+  { type = "git_output", args = "rev-list --count main", equals = "2", fail = { en = "Your main should not have changed. Use fetch, not pull.", es = "Tu main no debería haber cambiado. Usá fetch, no pull." } },
+]

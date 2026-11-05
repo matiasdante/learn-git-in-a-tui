@@ -51,3 +51,27 @@ id = "level-2-no-hints"
 title = { en = "Branching blind", es = "Ramas a ciegas" }
 description = { en = "Finish level 2 without using a single hint.", es = "Terminá el nivel 2 sin usar ni una pista." }
 condition = { type = "level_no_hints", level = 2 }
+
+[[achievement]]
+id = "first-push"
+title = { en = "Going public", es = "A la luz pública" }
+description = { en = "Publish a branch to a remote for the first time.", es = "Publicá una rama en un remoto por primera vez." }
+condition = { type = "exercise_done", exercise = "push-1" }
+
+[[achievement]]
+id = "team-player"
+title = { en = "Team player", es = "Jugador de equipo" }
+description = { en = "Integrate a teammate's commit and publish yours.", es = "Integrá el commit de un compañero y publicá el tuyo." }
+condition = { type = "exercise_done", exercise = "pull-3" }
+
+[[achievement]]
+id = "level-3-done"
+title = { en = "Remote control", es = "Control remoto" }
+description = { en = "Finish every exercise of level 3.", es = "Terminá todos los ejercicios del nivel 3." }
+condition = { type = "level_done", level = 3 }
+
+[[achievement]]
+id = "level-3-no-hints"
+title = { en = "Lone wolf", es = "Lobo solitario" }
+description = { en = "Finish level 3 without using a single hint.", es = "Terminá el nivel 3 sin usar ni una pista." }
+condition = { type = "level_no_hints", level = 3 }

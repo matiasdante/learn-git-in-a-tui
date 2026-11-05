@@ -1,0 +1,89 @@
+id = "remote"
+level = 3
+order = 2
+
+[title]
+en = "Managing remotes: remote"
+es = "Administrar remotos: remote"
+
+[theory]
+en = """
+A remote is a nickname for another copy of your repository. `git remote` manages those nicknames.
+
+  git remote -v                       list remotes with their URLs
+  git remote add origin <url>         register a remote
+  git remote rename origin upstream   rename it
+  git remote set-url origin <url>     change the URL (the server moved)
+  git remote remove name              forget it"""
+es = """
+Un remoto es un apodo para otra copia de tu repositorio. `git remote` administra esos apodos.
+
+  git remote -v                       lista los remotos con sus URL
+  git remote add origin <url>         registra un remoto
+  git remote rename origin upstream   lo renombra
+  git remote set-url origin <url>     cambia la URL (el servidor se mudó)
+  git remote remove nombre            lo olvida"""
+
+[[exercise]]
+id = "remote-1"
+cwd = "project"
+solution = ["git remote add origin ../server.git"]
+setup = [
+  { do = "git", args = "init --bare server.git" },
+  { do = "git", args = "init project" },
+  { do = "write", path = "project/a.txt", content = "one\n" },
+  { do = "git", args = "add a.txt", dir = "project" },
+  { do = "git", args = "commit -m \"First commit\"", dir = "project" },
+]
+prompt = { en = "You started a project locally. Register ../server.git as a remote called origin.", es = "Empezaste un proyecto en local. Registrá ../server.git como un remoto llamado origin." }
+hints = [
+  { en = "git remote add takes a name and then a URL.", es = "git remote add recibe un nombre y después una URL." },
+  { en = "Type: git remote add origin ../server.git", es = "Escribí: git remote add origin ../server.git" },
+]
+checks = [
+  { type = "git_output", args = "remote", equals = "origin", fail = { en = "There is no remote called origin yet.", es = "Todavía no hay un remoto llamado origin." } },
+  { type = "git_ok", args = "ls-remote origin", fail = { en = "origin does not point to a reachable repository. Check the path.", es = "origin no apunta a un repositorio alcanzable. Revisá la ruta." } },
+]
+
+[[exercise]]
+id = "remote-2"
+cwd = "project"
+solution = ["git remote rename origin upstream"]
+setup = [
+  { do = "git", args = "init --bare server.git" },
+  { do = "git", args = "init seed" },
+  { do = "write", path = "seed/a.txt", content = "one\n" },
+  { do = "git", args = "add a.txt", dir = "seed" },
+  { do = "git", args = "commit -m \"First commit\"", dir = "seed" },
+  { do = "write", path = "seed/b.txt", content = "two\n" },
+  { do = "git", args = "add b.txt", dir = "seed" },
+  { do = "git", args = "commit -m \"Second commit\"", dir = "seed" },
+  { do = "git", args = "remote add origin ../server.git", dir = "seed" },
+  { do = "git", args = "push -u origin main", dir = "seed" },
+  { do = "rm", path = "seed" },
+  { do = "git", args = "clone server.git project" },
+]
+prompt = { en = "Rename the remote origin to upstream.", es = "Renombrá el remoto origin a upstream." }
+hints = [
+  { en = "git remote rename takes the old name and the new name.", es = "git remote rename recibe el nombre viejo y el nuevo." },
+]
+checks = [
+  { type = "git_output", args = "remote", equals = "upstream", fail = { en = "The remote is not called upstream yet.", es = "El remoto todavía no se llama upstream." } },
+]
+
+[[exercise]]
+id = "remote-3"
+cwd = "project"
+solution = ["git remote set-url origin ../server.git"]
+setup = [
+  { do = "git", args = "init --bare server.git" },
+  { do = "git", args = "init project" },
+  { do = "git", args = "remote add origin ../old.git", dir = "project" },
+]
+prompt = { en = "origin points to ../old.git, which does not exist anymore. Point it to ../server.git.", es = "origin apunta a ../old.git, que ya no existe. Hacelo apuntar a ../server.git." }
+hints = [
+  { en = "There is a remote subcommand that changes the URL.", es = "Hay un subcomando de remote que cambia la URL." },
+]
+checks = [
+  { type = "git_output", args = "remote get-url origin", equals = "../server.git", fail = { en = "The URL of origin is not ../server.git yet.", es = "La URL de origin todavía no es ../server.git." } },
+]

@@ -71,6 +71,7 @@ fn apply(console: &Console, work: &Path, action: &Action) -> Result<()> {
             }
         }
         Action::Mkdir { path } => std::fs::create_dir_all(safe_join(work, path)?)?,
+        Action::Rm { path } => crate::sandbox::remove_dir_all_force(&safe_join(work, path)?)?,
         Action::Git {
             args,
             dir,
