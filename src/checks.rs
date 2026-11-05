@@ -90,6 +90,16 @@ pub enum CheckKind {
         path: String,
         contains: String,
     },
+    /// El archivo existe y NO contiene este texto (por ejemplo marcas de conflicto).
+    FileNotContains {
+        path: String,
+        text: String,
+    },
+    /// El contenido del archivo es exactamente la salida de este git.
+    FileEqualsGit {
+        path: String,
+        args: String,
+    },
     /// Escape para checks específicos: corre git (solo plumbing o formatos de máquina) y
     /// compara su salida con `equals` o con la salida de otro git (`same_as`).
     GitOutput {
@@ -227,6 +237,13 @@ impl Check {
             CheckKind::FileContains { path, contains } => ctx
                 .read(path)
                 .is_some_and(|c| c.contains(contains.as_str())),
+            CheckKind::FileNotContains { path, text } => {
+                ctx.read(path).is_some_and(|c| !c.contains(text.as_str()))
+            }
+            CheckKind::FileEqualsGit { path, args } => {
+                let expected = ctx.out_of(args);
+                expected.is_some() && ctx.read(path).map(|c| c.trim().to_string()) == expected
+            }
             CheckKind::GitOutput {
                 args,
                 equals,

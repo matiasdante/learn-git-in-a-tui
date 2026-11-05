@@ -1,0 +1,80 @@
+id = "stash"
+level = 2
+order = 10
+
+[title]
+en = "Parking work: stash"
+es = "Guardar trabajo en el cajón: stash"
+
+[theory]
+en = """
+You are halfway through a change when an urgent bug arrives. You cannot commit half-done work, and you cannot switch branches with a dirty tree. `git stash` puts your uncommitted changes in a drawer and leaves the folder clean.
+
+  git stash             save tracked changes and clean the tree
+  git stash -u          also save untracked files
+  git stash list        what is in the drawer
+  git stash pop         bring the latest stash back and remove it from the list
+  git stash apply       bring it back but keep it in the list"""
+es = """
+Estás a mitad de un cambio cuando llega un bug urgente. No podés commitear trabajo a medias ni cambiar de rama con el árbol sucio. `git stash` guarda tus cambios sin commitear en un cajón y deja la carpeta limpia.
+
+  git stash             guarda los cambios seguidos y limpia el árbol
+  git stash -u          guarda también los archivos sin seguimiento
+  git stash list        qué hay en el cajón
+  git stash pop         trae de vuelta el último stash y lo saca de la lista
+  git stash apply       lo trae de vuelta pero lo deja en la lista"""
+
+[[exercise]]
+id = "stash-1"
+solution = ["git stash"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "f.txt", content = "v1\n" },
+  { do = "git", args = "add f.txt" },
+  { do = "git", args = "commit -m \"Add f\"" },
+  { do = "write", path = "f.txt", content = "v2 half done\n" },
+]
+prompt = { en = "f.txt has half-done changes and an urgent bug arrived. Park your changes so the working tree is clean.", es = "f.txt tiene cambios a medias y llegó un bug urgente. Guardá tus cambios para que el árbol de trabajo quede limpio." }
+hints = [{ en = "Type: git stash", es = "Escribí: git stash" }]
+checks = [
+  { type = "file_content", path = "f.txt", equals = "v1", fail = { en = "f.txt still has your changes.", es = "f.txt todavía tiene tus cambios." } },
+  { type = "git_output", args = "rev-list -g --count refs/stash", equals = "1", fail = { en = "Nothing was saved in the stash.", es = "No se guardó nada en el stash." } },
+]
+
+[[exercise]]
+id = "stash-2"
+solution = ["git stash pop"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "f.txt", content = "v1\n" },
+  { do = "git", args = "add f.txt" },
+  { do = "git", args = "commit -m \"Add f\"" },
+  { do = "write", path = "f.txt", content = "v2 half done\n" },
+  { do = "git", args = "stash" },
+]
+prompt = { en = "The urgent bug is fixed. Bring your parked changes back and remove them from the stash list.", es = "El bug urgente está arreglado. Recuperá tus cambios guardados y sacalos de la lista del stash." }
+hints = [{ en = "pop brings it back and drops it from the list.", es = "pop lo trae de vuelta y lo saca de la lista." }]
+checks = [
+  { type = "file_content", path = "f.txt", equals = "v2 half done", fail = { en = "Your changes are not back in f.txt yet.", es = "Tus cambios todavía no volvieron a f.txt." } },
+  { type = "git_fails", args = "rev-parse --verify --quiet refs/stash", fail = { en = "The stash still has the entry. Use pop (or drop it).", es = "El stash todavía tiene la entrada. Usá pop (o borrala)." } },
+]
+
+[[exercise]]
+id = "stash-3"
+solution = ["git stash -u"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "f.txt", content = "v1\n" },
+  { do = "git", args = "add f.txt" },
+  { do = "git", args = "commit -m \"Add f\"" },
+  { do = "write", path = "new.txt", content = "brand new file\n" },
+]
+prompt = { en = "You created a brand new file, new.txt, that git does not track yet. Stash it too, so it disappears from the folder.", es = "Creaste un archivo nuevo, new.txt, que git todavía no sigue. Guardalo también en el stash, para que desaparezca de la carpeta." }
+hints = [
+  { en = "A plain git stash ignores untracked files. Look for the option that includes them.", es = "Un git stash común ignora los archivos sin seguimiento. Buscá la opción que los incluye." },
+  { en = "Type: git stash -u", es = "Escribí: git stash -u" },
+]
+checks = [
+  { type = "file_missing", path = "new.txt", fail = { en = "new.txt is still in the folder.", es = "new.txt todavía está en la carpeta." } },
+  { type = "git_output", args = "rev-list -g --count refs/stash", equals = "1", fail = { en = "Nothing was saved in the stash.", es = "No se guardó nada en el stash." } },
+]

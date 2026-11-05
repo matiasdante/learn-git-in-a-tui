@@ -1,0 +1,101 @@
+id = "merge-conflict"
+level = 2
+order = 6
+
+[title]
+en = "Merge conflicts"
+es = "Conflictos de fusión"
+
+[theory]
+en = """
+Two branches changed the same line of the same file. Git cannot decide which version is right, so it stops and marks the file:
+
+  <<<<<<< HEAD
+  Hello from main
+  =======
+  Hello from feature
+  >>>>>>> feature
+
+Everything between `<<<<<<<` and `=======` is your side, the rest is the other branch. To resolve it:
+
+  1. edit the file so it has the final content (and delete the three marker lines)
+  2. git add <file>
+  3. git commit        (or git merge --continue)
+
+If you get scared, `git merge --abort` brings everything back to how it was before the merge."""
+es = """
+Dos ramas cambiaron la misma línea del mismo archivo. Git no puede decidir cuál versión es la correcta, así que se detiene y marca el archivo:
+
+  <<<<<<< HEAD
+  Hello from main
+  =======
+  Hello from feature
+  >>>>>>> feature
+
+Todo lo que está entre `<<<<<<<` y `=======` es tu lado, el resto es la otra rama. Para resolverlo:
+
+  1. editá el archivo para que quede el contenido final (y borrá las tres líneas de marcas)
+  2. git add <archivo>
+  3. git commit        (o git merge --continue)
+
+Si te asustás, `git merge --abort` deja todo como estaba antes de la fusión."""
+
+[[exercise]]
+id = "merge-conflict-1"
+solution = [
+  { run = "git merge feature", allow_fail = true },
+  "echo Hello from main > greeting.txt",
+  "echo Hello from feature >> greeting.txt",
+  "git add greeting.txt",
+  "git commit -m \"Merge feature\"",
+]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "greeting.txt", content = "Hello\n" },
+  { do = "git", args = "add greeting.txt" },
+  { do = "git", args = "commit -m \"Add greeting\"" },
+  { do = "git", args = "switch -c feature" },
+  { do = "write", path = "greeting.txt", content = "Hello from feature\n" },
+  { do = "git", args = "commit -am \"Greet from feature\"" },
+  { do = "git", args = "switch main" },
+  { do = "write", path = "greeting.txt", content = "Hello from main\n" },
+  { do = "git", args = "commit -am \"Greet from main\"" },
+]
+prompt = { en = "Merge feature into main. The merge will conflict in greeting.txt: resolve it keeping both lines (main first), and finish the merge with a commit.", es = "Fusioná feature en main. La fusión va a dar conflicto en greeting.txt: resolvelo conservando las dos líneas (primero la de main) y terminá la fusión con un commit." }
+hints = [
+  { en = "git merge feature stops with a conflict. Open the file with: edit greeting.txt", es = "git merge feature se detiene con un conflicto. Abrí el archivo con: edit greeting.txt" },
+  { en = "Leave only the two lines, with no <<<<<<<, ======= or >>>>>>> markers. Save with Ctrl+S.", es = "Dejá solo las dos líneas, sin las marcas <<<<<<<, ======= ni >>>>>>>. Guardá con Ctrl+S." },
+  { en = "Then: git add greeting.txt and git commit -m \"Merge feature\"", es = "Después: git add greeting.txt y git commit -m \"Merge feature\"" },
+]
+checks = [
+  { type = "git_ok", args = "rev-parse --verify HEAD^2", fail = { en = "The merge is not finished: there is no merge commit yet.", es = "La fusión no terminó: todavía no hay commit de fusión." } },
+  { type = "file_not_contains", path = "greeting.txt", text = "<<<<<<<", fail = { en = "greeting.txt still has conflict markers.", es = "greeting.txt todavía tiene marcas de conflicto." } },
+  { type = "file_contains", path = "greeting.txt", contains = "Hello from main", fail = { en = "The line from main is missing.", es = "Falta la línea de main." } },
+  { type = "file_contains", path = "greeting.txt", contains = "Hello from feature", fail = { en = "The line from feature is missing.", es = "Falta la línea de feature." } },
+]
+
+[[exercise]]
+id = "merge-conflict-2"
+solution = [{ run = "git merge feature", allow_fail = true }, "git merge --abort"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "greeting.txt", content = "Hello\n" },
+  { do = "git", args = "add greeting.txt" },
+  { do = "git", args = "commit -m \"Add greeting\"" },
+  { do = "git", args = "switch -c feature" },
+  { do = "write", path = "greeting.txt", content = "Hello from feature\n" },
+  { do = "git", args = "commit -am \"Greet from feature\"" },
+  { do = "git", args = "switch main" },
+  { do = "write", path = "greeting.txt", content = "Hello from main\n" },
+  { do = "git", args = "commit -am \"Greet from main\"" },
+]
+prompt = { en = "Try to merge feature (it will conflict), then change your mind: abort the merge so main is exactly as before.", es = "Intentá fusionar feature (va a dar conflicto) y después cambiá de idea: abortá la fusión para que main quede exactamente como antes." }
+hints = [
+  { en = "git merge feature first. The abort option is on the same command.", es = "Primero git merge feature. La opción para abortar es del mismo comando." },
+  { en = "Type: git merge --abort", es = "Escribí: git merge --abort" },
+]
+checks = [
+  { type = "ran", any = ["git merge feature"], fail = { en = "First try the merge with git merge feature.", es = "Primero probá la fusión con git merge feature." } },
+  { type = "git_fails", args = "rev-parse -q --verify MERGE_HEAD", fail = { en = "The merge is still in progress. Abort it.", es = "La fusión sigue en curso. Abortala." } },
+  { type = "file_content", path = "greeting.txt", equals = "Hello from main", fail = { en = "greeting.txt should be back to the version from main.", es = "greeting.txt debería volver a la versión de main." } },
+]

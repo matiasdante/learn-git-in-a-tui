@@ -112,6 +112,9 @@ pub enum SolutionStep {
         stdin: Option<String>,
         #[serde(default)]
         editor: Vec<EditRule>,
+        /// El paso termina con error a propósito (por ejemplo un merge con conflicto).
+        #[serde(default)]
+        allow_fail: bool,
     },
 }
 
