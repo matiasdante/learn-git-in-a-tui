@@ -1,0 +1,42 @@
+id = "count-objects"
+level = 10
+order = 11
+
+[title]
+en = "Measuring the repository: count-objects"
+es = "Medir el repositorio: count-objects"
+
+[theory]
+en = """
+`git count-objects` reports how many loose objects there are and how much disk they use. With -v it also reports packs, and "garbage".
+
+  git count-objects         e.g. 9 objects, 36 kilobytes
+  git count-objects -v      count, size, in-pack, packs, size-pack, garbage"""
+es = """
+`git count-objects` informa cuántos objetos sueltos hay y cuánto disco usan. Con -v informa también los packs y la "basura".
+
+  git count-objects         p. ej. 9 objects, 36 kilobytes
+  git count-objects -v      count, size, in-pack, packs, size-pack, garbage"""
+
+[[exercise]]
+id = "count-objects-1"
+solution = ["git count-objects -v > answer.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "write", path = "b.txt", content = "b\n" },
+  { do = "git", args = "add b.txt" },
+  { do = "git", args = "commit -m \"Add b\"" },
+  { do = "write", path = "c.txt", content = "c\n" },
+  { do = "git", args = "add c.txt" },
+  { do = "git", args = "commit -m \"Add c\"" },
+]
+prompt = { en = "Save the detailed object statistics of this repository into answer.txt.", es = "Guardá en answer.txt las estadísticas detalladas de objetos de este repositorio." }
+hints = [
+  { en = "-v gives the detailed version.", es = "-v da la versión detallada." },
+]
+checks = [
+  { type = "file_equals_git", path = "answer.txt", args = "count-objects -v", fail = { en = "answer.txt must contain exactly the output of git count-objects -v.", es = "answer.txt debe contener exactamente la salida de git count-objects -v." } },
+]

@@ -1,0 +1,47 @@
+id = "repack"
+level = 10
+order = 4
+
+[title]
+en = "Repacking: repack"
+es = "Reempaquetar: repack"
+
+[theory]
+en = """
+`git repack` is the packing step of gc. The useful options:
+
+  git repack -a        put EVERYTHING in one pack (not only the new loose objects)
+  git repack -d        delete the redundant packs and loose objects afterwards
+  git repack -a -d     the classic combination
+  git repack -a -d -f  recompute deltas from scratch (slow, best compression)"""
+es = """
+`git repack` es el paso de empaquetado de gc. Las opciones útiles:
+
+  git repack -a        mete TODO en un único pack (no solo los sueltos nuevos)
+  git repack -d        borra después los packs y objetos sueltos redundantes
+  git repack -a -d     la combinación clásica
+  git repack -a -d -f  recalcula los deltas desde cero (lento, mejor compresión)"""
+
+[[exercise]]
+id = "repack-1"
+solution = ["git repack -a -d"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "write", path = "b.txt", content = "b\n" },
+  { do = "git", args = "add b.txt" },
+  { do = "git", args = "commit -m \"Add b\"" },
+  { do = "write", path = "c.txt", content = "c\n" },
+  { do = "git", args = "add c.txt" },
+  { do = "git", args = "commit -m \"Add c\"" },
+]
+prompt = { en = "Put all the objects in a single pack and delete the loose objects in one command.", es = "Poné todos los objetos en un único pack y borrá los sueltos con un solo comando." }
+hints = [
+  { en = "You need -a (all) and -d (delete redundant).", es = "Necesitás -a (todo) y -d (borrar lo redundante)." },
+]
+checks = [
+  { type = "git_output", args = "count-objects -v", contains = "count: 0", fail = { en = "There are still loose objects.", es = "Todavía hay objetos sueltos." } },
+  { type = "git_output", args = "count-objects -v", contains = "packs: 1", fail = { en = "There should be exactly one pack.", es = "Tendría que haber exactamente un pack." } },
+]

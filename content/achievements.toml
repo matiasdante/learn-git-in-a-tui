@@ -183,3 +183,15 @@ id = "level-9-no-hints"
 title = { en = "Plumber's pride", es = "Orgullo de plomero" }
 description = { en = "Finish level 9 without using a single hint.", es = "Terminá el nivel 9 sin usar ni una pista." }
 condition = { type = "level_no_hints", level = 9 }
+
+[[achievement]]
+id = "level-10-done"
+title = { en = "Spring cleaning", es = "Limpieza de primavera" }
+description = { en = "Finish every exercise of level 10.", es = "Terminá todos los ejercicios del nivel 10." }
+condition = { type = "level_done", level = 10 }
+
+[[achievement]]
+id = "level-10-no-hints"
+title = { en = "Tidy and unassisted", es = "Prolijo y sin ayuda" }
+description = { en = "Finish level 10 without using a single hint.", es = "Terminá el nivel 10 sin usar ni una pista." }
+condition = { type = "level_no_hints", level = 10 }

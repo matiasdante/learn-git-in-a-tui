@@ -100,6 +100,11 @@ pub enum CheckKind {
         path: String,
         text: String,
     },
+    /// El archivo tiene exactamente esta cantidad de líneas.
+    FileLines {
+        path: String,
+        count: usize,
+    },
     /// El contenido del archivo es exactamente la salida de este git.
     FileEqualsGit {
         path: String,
@@ -268,6 +273,9 @@ impl Check {
             }
             CheckKind::FileNotContains { path, text } => {
                 ctx.read(path).is_some_and(|c| !c.contains(text.as_str()))
+            }
+            CheckKind::FileLines { path, count } => {
+                ctx.read(path).is_some_and(|c| c.lines().count() == *count)
             }
             CheckKind::FileEqualsGit { path, args } => {
                 let expected = ctx.out_of(args);
