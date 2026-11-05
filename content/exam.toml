@@ -1,0 +1,121 @@
+# Examen de ubicación: 2 preguntas por cada uno de los niveles 1 a 5.
+
+[[question]]
+id = "q1-init"
+level = 1
+answer = 1
+text = { en = "Which command turns the current folder into a new git repository?", es = "¿Qué comando convierte la carpeta actual en un repositorio git nuevo?" }
+options = [
+  { en = "git start", es = "git start" },
+  { en = "git init", es = "git init" },
+  { en = "git new", es = "git new" },
+  { en = "git create", es = "git create" },
+]
+
+[[question]]
+id = "q1-add"
+level = 1
+answer = 2
+text = { en = "You edited a.txt and want it in the next commit. What do you run first?", es = "Editaste a.txt y querés que entre en el próximo commit. ¿Qué ejecutás primero?" }
+options = [
+  { en = "git push a.txt", es = "git push a.txt" },
+  { en = "git log a.txt", es = "git log a.txt" },
+  { en = "git add a.txt", es = "git add a.txt" },
+  { en = "git save a.txt", es = "git save a.txt" },
+]
+
+[[question]]
+id = "q2-switch"
+level = 2
+answer = 0
+text = { en = "Which command creates a branch called fix and moves you to it?", es = "¿Qué comando crea una rama llamada fix y te mueve a ella?" }
+options = [
+  { en = "git switch -c fix", es = "git switch -c fix" },
+  { en = "git branch fix", es = "git branch fix" },
+  { en = "git merge fix", es = "git merge fix" },
+  { en = "git tag fix", es = "git tag fix" },
+]
+
+[[question]]
+id = "q2-conflict"
+level = 2
+answer = 3
+text = { en = "Two branches changed the same line of a file. What happens when you merge them?", es = "Dos ramas cambiaron la misma línea de un archivo. ¿Qué pasa al fusionarlas?" }
+options = [
+  { en = "Git silently keeps the newest change", es = "Git se queda en silencio con el cambio más nuevo" },
+  { en = "Git deletes one of the branches", es = "Git borra una de las ramas" },
+  { en = "Git keeps both lines without asking", es = "Git deja las dos líneas sin preguntar" },
+  { en = "Git reports a conflict that you must resolve", es = "Git informa un conflicto que tenés que resolver" },
+]
+
+[[question]]
+id = "q3-fetch"
+level = 3
+answer = 2
+text = { en = "What does git fetch do?", es = "¿Qué hace git fetch?" }
+options = [
+  { en = "Uploads your commits to the remote", es = "Sube tus commits al remoto" },
+  { en = "Merges the remote branch into your current branch", es = "Fusiona la rama remota en tu rama actual" },
+  { en = "Downloads new commits without changing your working branch", es = "Descarga commits nuevos sin cambiar tu rama de trabajo" },
+  { en = "Deletes the remote branches", es = "Borra las ramas remotas" },
+]
+
+[[question]]
+id = "q3-push"
+level = 3
+answer = 1
+text = { en = "Which command uploads your local commits to the remote?", es = "¿Qué comando sube tus commits locales al remoto?" }
+options = [
+  { en = "git pull", es = "git pull" },
+  { en = "git push", es = "git push" },
+  { en = "git clone", es = "git clone" },
+  { en = "git remote", es = "git remote" },
+]
+
+[[question]]
+id = "q4-revert"
+level = 4
+answer = 0
+text = { en = "A bad commit is already pushed to a shared branch. What is the safe way to undo it?", es = "Un commit malo ya está publicado en una rama compartida. ¿Cuál es la forma segura de deshacerlo?" }
+options = [
+  { en = "git revert <commit>, which adds a new commit that undoes it", es = "git revert <commit>, que agrega un commit nuevo que lo deshace" },
+  { en = "git reset --hard and force push", es = "git reset --hard y push forzado" },
+  { en = "Delete the repository and clone again", es = "Borrar el repositorio y clonar de nuevo" },
+  { en = "git clean -f", es = "git clean -f" },
+]
+
+[[question]]
+id = "q4-reflog"
+level = 4
+answer = 3
+text = { en = "After a git reset --hard you lost a commit. Which command helps you find it again?", es = "Después de un git reset --hard perdiste un commit. ¿Qué comando te ayuda a encontrarlo?" }
+options = [
+  { en = "git blame", es = "git blame" },
+  { en = "git stash list", es = "git stash list" },
+  { en = "git cherry", es = "git cherry" },
+  { en = "git reflog", es = "git reflog" },
+]
+
+[[question]]
+id = "q5-bisect"
+level = 5
+answer = 1
+text = { en = "Which command finds the commit that introduced a bug using binary search?", es = "¿Qué comando encuentra el commit que introdujo un bug usando búsqueda binaria?" }
+options = [
+  { en = "git grep", es = "git grep" },
+  { en = "git bisect", es = "git bisect" },
+  { en = "git shortlog", es = "git shortlog" },
+  { en = "git describe", es = "git describe" },
+]
+
+[[question]]
+id = "q5-blame"
+level = 5
+answer = 2
+text = { en = "Which command shows who last changed each line of a file?", es = "¿Qué comando muestra quién cambió por última vez cada línea de un archivo?" }
+options = [
+  { en = "git show", es = "git show" },
+  { en = "git log --stat", es = "git log --stat" },
+  { en = "git blame", es = "git blame" },
+  { en = "git diff", es = "git diff" },
+]

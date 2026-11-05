@@ -7,6 +7,7 @@ use anyhow::{Result, bail};
 use learn_git_tui::app::App;
 use learn_git_tui::content::Content;
 use learn_git_tui::editor;
+use learn_git_tui::progress::Progress;
 use learn_git_tui::sandbox::Sandbox;
 use learn_git_tui::ui;
 use ratatui::DefaultTerminal;
@@ -41,7 +42,9 @@ fn run_tui() -> Result<()> {
         bail!("git was not found in PATH. Install git (2.34 or newer) and try again.");
     }
     let sandbox = Sandbox::new(Sandbox::default_root()?, env::current_exe()?)?;
-    let mut app = App::new(sandbox, Content::load()?);
+    let progress_path = Progress::default_path()?;
+    let progress = Progress::load(&progress_path);
+    let mut app = App::new(sandbox, Content::load()?, progress, Some(progress_path));
     let mut terminal = ratatui::init();
     let result = event_loop(&mut terminal, &mut app);
     app.shutdown();

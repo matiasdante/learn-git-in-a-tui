@@ -1,5 +1,6 @@
-//! Estado de la aplicación (modo libre): salida de la consola, línea de entrada, editor.
+//! Estado de la aplicación: navegación entre pantallas, consola, editor y progreso.
 
+use std::path::PathBuf;
 use std::sync::mpsc::{self, Receiver, Sender};
 
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
@@ -9,6 +10,7 @@ use crate::content::Content;
 use crate::editor::{EditorAction, EditorState, IpcServer};
 use crate::engine::{self, Verdict};
 use crate::i18n::{Lang, Text, tr};
+use crate::progress::Progress;
 use crate::sandbox::Sandbox;
 
 const MAX_LINES: usize = 5000;
@@ -59,37 +61,56 @@ impl Output {
 }
 
 pub enum Screen {
-    Menu,
+    LangSelect,
+    ExamOffer { selected: usize },
+    Exam(ExamState),
+    Map,
+    Level(u8),
     Theory { lesson: usize, scroll: u16 },
     Exercise(ExerciseState),
     Free,
+    Achievements,
+}
+
+pub struct ExamState {
+    pub question: usize,
+    pub selected: usize,
+    /// Primer nivel (el más bajo) donde se falló alguna pregunta.
+    pub first_wrong: Option<u8>,
+    /// Nivel de arranque, cuando el examen terminó.
+    pub result: Option<u8>,
 }
 
 pub struct ExerciseState {
     pub lesson: usize,
     pub index: usize,
     pub hints_shown: usize,
+    pub failures: u32,
     pub status: ExStatus,
 }
 
 pub enum ExStatus {
     Doing,
     Failed(Text),
-    Passed,
+    Passed { points: u32 },
 }
 
-/// Una fila seleccionable del menú principal.
-#[derive(Clone, Copy)]
-pub enum MenuItem {
-    Lesson(usize),
+/// Una fila seleccionable del mapa de niveles.
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum MapItem {
+    Level(u8),
     Free,
+    Achievements,
 }
 
 pub struct App {
     pub content: Content,
+    pub progress: Progress,
+    progress_path: Option<PathBuf>,
     pub lang: Lang,
     pub screen: Screen,
-    pub menu_selected: usize,
+    pub map_selected: usize,
+    pub level_selected: usize,
     pub console: Console,
     ipc: IpcServer,
     pub output: Output,
@@ -108,13 +129,28 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(sandbox: Sandbox, content: Content) -> Self {
+    /// `progress_path`: dónde guardar el progreso (`None` en los tests).
+    pub fn new(
+        sandbox: Sandbox,
+        content: Content,
+        progress: Progress,
+        progress_path: Option<PathBuf>,
+    ) -> Self {
         let (tx, rx) = mpsc::channel();
-        Self {
+        let lang = progress.lang.unwrap_or_default();
+        let screen = match (progress.lang, progress.exam_done) {
+            (None, _) => Screen::LangSelect,
+            (Some(_), false) => Screen::ExamOffer { selected: 0 },
+            (Some(_), true) => Screen::Map,
+        };
+        let mut app = Self {
             content,
-            lang: Lang::default(),
-            screen: Screen::Menu,
-            menu_selected: 0,
+            progress,
+            progress_path,
+            lang,
+            screen,
+            map_selected: 0,
+            level_selected: 0,
             ipc: IpcServer::new(sandbox.ipc_dir()),
             console: Console::new(sandbox),
             output: Output::new(),
@@ -129,7 +165,9 @@ impl App {
             quit: false,
             tx,
             rx,
-        }
+        };
+        app.select_start_level();
+        app
     }
 
     pub fn prompt(&self) -> String {
@@ -137,6 +175,38 @@ impl App {
             "> ".to_string()
         } else {
             format!("{} $ ", self.console.display_cwd())
+        }
+    }
+
+    pub fn map_items(&self) -> Vec<MapItem> {
+        let mut items: Vec<MapItem> = self
+            .content
+            .levels
+            .iter()
+            .map(|l| MapItem::Level(l.id))
+            .collect();
+        items.push(MapItem::Free);
+        items.push(MapItem::Achievements);
+        items
+    }
+
+    /// Deja el cursor del mapa en el nivel recomendado por el examen.
+    fn select_start_level(&mut self) {
+        if let Some(level) = self.progress.placement {
+            let items = self.map_items();
+            if let Some(pos) = items.iter().position(|i| *i == MapItem::Level(level)) {
+                self.map_selected = pos;
+            }
+        }
+    }
+
+    fn save_progress(&mut self) {
+        let Some(path) = &self.progress_path else {
+            return;
+        };
+        if let Err(e) = self.progress.save(path) {
+            self.output
+                .push_line(&format!("warning: progress not saved: {e:#}"));
         }
     }
 
@@ -177,39 +247,175 @@ impl App {
         }
     }
 
-    pub fn menu_items(&self) -> Vec<MenuItem> {
-        let mut items: Vec<MenuItem> = (0..self.content.lessons.len())
-            .map(MenuItem::Lesson)
-            .collect();
-        items.push(MenuItem::Free);
-        items
-    }
-
     pub fn on_key(&mut self, key: KeyEvent) {
         if self.editor.is_some() {
             self.on_editor_key(key);
             return;
         }
         match self.screen {
-            Screen::Menu => self.on_menu_key(key),
+            Screen::LangSelect => self.on_lang_key(key),
+            Screen::ExamOffer { .. } => self.on_exam_offer_key(key),
+            Screen::Exam(_) => self.on_exam_key(key),
+            Screen::Map => self.on_map_key(key),
+            Screen::Level(_) => self.on_level_key(key),
             Screen::Theory { .. } => self.on_theory_key(key),
+            Screen::Achievements => {
+                if matches!(key.code, KeyCode::Esc | KeyCode::Char('q') | KeyCode::Enter) {
+                    self.screen = Screen::Map;
+                }
+            }
             Screen::Exercise(_) | Screen::Free => self.on_console_key(key),
         }
     }
 
-    fn on_menu_key(&mut self, key: KeyEvent) {
-        let items = self.menu_items();
+    // ---------- idioma y examen ----------
+
+    fn on_lang_key(&mut self, key: KeyEvent) {
+        let chosen = match key.code {
+            KeyCode::Char('1') | KeyCode::Char('e') => Some(Lang::En),
+            KeyCode::Char('2') | KeyCode::Char('s') => Some(Lang::Es),
+            KeyCode::Up | KeyCode::Down => {
+                self.lang = self.lang.toggle();
+                None
+            }
+            KeyCode::Enter => Some(self.lang),
+            KeyCode::Char('q') | KeyCode::Esc => {
+                self.quit = true;
+                None
+            }
+            _ => None,
+        };
+        if let Some(lang) = chosen {
+            self.lang = lang;
+            self.progress.lang = Some(lang);
+            self.save_progress();
+            self.screen = if self.progress.exam_done {
+                Screen::Map
+            } else {
+                Screen::ExamOffer { selected: 0 }
+            };
+        }
+    }
+
+    fn on_exam_offer_key(&mut self, key: KeyEvent) {
+        let Screen::ExamOffer { selected } = &mut self.screen else {
+            return;
+        };
+        match key.code {
+            KeyCode::Up | KeyCode::Down => *selected = 1 - *selected,
+            KeyCode::Char('l') => self.lang = self.lang.toggle(),
+            KeyCode::Char('q') => self.quit = true,
+            KeyCode::Enter => {
+                if *selected == 0 && !self.content.exam.is_empty() {
+                    self.screen = Screen::Exam(ExamState {
+                        question: 0,
+                        selected: 0,
+                        first_wrong: None,
+                        result: None,
+                    });
+                } else {
+                    // Sin examen se arranca en el nivel 1.
+                    self.progress.exam_done = true;
+                    self.progress.placement = None;
+                    self.save_progress();
+                    self.map_selected = 0;
+                    self.screen = Screen::Map;
+                }
+            }
+            _ => {}
+        }
+    }
+
+    fn on_exam_key(&mut self, key: KeyEvent) {
+        let Screen::Exam(exam) = &mut self.screen else {
+            return;
+        };
+        if let Some(level) = exam.result {
+            if key.code == KeyCode::Enter {
+                self.progress.exam_done = true;
+                self.progress.placement = Some(level);
+                self.save_progress();
+                self.select_start_level();
+                self.screen = Screen::Map;
+            }
+            return;
+        }
+        let options = self.content.exam[exam.question].options.len();
+        match key.code {
+            KeyCode::Up => exam.selected = exam.selected.saturating_sub(1),
+            KeyCode::Down => exam.selected = (exam.selected + 1).min(options - 1),
+            KeyCode::Char(c) if c.is_ascii_digit() => {
+                let n = c.to_digit(10).unwrap_or(0) as usize;
+                if (1..=options).contains(&n) {
+                    exam.selected = n - 1;
+                }
+            }
+            KeyCode::Enter => {
+                let question = &self.content.exam[exam.question];
+                if exam.selected != question.answer {
+                    exam.first_wrong = Some(
+                        exam.first_wrong
+                            .map_or(question.level, |l| l.min(question.level)),
+                    );
+                }
+                exam.question += 1;
+                exam.selected = 0;
+                if exam.question >= self.content.exam.len() {
+                    // Todo bien arranca después del último nivel evaluado (el 6).
+                    let tested_max = self.content.exam.iter().map(|q| q.level).max().unwrap_or(0);
+                    let start = exam.first_wrong.unwrap_or(tested_max + 1);
+                    exam.result = Some(start.clamp(1, self.content.max_level()));
+                }
+            }
+            _ => {}
+        }
+    }
+
+    // ---------- mapa, nivel y teoría ----------
+
+    fn on_map_key(&mut self, key: KeyEvent) {
+        let items = self.map_items();
         let ctrl = key.modifiers.contains(KeyModifiers::CONTROL);
         match key.code {
             KeyCode::Char('q') | KeyCode::Esc => self.quit = true,
             KeyCode::Char('c') if ctrl => self.quit = true,
-            KeyCode::Char('l') => self.lang = self.lang.toggle(),
-            KeyCode::Up => self.menu_selected = self.menu_selected.saturating_sub(1),
-            KeyCode::Down => self.menu_selected = (self.menu_selected + 1).min(items.len() - 1),
-            KeyCode::Enter => match items[self.menu_selected] {
-                MenuItem::Lesson(lesson) => self.screen = Screen::Theory { lesson, scroll: 0 },
-                MenuItem::Free => self.enter_free_mode(),
+            KeyCode::Char('l') => {
+                self.lang = self.lang.toggle();
+                self.progress.lang = Some(self.lang);
+                self.save_progress();
+            }
+            KeyCode::Up => self.map_selected = self.map_selected.saturating_sub(1),
+            KeyCode::Down => self.map_selected = (self.map_selected + 1).min(items.len() - 1),
+            KeyCode::Enter => match items[self.map_selected] {
+                MapItem::Level(level) => {
+                    self.level_selected = 0;
+                    self.screen = Screen::Level(level);
+                }
+                MapItem::Free => self.enter_free_mode(),
+                MapItem::Achievements => self.screen = Screen::Achievements,
             },
+            _ => {}
+        }
+    }
+
+    fn on_level_key(&mut self, key: KeyEvent) {
+        let Screen::Level(level) = self.screen else {
+            return;
+        };
+        let lessons: Vec<usize> = self.content.lessons_of(level).map(|(i, _)| i).collect();
+        match key.code {
+            KeyCode::Esc | KeyCode::Char('q') => self.screen = Screen::Map,
+            KeyCode::Char('l') => self.lang = self.lang.toggle(),
+            KeyCode::Up => self.level_selected = self.level_selected.saturating_sub(1),
+            KeyCode::Down if !lessons.is_empty() => {
+                self.level_selected = (self.level_selected + 1).min(lessons.len() - 1);
+            }
+            KeyCode::Enter if !lessons.is_empty() => {
+                self.screen = Screen::Theory {
+                    lesson: lessons[self.level_selected],
+                    scroll: 0,
+                };
+            }
             _ => {}
         }
     }
@@ -220,7 +426,9 @@ impl App {
         };
         let lesson = *lesson;
         match key.code {
-            KeyCode::Esc | KeyCode::Char('q') => self.screen = Screen::Menu,
+            KeyCode::Esc | KeyCode::Char('q') => {
+                self.screen = Screen::Level(self.content.lessons[lesson].level);
+            }
             KeyCode::Char('l') => self.lang = self.lang.toggle(),
             KeyCode::Up => *scroll = scroll.saturating_sub(1),
             KeyCode::Down => *scroll += 1,
@@ -233,6 +441,8 @@ impl App {
         }
     }
 
+    // ---------- ejercicios y modo libre ----------
+
     fn enter_free_mode(&mut self) {
         self.screen = Screen::Free;
         self.reset();
@@ -244,7 +454,10 @@ impl App {
         }
         self.clear_input();
         self.confirm_reset = false;
-        self.screen = Screen::Menu;
+        self.screen = match &self.screen {
+            Screen::Exercise(state) => Screen::Level(self.content.lessons[state.lesson].level),
+            _ => Screen::Map,
+        };
     }
 
     fn start_exercise(&mut self, lesson: usize, index: usize) {
@@ -263,30 +476,51 @@ impl App {
             )),
             Err(e) => self.output.push_line(&format!("error: {e:#}")),
         }
+        // Reiniciar el mismo ejercicio conserva pistas y fallos: no se pueden "borrar" reiniciando.
+        let (hints_shown, failures) = match &self.screen {
+            Screen::Exercise(s) if s.lesson == lesson && s.index == index => {
+                (s.hints_shown, s.failures)
+            }
+            _ => (0, 0),
+        };
         self.screen = Screen::Exercise(ExerciseState {
             lesson,
             index,
-            hints_shown: 0,
+            hints_shown,
+            failures,
             status: ExStatus::Doing,
         });
     }
 
     fn verify_exercise(&mut self) {
-        let Screen::Exercise(state) = &mut self.screen else {
+        let Screen::Exercise(state) = &self.screen else {
             return;
         };
-        if self.running.is_some() {
+        if self.running.is_some() || matches!(state.status, ExStatus::Passed { .. }) {
             return;
         }
-        let exercise = &self.content.lessons[state.lesson].exercises[state.index];
-        match engine::verify(&mut self.console, exercise) {
+        let (lesson, index, hints, failures) =
+            (state.lesson, state.index, state.hints_shown, state.failures);
+        let exercise = &self.content.lessons[lesson].exercises[index];
+        let verdict = engine::verify(&mut self.console, exercise);
+        self.scroll = 0;
+
+        let status = match verdict {
             Ok(Verdict::Pass) => {
-                state.status = ExStatus::Passed;
-                self.output.push_line(tr(
-                    self.lang,
-                    "✓ Correct! Press F6 to continue.",
-                    "✓ ¡Correcto! Apretá F6 para continuar.",
+                let id = exercise.id.clone();
+                let points = self.progress.record_pass(&id, hints as u32, failures);
+                self.output.push_line(&format!(
+                    "{} +{points} {}",
+                    tr(
+                        self.lang,
+                        "✓ Correct! Press F6 to continue.",
+                        "✓ ¡Correcto! Apretá F6 para continuar."
+                    ),
+                    tr(self.lang, "points", "puntos")
                 ));
+                self.award_achievements();
+                self.save_progress();
+                ExStatus::Passed { points }
             }
             Ok(Verdict::Fail(why)) => {
                 self.output.push_line(&format!(
@@ -298,18 +532,44 @@ impl App {
                         "(el sandbox volvió al inicio del ejercicio)"
                     )
                 ));
-                state.status = ExStatus::Failed(why);
+                ExStatus::Failed(why)
             }
-            Err(e) => self.output.push_line(&format!("error: {e:#}")),
+            Err(e) => {
+                self.output.push_line(&format!("error: {e:#}"));
+                return;
+            }
+        };
+        let failed = matches!(status, ExStatus::Failed(_));
+        if let Screen::Exercise(state) = &mut self.screen {
+            state.status = status;
+            if failed {
+                state.failures += 1;
+            }
         }
-        self.scroll = 0;
+    }
+
+    fn award_achievements(&mut self) {
+        let unlocked: Vec<(String, Text)> = self
+            .content
+            .newly_unlocked(&self.progress)
+            .iter()
+            .map(|a| (a.id.clone(), a.title.clone()))
+            .collect();
+        for (id, title) in unlocked {
+            self.output.push_line(&format!(
+                "★ {}: {}",
+                tr(self.lang, "Achievement unlocked", "Logro desbloqueado"),
+                title.get(self.lang)
+            ));
+            self.progress.achievements.insert(id);
+        }
     }
 
     fn next_exercise(&mut self) {
         let Screen::Exercise(state) = &self.screen else {
             return;
         };
-        if !matches!(state.status, ExStatus::Passed) {
+        if !matches!(state.status, ExStatus::Passed { .. }) {
             return;
         }
         let (lesson, next) = (state.lesson, state.index + 1);

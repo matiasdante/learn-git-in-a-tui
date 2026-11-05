@@ -8,6 +8,7 @@ use serde::Deserialize;
 
 use crate::checks::Check;
 use crate::i18n::Text;
+use crate::progress::Progress;
 
 static CONTENT_DIR: Dir = include_dir!("$CARGO_MANIFEST_DIR/content");
 
@@ -20,6 +21,49 @@ pub struct Level {
 #[derive(Debug, Deserialize)]
 struct LevelsFile {
     level: Vec<Level>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Achievement {
+    pub id: String,
+    pub title: Text,
+    pub description: Text,
+    pub condition: Condition,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum Condition {
+    ExerciseDone {
+        exercise: String,
+    },
+    LevelDone {
+        level: u8,
+    },
+    /// Todos los ejercicios del nivel hechos sin usar ninguna pista.
+    LevelNoHints {
+        level: u8,
+    },
+}
+
+#[derive(Debug, Deserialize)]
+struct AchievementsFile {
+    achievement: Vec<Achievement>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Question {
+    pub id: String,
+    pub level: u8,
+    pub text: Text,
+    pub options: Vec<Text>,
+    /// Índice (desde 0) de la opción correcta.
+    pub answer: usize,
+}
+
+#[derive(Debug, Deserialize)]
+struct ExamFile {
+    question: Vec<Question>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -80,6 +124,8 @@ impl Lesson {
 pub struct Content {
     pub levels: Vec<Level>,
     pub lessons: Vec<Lesson>,
+    pub achievements: Vec<Achievement>,
+    pub exam: Vec<Question>,
 }
 
 impl Content {
@@ -99,7 +145,10 @@ impl Content {
         collect_toml(&CONTENT_DIR, &mut files);
         for file in files {
             let path = file.path();
-            if path.ends_with("levels.toml") {
+            if ["levels.toml", "achievements.toml", "exam.toml"]
+                .iter()
+                .any(|name| path.ends_with(name))
+            {
                 continue;
             }
             let text = file
@@ -122,10 +171,95 @@ impl Content {
                 }
             }
         }
-        Ok(Self {
+        let achievements: AchievementsFile = read_toml("achievements.toml")?;
+        let exam: ExamFile = read_toml("exam.toml")?;
+        let content = Self {
             levels: levels.level,
             lessons,
-        })
+            achievements: achievements.achievement,
+            exam: exam.question,
+        };
+        content.validate_references()?;
+        Ok(content)
+    }
+
+    /// Los logros y el examen no pueden apuntar a niveles o ejercicios que no existen.
+    fn validate_references(&self) -> Result<()> {
+        for a in &self.achievements {
+            match &a.condition {
+                Condition::ExerciseDone { exercise } => {
+                    if self.exercise(exercise).is_none() {
+                        bail!(
+                            "achievement '{}' refers to unknown exercise '{exercise}'",
+                            a.id
+                        );
+                    }
+                }
+                Condition::LevelDone { level } | Condition::LevelNoHints { level } => {
+                    if self.level(*level).is_none() {
+                        bail!("achievement '{}' refers to unknown level {level}", a.id);
+                    }
+                }
+            }
+        }
+        for q in &self.exam {
+            if q.options.len() < 2 || q.answer >= q.options.len() {
+                bail!("question '{}' has invalid options or answer", q.id);
+            }
+        }
+        Ok(())
+    }
+
+    pub fn exercise(&self, id: &str) -> Option<&Exercise> {
+        self.lessons
+            .iter()
+            .flat_map(|l| &l.exercises)
+            .find(|e| e.id == id)
+    }
+
+    pub fn lessons_of(&self, level: u8) -> impl Iterator<Item = (usize, &Lesson)> {
+        self.lessons
+            .iter()
+            .enumerate()
+            .filter(move |(_, l)| l.level == level)
+    }
+
+    pub fn max_level(&self) -> u8 {
+        self.levels.iter().map(|l| l.id).max().unwrap_or(1)
+    }
+
+    /// Logros cuya condición se cumple con este progreso y que todavía no se otorgaron.
+    pub fn newly_unlocked(&self, progress: &Progress) -> Vec<&Achievement> {
+        self.achievements
+            .iter()
+            .filter(|a| !progress.achievements.contains(&a.id))
+            .filter(|a| match &a.condition {
+                Condition::ExerciseDone { exercise } => progress.is_done(exercise),
+                Condition::LevelDone { level } => self
+                    .level_exercises(*level)
+                    .all(|e| progress.is_done(&e.id)),
+                Condition::LevelNoHints { level } => self
+                    .level_exercises(*level)
+                    .all(|e| progress.exercises.get(&e.id).is_some_and(|r| r.hints == 0)),
+            })
+            .collect()
+    }
+
+    fn level_exercises(&self, level: u8) -> impl Iterator<Item = &Exercise> {
+        self.lessons
+            .iter()
+            .filter(move |l| l.level == level)
+            .flat_map(|l| &l.exercises)
+    }
+
+    /// (hechos, total) de ejercicios de un nivel.
+    pub fn level_progress(&self, level: u8, progress: &Progress) -> (usize, usize) {
+        let total = self.level_exercises(level).count();
+        let done = self
+            .level_exercises(level)
+            .filter(|e| progress.is_done(&e.id))
+            .count();
+        (done, total)
     }
 
     pub fn level(&self, id: u8) -> Option<&Level> {
@@ -142,4 +276,12 @@ fn collect_toml<'a>(dir: &'a Dir<'static>, out: &mut Vec<&'a include_dir::File<'
     for sub in dir.dirs() {
         collect_toml(sub, out);
     }
+}
+
+fn read_toml<T: serde::de::DeserializeOwned>(name: &str) -> Result<T> {
+    let file = CONTENT_DIR
+        .get_file(name)
+        .with_context(|| format!("content/{name} is missing"))?;
+    toml::from_str(file.contents_utf8().context("not UTF-8")?)
+        .with_context(|| format!("invalid {name}"))
 }
