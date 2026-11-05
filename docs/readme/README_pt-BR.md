@@ -2,10 +2,6 @@
 
 [English](../../README.md) · [Español](README_es.md) · **Português (Brasil)** · [简体中文](README_zh.md)
 
-<!-- BANNER: tire uma captura da tela de título, salve como docs/media/banner.png e troque este comentário por:
-<img src="../media/banner.png" alt="LEARN GIT" width="720">
--->
-
 # learn-git-tui
 
 ### Aprenda git praticando com git de verdade, dentro do seu terminal.
@@ -30,9 +26,7 @@ Cada exercício apresenta uma situação pequena ("um commit quebrou a produçã
 
 ## Demonstração
 
-<!-- GIF DA DEMO: grave o mini curso, salve como docs/media/demo.gif e troque este comentário por:
 <p align="center"><img src="../media/demo.gif" alt="learn-git-tui demo" width="800"></p>
--->
 
 ## Início rápido
 

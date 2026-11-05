@@ -2,10 +2,6 @@
 
 [English](../../README.md) · [Español](README_es.md) · [Português (Brasil)](README_pt-BR.md) · **简体中文**
 
-<!-- 横幅：截一张标题界面的图，保存为 docs/media/banner.png，然后把这段注释替换成：
-<img src="../media/banner.png" alt="LEARN GIT" width="720">
--->
-
 # learn-git-tui
 
 ### 在终端里用真实的 git 练习，学会 git。
@@ -30,9 +26,7 @@
 
 ## 演示
 
-<!-- 演示 GIF：录制迷你课程，保存为 docs/media/demo.gif，然后把这段注释替换成：
 <p align="center"><img src="../media/demo.gif" alt="learn-git-tui demo" width="800"></p>
--->
 
 ## 快速开始
 

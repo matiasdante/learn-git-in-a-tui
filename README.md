@@ -2,10 +2,6 @@
 
 **English** · [Español](docs/readme/README_es.md) · [Português (Brasil)](docs/readme/README_pt-BR.md) · [简体中文](docs/readme/README_zh.md)
 
-<!-- BANNER: take a screenshot of the title screen, save it as docs/media/banner.png and replace this comment with:
-<img src="docs/media/banner.png" alt="LEARN GIT" width="720">
--->
-
 # learn-git-tui
 
 ### Learn git by practicing real git, inside your terminal.
@@ -29,6 +25,7 @@
 Each exercise gives you a small situation ("a commit broke production", "a teammate pushed first") and a console. You solve it however you like; pressing `F5` inspects the **state of the repository**, not the commands you typed, so every correct path counts. If a check fails, the app explains what is missing and puts the sandbox back at the start of the exercise.
 
 ## Showcase
+
 <p align="center"><img src="docs/media/demo.gif" alt="learn-git-tui demo" width="800"></p>
 
 ## Quick start
