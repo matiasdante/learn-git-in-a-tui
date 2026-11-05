@@ -99,3 +99,21 @@ id = "level-4-no-hints"
 title = { en = "No second thoughts", es = "Sin arrepentimientos" }
 description = { en = "Finish level 4 without using a single hint.", es = "Terminá el nivel 4 sin usar ni una pista." }
 condition = { type = "level_no_hints", level = 4 }
+
+[[achievement]]
+id = "bug-hunter"
+title = { en = "Bug hunter", es = "Cazador de bugs" }
+description = { en = "Find the guilty commit with git bisect.", es = "Encontrá el commit culpable con git bisect." }
+condition = { type = "exercise_done", exercise = "bisect-1" }
+
+[[achievement]]
+id = "level-5-done"
+title = { en = "History detective", es = "Detective de la historia" }
+description = { en = "Finish every exercise of level 5.", es = "Terminá todos los ejercicios del nivel 5." }
+condition = { type = "level_done", level = 5 }
+
+[[achievement]]
+id = "level-5-no-hints"
+title = { en = "Elementary", es = "Elemental" }
+description = { en = "Finish level 5 without using a single hint.", es = "Terminá el nivel 5 sin usar ni una pista." }
+condition = { type = "level_no_hints", level = 5 }

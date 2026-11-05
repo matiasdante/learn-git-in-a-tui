@@ -1,0 +1,77 @@
+id = "bisect"
+level = 5
+order = 5
+
+[title]
+en = "Finding the culprit: bisect"
+es = "Encontrar al culpable: bisect"
+
+[theory]
+en = """
+A bug exists today, but it worked 8 commits ago. Instead of testing every commit, `git bisect` does a binary search: you tell it one good and one bad commit, it checks out the middle, you say good/bad, and in about log2(n) steps it names the first bad commit.
+
+  git bisect start
+  git bisect bad                 the current commit has the bug
+  git bisect good <old-commit>   this old one was fine
+  (git checks out the middle: test it, then git bisect good / git bisect bad)
+  git bisect reset               go back when finished
+
+If you have a script that exits 0 for good and non-zero for bad, git can do it all: git bisect run ./test.sh"""
+es = """
+Hoy hay un bug, pero hace 8 commits funcionaba. En vez de probar cada commit, `git bisect` hace una búsqueda binaria: le decís un commit bueno y uno malo, te posiciona en el medio, decís bueno/malo y en unos log2(n) pasos nombra al primer commit malo.
+
+  git bisect start
+  git bisect bad                 el commit actual tiene el bug
+  git bisect good <commit-viejo> este viejo andaba bien
+  (git te deja en el medio: probalo y después git bisect good / git bisect bad)
+  git bisect reset               volvé al terminar
+
+Si tenés un script que sale con 0 si está bien y distinto de 0 si está mal, git lo hace todo: git bisect run ./test.sh"""
+
+[[exercise]]
+id = "bisect-1"
+solution = ["git bisect start HEAD HEAD~7", "git bisect run ./test.sh", "git rev-parse refs/bisect/bad > answer.txt", "git bisect reset"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "test.sh", content = "#!/bin/sh\ngrep -qx ok status.txt\n", executable = true },
+  { do = "write", path = "status.txt", content = "ok\n" },
+  { do = "write", path = "history.txt", content = "change 1\n" },
+  { do = "git", args = "add status.txt history.txt" },
+  { do = "git", args = "commit -m \"Change 1\"" },
+  { do = "write", path = "status.txt", content = "ok\n" },
+  { do = "write", path = "history.txt", content = "change 2\n" },
+  { do = "git", args = "add status.txt history.txt" },
+  { do = "git", args = "commit -m \"Change 2\"" },
+  { do = "write", path = "status.txt", content = "ok\n" },
+  { do = "write", path = "history.txt", content = "change 3\n" },
+  { do = "git", args = "add status.txt history.txt" },
+  { do = "git", args = "commit -m \"Change 3\"" },
+  { do = "write", path = "status.txt", content = "ok\n" },
+  { do = "write", path = "history.txt", content = "change 4\n" },
+  { do = "git", args = "add status.txt history.txt" },
+  { do = "git", args = "commit -m \"Change 4\"" },
+  { do = "write", path = "status.txt", content = "broken\n" },
+  { do = "write", path = "history.txt", content = "change 5\n" },
+  { do = "git", args = "add status.txt history.txt" },
+  { do = "git", args = "commit -m \"Change 5\"" },
+  { do = "write", path = "status.txt", content = "broken\n" },
+  { do = "write", path = "history.txt", content = "change 6\n" },
+  { do = "git", args = "add status.txt history.txt" },
+  { do = "git", args = "commit -m \"Change 6\"" },
+  { do = "write", path = "status.txt", content = "broken\n" },
+  { do = "write", path = "history.txt", content = "change 7\n" },
+  { do = "git", args = "add status.txt history.txt" },
+  { do = "git", args = "commit -m \"Change 7\"" },
+  { do = "write", path = "status.txt", content = "broken\n" },
+  { do = "write", path = "history.txt", content = "change 8\n" },
+  { do = "git", args = "add status.txt history.txt" },
+  { do = "git", args = "commit -m \"Change 8\"" },
+]
+prompt = { en = "status.txt said \"ok\" in the first commit and says \"broken\" now. The script ./test.sh exits 0 when status.txt is ok. Use bisect to find the first bad commit and write its hash into answer.txt.", es = "status.txt decía \"ok\" en el primer commit y ahora dice \"broken\". El script ./test.sh sale con 0 cuando status.txt está ok. Usá bisect para encontrar el primer commit malo y escribí su hash en answer.txt." }
+hints = [
+  { en = "git bisect start <bad> <good> sets both ends. Then git bisect run ./test.sh.", es = "git bisect start <malo> <bueno> fija los dos extremos. Después git bisect run ./test.sh." },
+  { en = "When it finishes, git rev-parse refs/bisect/bad is the culprit. Finish with git bisect reset.", es = "Cuando termina, git rev-parse refs/bisect/bad es el culpable. Terminá con git bisect reset." },
+]
+checks = [
+  { type = "file_matches_rev", path = "answer.txt", rev = "HEAD~3", fail = { en = "answer.txt must contain the hash of the first commit where status.txt became broken (\"Change 5\").", es = "answer.txt debe contener el hash del primer commit donde status.txt quedó broken (\"Change 5\")." } },
+]

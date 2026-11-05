@@ -1,0 +1,17 @@
+id = "difftool-helper"
+level = 5
+order = 10
+
+[title]
+en = "difftool--helper (internal)"
+es = "difftool--helper (interno)"
+
+[theory]
+en = """
+`git difftool--helper` is not a command for you. When you run `git difftool`, git calls this helper once per changed file; the helper reads the configured tool (diff.tool, difftool.<tool>.cmd), prepares the LOCAL and REMOTE copies of the file and launches your tool.
+
+You will only see it in process lists or when debugging a broken difftool configuration. If a difftool does nothing, check git config diff.tool and difftool.<tool>.cmd instead of calling the helper directly."""
+es = """
+`git difftool--helper` no es un comando para vos. Cuando ejecutás `git difftool`, git llama a este ayudante una vez por cada archivo cambiado; el ayudante lee la herramienta configurada (diff.tool, difftool.<herramienta>.cmd), prepara las copias LOCAL y REMOTE del archivo y lanza tu herramienta.
+
+Solo lo vas a ver en listas de procesos o al depurar una configuración rota de difftool. Si un difftool no hace nada, revisá git config diff.tool y difftool.<herramienta>.cmd en vez de llamar al ayudante directamente."""
