@@ -1,0 +1,44 @@
+id = "verify-tag"
+level = 8
+order = 10
+requires = ["bin:ssh-keygen"]
+
+[title]
+en = "Signed tags: verify-tag"
+es = "Tags firmados: verify-tag"
+
+[theory]
+en = """
+Releases are the most important thing to sign: users want to know that v1.0 really comes from you. A signed tag is an annotated tag with a signature.
+
+  git tag -s v1.0 -m "Release 1.0"    create it signed
+  git verify-tag v1.0                 check it (exit code 0 = valid)"""
+es = """
+Las versiones son lo más importante para firmar: quien las usa quiere saber que v1.0 realmente viene de vos. Un tag firmado es un tag anotado con una firma.
+
+  git tag -s v1.0 -m "Release 1.0"    lo crea firmado
+  git verify-tag v1.0                 lo verifica (código de salida 0 = válido)"""
+
+[[exercise]]
+id = "verify-tag-1"
+solution = ["git tag -s v1.0 -m \"Release 1.0\"", "git verify-tag v1.0"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "exec", program = "ssh-keygen", args = "-q -t ed25519 -N \"\" -f key" },
+  { do = "allowed_signers", key = "key.pub", principal = "learner@example.com", out = "allowed_signers" },
+  { do = "git", args = "config gpg.format ssh" },
+  { do = "git", args = "config user.signingkey key" },
+  { do = "git", args = "config gpg.ssh.allowedSignersFile allowed_signers" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+]
+prompt = { en = "Mark the current commit with a signed tag v1.0 (message \"Release 1.0\") and verify it.", es = "Marcá el commit actual con un tag firmado v1.0 (mensaje \"Release 1.0\") y verificalo." }
+hints = [
+  { en = "-s makes the tag signed.", es = "-s hace el tag firmado." },
+]
+checks = [
+  { type = "tag_exists", name = "v1.0", annotated = true, fail = { en = "There is no annotated tag v1.0.", es = "No hay un tag anotado v1.0." } },
+  { type = "git_ok", args = "verify-tag v1.0", fail = { en = "The tag v1.0 has no valid signature.", es = "El tag v1.0 no tiene una firma válida." } },
+  { type = "ran", any = ["verify-tag"], fail = { en = "Verify the tag with git verify-tag v1.0.", es = "Verificá el tag con git verify-tag v1.0." } },
+]

@@ -1,0 +1,25 @@
+id = "fsmonitor-daemon"
+level = 8
+order = 15
+
+[title]
+en = "fsmonitor--daemon"
+es = "fsmonitor--daemon"
+
+[theory]
+en = """
+In a huge repository `git status` is slow because git must check every file. `git fsmonitor--daemon` is a background process that watches the file system and tells git which files changed, so status only looks at those.
+
+  git config core.fsmonitor true     turn it on (git starts the daemon)
+  git fsmonitor--daemon status       is it running?
+  git fsmonitor--daemon stop
+
+It leaves a process running and depends on operating system services, so this practice only explains it."""
+es = """
+En un repositorio enorme `git status` es lento porque git tiene que revisar cada archivo. `git fsmonitor--daemon` es un proceso en segundo plano que vigila el sistema de archivos y le avisa a git qué archivos cambiaron, así status mira solo esos.
+
+  git config core.fsmonitor true     lo activa (git inicia el daemon)
+  git fsmonitor--daemon status       ¿está corriendo?
+  git fsmonitor--daemon stop
+
+Deja un proceso corriendo y depende de servicios del sistema operativo, así que esta práctica solo lo explica."""

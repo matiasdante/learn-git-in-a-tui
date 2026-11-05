@@ -1,0 +1,37 @@
+id = "diagnose"
+level = 8
+order = 12
+min_git = "2.38"
+
+[title]
+en = "Collecting diagnostics: diagnose"
+es = "Juntar diagnósticos: diagnose"
+
+[theory]
+en = """
+For performance or corruption problems, the git maintainers ask for more than a bug report. `git diagnose` (git 2.38+) packs useful information about the repository (sizes, packfiles, configuration, refs) into a zip, WITHOUT including your files' contents.
+
+  git diagnose -s mycase       creates git-diagnostics-mycase.zip
+  git diagnose --mode=all      also include more data (careful: may contain sensitive paths)"""
+es = """
+Para problemas de rendimiento o de corrupción, quienes mantienen git piden algo más que un reporte de bug. `git diagnose` (git 2.38+) empaqueta en un zip información útil del repositorio (tamaños, packfiles, configuración, referencias), SIN incluir el contenido de tus archivos.
+
+  git diagnose -s micaso       crea git-diagnostics-micaso.zip
+  git diagnose --mode=all      incluye además más datos (cuidado: puede tener rutas sensibles)"""
+
+[[exercise]]
+id = "diagnose-1"
+solution = ["git diagnose -s mycase"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+]
+prompt = { en = "Collect diagnostics of this repository in a zip with the suffix mycase.", es = "Juntá los diagnósticos de este repositorio en un zip con el sufijo mycase." }
+hints = [
+  { en = "The -s option sets the suffix of the zip.", es = "La opción -s define el sufijo del zip." },
+]
+checks = [
+  { type = "file_exists", path = "git-diagnostics-mycase.zip", fail = { en = "git-diagnostics-mycase.zip does not exist yet.", es = "git-diagnostics-mycase.zip todavía no existe." } },
+]

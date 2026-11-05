@@ -94,6 +94,21 @@ fn apply(console: &Console, work: &Path, action: &Action) -> Result<()> {
                 );
             }
         }
+        Action::AllowedSigners {
+            key,
+            principal,
+            out,
+        } => {
+            let public = std::fs::read_to_string(safe_join(work, key)?)?;
+            let mut fields = public.split_whitespace();
+            let (Some(kind), Some(data)) = (fields.next(), fields.next()) else {
+                bail!("{key} is not a public key");
+            };
+            std::fs::write(
+                safe_join(work, out)?,
+                format!("{principal} {kind} {data}\n"),
+            )?;
+        }
         Action::Exec { program, args, dir } => {
             if program != "ssh-keygen" {
                 bail!("setup cannot run '{program}'");
