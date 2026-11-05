@@ -2,6 +2,8 @@
 name = "learn-git-tui"
 version = "0.1.0"
 edition = "2024"
+description = "Learn git by practicing real git inside a terminal UI"
+repository = "https://github.com/matiasdante/learn-git-in-a-tui"
 
 [dependencies]
 anyhow = "1.0.104"
