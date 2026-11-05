@@ -1,0 +1,17 @@
+id = "http-backend"
+level = 11
+order = 2
+
+[title]
+en = "git http-backend"
+es = "git http-backend"
+
+[theory]
+en = """
+`git http-backend` is a CGI program: a web server (Apache, nginx...) runs it for each request so that clone, fetch and push work over http:// and https:// with the smart protocol. Authentication and TLS are handled by the web server.
+
+It is the building block behind self-hosted git over HTTP. You configure the web server to call it; you never type the command."""
+es = """
+`git http-backend` es un programa CGI: un servidor web (Apache, nginx...) lo ejecuta en cada pedido para que clone, fetch y push funcionen por http:// y https:// con el protocolo inteligente. La autenticación y TLS las maneja el servidor web.
+
+Es la pieza detrás de git autoalojado sobre HTTP. Configurás el servidor web para que lo llame; nunca escribís el comando."""

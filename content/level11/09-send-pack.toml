@@ -1,0 +1,21 @@
+id = "send-pack"
+level = 11
+order = 9
+
+[title]
+en = "git send-pack"
+es = "git send-pack"
+
+[theory]
+en = """
+`git send-pack` is the CLIENT half of push: it computes what the server lacks, builds a pack and sends it to a `receive-pack`. `git push` calls it for you.
+
+  git send-pack ../server.git main
+
+Useful to understand what push does; in daily work use git push."""
+es = """
+`git send-pack` es la mitad CLIENTE de push: calcula qué le falta al servidor, arma un pack y lo envía a un `receive-pack`. `git push` lo llama por vos.
+
+  git send-pack ../server.git main
+
+Sirve para entender qué hace push; en el trabajo diario usá git push."""

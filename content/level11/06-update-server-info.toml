@@ -1,0 +1,17 @@
+id = "update-server-info"
+level = 11
+order = 6
+
+[title]
+en = "git update-server-info"
+es = "git update-server-info"
+
+[theory]
+en = """
+A "dumb" HTTP server cannot answer "what branches do you have?", so git writes that information in static files (info/refs, objects/info/packs). `git update-server-info` regenerates them. It is usually run from a post-update hook on the server.
+
+  git update-server-info"""
+es = """
+Un servidor HTTP "tonto" no puede responder "¿qué ramas tenés?", así que git escribe esa información en archivos estáticos (info/refs, objects/info/packs). `git update-server-info` los regenera. Se suele ejecutar desde un hook post-update en el servidor.
+
+  git update-server-info"""

@@ -1,0 +1,23 @@
+id = "daemon"
+level = 11
+order = 1
+
+[title]
+en = "git daemon"
+es = "git daemon"
+
+[theory]
+en = """
+`git daemon` is a tiny server for the git:// protocol (port 9418). It lets anyone on your network clone a repository without accounts or passwords, read-only by default.
+
+  git daemon --base-path=/srv/git --export-all
+  git clone git://myserver/project.git
+
+There is no authentication or encryption, so it is only suitable for public or private-network read access. For writing use SSH or HTTP."""
+es = """
+`git daemon` es un servidorcito para el protocolo git:// (puerto 9418). Permite que cualquiera en tu red clone un repositorio sin cuentas ni contraseñas, solo lectura por defecto.
+
+  git daemon --base-path=/srv/git --export-all
+  git clone git://miservidor/proyecto.git
+
+No tiene autenticación ni cifrado, así que sirve solo para lectura pública o en una red privada. Para escribir se usa SSH o HTTP."""
