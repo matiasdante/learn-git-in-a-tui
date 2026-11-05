@@ -160,7 +160,12 @@ pub fn run_step(console: &mut Console, step: &SolutionStep) -> Result<(Option<i3
             let line = expand_solution(console, line)?;
             crate::console::run_blocking(console, &line)
         }
-        SolutionStep::Full { run, stdin, editor } => {
+        SolutionStep::Full {
+            run,
+            stdin,
+            editor,
+            allow_fail,
+        } => {
             let line = expand_solution(console, run)?;
             let stdin = match stdin {
                 Some(text) => Some(expand_solution(console, text)?),
@@ -173,7 +178,9 @@ pub fn run_step(console: &mut Console, step: &SolutionStep) -> Result<(Option<i3
                 }
                 std::fs::write(path, content).is_ok()
             };
-            crate::console::run_with(console, &line, stdin.as_deref(), &mut handler)
+            let (code, output) =
+                crate::console::run_with(console, &line, stdin.as_deref(), &mut handler)?;
+            Ok((if *allow_fail { Some(0) } else { code }, output))
         }
     }
 }

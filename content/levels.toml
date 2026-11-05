@@ -1,3 +1,7 @@
 [[level]]
 id = 1
 title = { en = "Fundamentals", es = "Fundamentos" }
+
+[[level]]
+id = 2
+title = { en = "Branches and tags", es = "Ramas y tags" }

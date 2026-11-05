@@ -1,0 +1,79 @@
+id = "switch"
+level = 2
+order = 2
+
+[title]
+en = "Moving between branches: switch"
+es = "Moverse entre ramas: switch"
+
+[theory]
+en = """
+A teammate reports a bug on `develop` while you are on another branch. `git switch` moves your working folder to another branch, replacing the files with that branch's version.
+
+  git switch develop        go to an existing branch
+  git switch -c hotfix      create a branch and go to it
+  git switch -             go back to the previous branch
+
+Commits you make now belong to the branch you are on, so other branches stay untouched."""
+es = """
+Un compañero reporta un bug en `develop` mientras vos estás en otra rama. `git switch` mueve tu carpeta de trabajo a otra rama y reemplaza los archivos por los de esa rama.
+
+  git switch develop        va a una rama existente
+  git switch -c hotfix      crea una rama y va a ella
+  git switch -              vuelve a la rama anterior
+
+Los commits que hagas ahora pertenecen a la rama donde estás, así que las otras ramas quedan intactas."""
+
+[[exercise]]
+id = "switch-1"
+solution = ["git switch develop"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "git", args = "branch develop" },
+]
+prompt = { en = "Move to the develop branch.", es = "Pasate a la rama develop." }
+hints = [{ en = "Type: git switch develop", es = "Escribí: git switch develop" }]
+checks = [
+  { type = "branch", name = "develop", fail = { en = "You are not on develop yet.", es = "Todavía no estás en develop." } },
+]
+
+[[exercise]]
+id = "switch-2"
+solution = ["git switch -c hotfix"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+]
+prompt = { en = "Create the branch hotfix and move to it with a single command.", es = "Creá la rama hotfix y pasate a ella con un solo comando." }
+hints = [
+  { en = "The -c option of switch means create.", es = "La opción -c de switch significa crear." },
+  { en = "Type: git switch -c hotfix", es = "Escribí: git switch -c hotfix" },
+]
+checks = [
+  { type = "branch", name = "hotfix", fail = { en = "You are not on hotfix yet.", es = "Todavía no estás en hotfix." } },
+]
+
+[[exercise]]
+id = "switch-3"
+solution = ["git switch -c login", "echo login > login.txt", "git add login.txt", "git commit -m \"Add login\""]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+]
+prompt = { en = "Work on a feature without touching main: create the branch login, move to it and commit a new file login.txt there.", es = "Trabajá en una funcionalidad sin tocar main: creá la rama login, pasate a ella y commiteá ahí un archivo nuevo login.txt." }
+hints = [
+  { en = "Create the branch first, then create and commit the file while you are on it.", es = "Primero creá la rama y después creá y commiteá el archivo estando en ella." },
+  { en = "git switch -c login, then echo login > login.txt, git add and git commit.", es = "git switch -c login, después echo login > login.txt, git add y git commit." },
+]
+checks = [
+  { type = "branch", name = "login", fail = { en = "You should be on the branch login.", es = "Tendrías que estar en la rama login." } },
+  { type = "git_ok", args = "cat-file -e login:login.txt", fail = { en = "login.txt is not committed on the branch login.", es = "login.txt no está commiteado en la rama login." } },
+  { type = "git_fails", args = "cat-file -e main:login.txt", fail = { en = "login.txt ended up on main. The work belongs on the branch login.", es = "login.txt quedó en main. El trabajo tiene que estar en la rama login." } },
+]

@@ -27,3 +27,27 @@ id = "level-1-no-hints"
 title = { en = "No training wheels", es = "Sin rueditas" }
 description = { en = "Finish level 1 without using a single hint.", es = "Terminá el nivel 1 sin usar ni una pista." }
 condition = { type = "level_no_hints", level = 1 }
+
+[[achievement]]
+id = "first-release"
+title = { en = "Shipped it", es = "A producción" }
+description = { en = "Mark a release with an annotated tag.", es = "Marcá una versión con un tag anotado." }
+condition = { type = "exercise_done", exercise = "tag-1" }
+
+[[achievement]]
+id = "first-conflict"
+title = { en = "Conflict resolved", es = "Conflicto resuelto" }
+description = { en = "Resolve your first merge conflict.", es = "Resolvé tu primer conflicto de fusión." }
+condition = { type = "exercise_done", exercise = "merge-conflict-1" }
+
+[[achievement]]
+id = "level-2-done"
+title = { en = "Branch master", es = "Maestro de ramas" }
+description = { en = "Finish every exercise of level 2.", es = "Terminá todos los ejercicios del nivel 2." }
+condition = { type = "level_done", level = 2 }
+
+[[achievement]]
+id = "level-2-no-hints"
+title = { en = "Branching blind", es = "Ramas a ciegas" }
+description = { en = "Finish level 2 without using a single hint.", es = "Terminá el nivel 2 sin usar ni una pista." }
+condition = { type = "level_no_hints", level = 2 }
