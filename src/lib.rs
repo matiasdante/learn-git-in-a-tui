@@ -1,5 +1,9 @@
 pub mod app;
+pub mod checks;
 pub mod console;
+pub mod content;
 pub mod editor;
+pub mod engine;
+pub mod i18n;
 pub mod sandbox;
 pub mod ui;

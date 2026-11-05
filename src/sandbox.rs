@@ -87,6 +87,22 @@ impl Sandbox {
         self.root.join("home")
     }
 
+    fn snapshot_dir(&self) -> PathBuf {
+        self.root.join("snapshot")
+    }
+
+    /// Guarda una copia del repo de práctica para poder volver a este punto.
+    pub fn snapshot(&self) -> Result<()> {
+        remove_dir_all_force(&self.snapshot_dir())?;
+        copy_dir_all(&self.work_dir(), &self.snapshot_dir())
+    }
+
+    /// Vuelve el repo de práctica al último snapshot.
+    pub fn restore(&self) -> Result<()> {
+        remove_dir_all_force(&self.work_dir())?;
+        copy_dir_all(&self.snapshot_dir(), &self.work_dir())
+    }
+
     pub fn gitconfig_path(&self) -> PathBuf {
         self.root.join("gitconfig")
     }
@@ -95,6 +111,7 @@ impl Sandbox {
     pub fn reset(&self) -> Result<()> {
         remove_dir_all_force(&self.work_dir())?;
         remove_dir_all_force(&self.home_dir())?;
+        remove_dir_all_force(&self.snapshot_dir())?;
         self.prepare()
     }
 
@@ -178,4 +195,20 @@ fn make_writable(path: &Path) {
             make_writable(&entry.path());
         }
     }
+}
+
+/// Copia recursiva; ignora enlaces simbólicos (el sandbox no los usa).
+fn copy_dir_all(from: &Path, to: &Path) -> Result<()> {
+    fs::create_dir_all(to)?;
+    for entry in fs::read_dir(from)?.flatten() {
+        let target = to.join(entry.file_name());
+        let kind = entry.file_type()?;
+        if kind.is_dir() {
+            copy_dir_all(&entry.path(), &target)?;
+        } else if kind.is_file() {
+            fs::copy(entry.path(), &target)
+                .with_context(|| format!("could not copy {}", entry.path().display()))?;
+        }
+    }
+    Ok(())
 }

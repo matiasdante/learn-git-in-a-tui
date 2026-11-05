@@ -59,12 +59,29 @@ const OUTSIDE: &str = "path is outside the sandbox";
 pub struct Console {
     sandbox: Sandbox,
     cwd: PathBuf,
+    /// Líneas ejecutadas desde el último reset (para checks de tipo `ran`).
+    history: Vec<String>,
 }
 
 impl Console {
     pub fn new(sandbox: Sandbox) -> Self {
         let cwd = sandbox.work_dir();
-        Self { sandbox, cwd }
+        Self {
+            sandbox,
+            cwd,
+            history: Vec::new(),
+        }
+    }
+
+    pub fn history(&self) -> &[String] {
+        &self.history
+    }
+
+    /// Vuelve al snapshot del ejercicio y a la raíz del repo.
+    pub fn restore_snapshot(&mut self) -> Result<()> {
+        self.sandbox.restore()?;
+        self.cwd = self.sandbox.work_dir();
+        Ok(())
     }
 
     pub fn sandbox(&self) -> &Sandbox {
@@ -74,6 +91,7 @@ impl Console {
     pub fn reset(&mut self) -> Result<()> {
         self.sandbox.reset()?;
         self.cwd = self.sandbox.work_dir();
+        self.history.clear();
         Ok(())
     }
 
@@ -96,6 +114,7 @@ impl Console {
         let Some((cmd, args)) = tokens.split_first() else {
             return Ok(Outcome::Done);
         };
+        self.history.push(line.trim().to_string());
         let text = match cmd.as_str() {
             "git" => return self.run_git(args, tx),
             "clear" => return Ok(Outcome::Clear),
@@ -483,4 +502,41 @@ fn spawn_pump(mut reader: Box<dyn Read + Send>, tx: Sender<Event>) -> thread::Jo
             }
         }
     })
+}
+
+/// Ejecuta una línea y espera a que termine (sin editor ni stdin). Lo usan el motor de
+/// lecciones y los tests de contenido. Devuelve el código de salida y la salida combinada.
+pub fn run_blocking(console: &mut Console, line: &str) -> Result<(Option<i32>, String)> {
+    let (tx, rx) = std::sync::mpsc::channel();
+    let mut running = match console.execute(line, &tx)? {
+        Outcome::Running(running) => running,
+        Outcome::Edit(_) => bail!("`{line}` needs the editor, which is not available here"),
+        Outcome::Done | Outcome::Clear => {
+            let output = rx
+                .try_iter()
+                .filter_map(|e| {
+                    if let Event::Output(t) = e {
+                        Some(t)
+                    } else {
+                        None
+                    }
+                })
+                .collect();
+            return Ok((None, output));
+        }
+    };
+    running.close_stdin();
+    let deadline = std::time::Instant::now() + Duration::from_secs(30);
+    let mut output = String::new();
+    loop {
+        if std::time::Instant::now() > deadline {
+            running.kill();
+            bail!("`{line}` timed out (does it wait for an editor or for input?)");
+        }
+        match rx.recv_timeout(Duration::from_millis(50)) {
+            Ok(Event::Output(text)) => output.push_str(&text),
+            Ok(Event::Finished(code)) => return Ok((code, output)),
+            Err(_) => {}
+        }
+    }
 }
