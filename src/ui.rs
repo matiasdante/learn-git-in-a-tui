@@ -292,10 +292,7 @@ fn draw_map(frame: &mut Frame, app: &App) {
     draw_help(
         frame,
         help,
-        tr(
-            app.lang,
-            "↑/↓ move · Enter open · L: English/Español · Q quit",
-        ),
+        tr(app.lang, "↑/↓ move · Enter open · L language · Q quit"),
     );
 }
 
