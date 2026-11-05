@@ -99,6 +99,8 @@ flowchart LR
 
 Os temas internos e os servidores são explicados sem exercício; os comandos obsoletos não estão incluídos. `git maintenance start` e `register` são explicados, mas nunca executados, porque mudariam o agendador de tarefas do seu computador real.
 
+Depois do último exercício prático que a sua máquina consegue executar aparece a tela **E agora?** (e ela fica no mapa). Ela recomenda o [lazygit](https://github.com/jesseduffield/lazygit), uma interface de terminal para git, para você se sentir à vontade com o git no dia a dia, e explica como instalá-lo e abri-lo dentro dos seus próprios repositórios. O lazygit só é recomendado; este programa nunca o executa.
+
 ## Idiomas
 
 Inglês, espanhol (`es`), português (`pt`) e chinês (`zh`). Com `L` nos menus você troca de idioma; a escolha fica salva. Todos os textos ficam em `content/i18n/<idioma>/` e um teste falha se faltar qualquer texto em qualquer idioma.

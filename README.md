@@ -99,6 +99,8 @@ flowchart LR
 
 Internal commands and servers are explained without an exercise; obsolete commands are not included. `git maintenance start` and `register` are explained but never run, because they would change the scheduler of your real computer.
 
+After the last practice exercise that your machine can run, the **What now?** screen appears (and stays in the map). It recommends [lazygit](https://github.com/jesseduffield/lazygit), a terminal UI for git, to get comfortable with git in your daily work, and explains how to install it and open it inside your own repositories. lazygit is only recommended; this program never launches it.
+
 ## Languages
 
 English, Spanish (`es`), Portuguese (`pt`) and Chinese (`zh`). Press `L` in the menus to switch; the choice is saved. All texts live in `content/i18n/<language>/` and a test fails if any text is missing in any language.
