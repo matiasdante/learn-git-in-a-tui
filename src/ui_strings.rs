@@ -17,6 +17,43 @@ const STRINGS: &[(&str, &str, &str, &str)] = &[
         "✓ 正确！按 F6 继续。",
     ),
     ("points", "puntos", "pontos", "分"),
+    ("What now?", "¿Y ahora?", "E agora?", "接下来做什么？"),
+    (
+        "You finished every practice exercise. Well done!",
+        "¡Terminaste todos los ejercicios prácticos! Muy bien.",
+        "Você terminou todos os exercícios práticos! Muito bem.",
+        "你完成了所有练习！太棒了。",
+    ),
+    (
+        "To get comfortable with git in your daily work, try lazygit: a terminal UI for git that shows branches, commits and changes at a glance, and runs the same commands you learned here.",
+        "Para amigarte con git en el trabajo de todos los días, probá lazygit: una interfaz de terminal para git que muestra ramas, commits y cambios de un vistazo, y ejecuta los mismos comandos que aprendiste acá.",
+        "Para se sentir à vontade com o git no dia a dia, experimente o lazygit: uma interface de terminal para git que mostra branches, commits e alterações de relance, e executa os mesmos comandos que você aprendeu aqui.",
+        "想在日常工作中更自如地使用 git，可以试试 lazygit：一个 git 的终端界面，分支、提交和改动一目了然，执行的也正是你在这里学到的命令。",
+    ),
+    (
+        "Install it (pick one):",
+        "Instalalo (elegí una opción):",
+        "Instale (escolha uma opção):",
+        "安装方式（任选其一）：",
+    ),
+    (
+        "    Or download a binary for Windows, macOS or Linux from github.com/jesseduffield/lazygit/releases",
+        "    O bajá un binario para Windows, macOS o Linux de github.com/jesseduffield/lazygit/releases",
+        "    Ou baixe um binário para Windows, macOS ou Linux em github.com/jesseduffield/lazygit/releases",
+        "    或从 github.com/jesseduffield/lazygit/releases 下载 Windows、macOS 或 Linux 的可执行文件",
+    ),
+    (
+        "Open it inside one of your repositories:",
+        "Abrilo dentro de uno de tus repositorios:",
+        "Abra-o dentro de um dos seus repositórios:",
+        "在你自己的某个仓库里打开它：",
+    ),
+    (
+        "    Keep using the console when you want to see the exact command: lazygit is a shortcut, not a replacement.",
+        "    Seguí usando la consola cuando quieras ver el comando exacto: lazygit es un atajo, no un reemplazo.",
+        "    Continue usando o console quando quiser ver o comando exato: o lazygit é um atalho, não um substituto.",
+        "    想看清确切的命令时，继续使用命令行：lazygit 是捷径，而不是替代品。",
+    ),
     (
         "(sandbox restored to the start of the exercise)",
         "(el sandbox volvió al inicio del ejercicio)",

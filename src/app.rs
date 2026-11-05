@@ -63,14 +63,21 @@ impl Output {
 
 pub enum Screen {
     LangSelect,
-    ExamOffer { selected: usize },
+    ExamOffer {
+        selected: usize,
+    },
     Exam(ExamState),
     Map,
     Level(u8),
-    Theory { lesson: usize, scroll: u16 },
+    Theory {
+        lesson: usize,
+        scroll: u16,
+    },
     Exercise(ExerciseState),
     Free,
     Achievements,
+    /// Pantalla final: recomienda lazygit.
+    WhatsNext,
 }
 
 pub struct ExamState {
@@ -100,6 +107,8 @@ pub enum ExStatus {
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum MapItem {
     Level(u8),
+    /// Solo aparece cuando se aprobó el último ejercicio práctico.
+    WhatsNext,
     Free,
     Achievements,
 }
@@ -125,6 +134,8 @@ pub struct App {
     pub running: Option<Running>,
     pub editor: Option<EditorState>,
     pub confirm_reset: bool,
+    /// El último ejercicio práctico se aprobó hace un momento: al salir se muestra "¿Y ahora?".
+    pending_whats_next: bool,
     pub scroll: usize,
     pub quit: bool,
     tx: Sender<Event>,
@@ -166,6 +177,7 @@ impl App {
             running: None,
             editor: None,
             confirm_reset: false,
+            pending_whats_next: false,
             scroll: 0,
             quit: false,
             tx,
@@ -190,6 +202,9 @@ impl App {
             .iter()
             .map(|l| MapItem::Level(l.id))
             .collect();
+        if self.progress.course_done {
+            items.push(MapItem::WhatsNext);
+        }
         items.push(MapItem::Free);
         items.push(MapItem::Achievements);
         items
@@ -264,7 +279,7 @@ impl App {
             Screen::Map => self.on_map_key(key),
             Screen::Level(_) => self.on_level_key(key),
             Screen::Theory { .. } => self.on_theory_key(key),
-            Screen::Achievements => {
+            Screen::Achievements | Screen::WhatsNext => {
                 if matches!(key.code, KeyCode::Esc | KeyCode::Char('q') | KeyCode::Enter) {
                     self.screen = Screen::Map;
                 }
@@ -402,6 +417,7 @@ impl App {
                     self.level_selected = 0;
                     self.screen = Screen::Level(level);
                 }
+                MapItem::WhatsNext => self.screen = Screen::WhatsNext,
                 MapItem::Free => self.enter_free_mode(),
                 MapItem::Achievements => self.screen = Screen::Achievements,
             },
@@ -468,9 +484,13 @@ impl App {
         }
         self.clear_input();
         self.confirm_reset = false;
-        self.screen = match &self.screen {
-            Screen::Exercise(state) => Screen::Level(self.content.lessons[state.lesson].level),
-            _ => Screen::Map,
+        self.screen = if std::mem::take(&mut self.pending_whats_next) {
+            Screen::WhatsNext
+        } else {
+            match &self.screen {
+                Screen::Exercise(state) => Screen::Level(self.content.lessons[state.lesson].level),
+                _ => Screen::Map,
+            }
         };
     }
 
@@ -528,6 +548,10 @@ impl App {
                     tr(self.lang, "points")
                 ));
                 self.award_achievements();
+                if !self.progress.course_done && self.all_available_done() {
+                    self.progress.course_done = true;
+                    self.pending_whats_next = true;
+                }
                 self.save_progress();
                 ExStatus::Passed { points }
             }
@@ -551,6 +575,20 @@ impl App {
                 state.failures += 1;
             }
         }
+    }
+
+    /// Todos los ejercicios que esta máquina puede practicar están hechos. Las lecciones que
+    /// quedan como explicación (les falta una herramienta) no cuentan.
+    fn all_available_done(&self) -> bool {
+        let mut available = self
+            .content
+            .lessons
+            .iter()
+            .zip(&self.unavailable)
+            .filter(|(_, missing)| missing.is_empty())
+            .flat_map(|(lesson, _)| &lesson.exercises)
+            .peekable();
+        available.peek().is_some() && available.all(|e| self.progress.is_done(&e.id))
     }
 
     fn award_achievements(&mut self) {
@@ -578,7 +616,7 @@ impl App {
             return;
         }
         let (lesson, next) = (state.lesson, state.index + 1);
-        if next < self.content.lessons[lesson].exercises.len() {
+        if next < self.content.lessons[lesson].exercises.len() && !self.pending_whats_next {
             self.start_exercise(lesson, next);
         } else {
             self.leave_console();

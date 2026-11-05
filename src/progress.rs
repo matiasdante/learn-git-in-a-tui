@@ -40,6 +40,9 @@ pub struct Progress {
     pub exercises: BTreeMap<String, Record>,
     #[serde(default)]
     pub achievements: BTreeSet<String>,
+    /// Ya se aprobó el último ejercicio práctico: la pantalla "¿Y ahora?" queda en el mapa.
+    #[serde(default)]
+    pub course_done: bool,
 }
 
 impl Progress {

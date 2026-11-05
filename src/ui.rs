@@ -26,6 +26,7 @@ pub fn draw(frame: &mut Frame, app: &App) {
         Screen::Exercise(state) => draw_exercise(frame, app, state),
         Screen::Free => draw_free(frame, app),
         Screen::Achievements => draw_achievements(frame, app),
+        Screen::WhatsNext => draw_whats_next(frame, app),
     }
 }
 
@@ -270,6 +271,7 @@ fn draw_map(frame: &mut Frame, app: &App) {
                     tr(app.lang, "Level")
                 )
             }
+            MapItem::WhatsNext => format!("★ {}", tr(app.lang, "What now?")),
             MapItem::Free => format!("  {}", tr(app.lang, "Free mode")),
             MapItem::Achievements => format!(
                 "  {} ({}/{})",
@@ -278,7 +280,7 @@ fn draw_map(frame: &mut Frame, app: &App) {
                 app.content.achievements.len()
             ),
         };
-        if matches!(item, MapItem::Free) {
+        if i == app.content.levels.len() {
             lines.push(Line::raw(""));
         }
         lines.push(option_line(label, i == app.map_selected));
@@ -357,6 +359,49 @@ fn draw_achievements(frame: &mut Frame, app: &App) {
     );
     frame.render_widget(
         Paragraph::new(lines).block(Block::bordered().title(title)),
+        body,
+    );
+    draw_help(frame, help, tr(app.lang, "Esc: back"));
+}
+
+/// Pantalla final: recomienda lazygit para seguir practicando con repos reales.
+fn draw_whats_next(frame: &mut Frame, app: &App) {
+    let [body, help] =
+        Layout::vertical([Constraint::Min(3), Constraint::Length(1)]).areas(frame.area());
+    let bold = Style::new().add_modifier(Modifier::BOLD);
+    let heading = |text: &'static str| Line::styled(tr(app.lang, text), bold);
+    let command = |text: &str| Line::styled(format!("    {text}"), bold);
+    let lines = vec![
+        heading("You finished every practice exercise. Well done!"),
+        Line::raw(""),
+        Line::raw(tr(
+            app.lang,
+            "To get comfortable with git in your daily work, try lazygit: a terminal UI for git that shows branches, commits and changes at a glance, and runs the same commands you learned here.",
+        )),
+        Line::raw(""),
+        heading("Install it (pick one):"),
+        command("brew install lazygit                        (macOS / Linux, Homebrew)"),
+        command("winget install -e --id=JesseDuffield.lazygit   (Windows)"),
+        command("scoop bucket add extras && scoop install lazygit   (Windows)"),
+        command("sudo pacman -S lazygit                      (Arch Linux)"),
+        command("go install github.com/jesseduffield/lazygit@latest"),
+        Line::raw(tr(
+            app.lang,
+            "    Or download a binary for Windows, macOS or Linux from github.com/jesseduffield/lazygit/releases",
+        )),
+        Line::raw(""),
+        heading("Open it inside one of your repositories:"),
+        command("cd my-project"),
+        command("lazygit"),
+        Line::raw(tr(
+            app.lang,
+            "    Keep using the console when you want to see the exact command: lazygit is a shortcut, not a replacement.",
+        )),
+    ];
+    frame.render_widget(
+        Paragraph::new(lines)
+            .block(Block::bordered().title(format!(" {} ", tr(app.lang, "What now?"))))
+            .wrap(Wrap { trim: false }),
         body,
     );
     draw_help(frame, help, tr(app.lang, "Esc: back"));

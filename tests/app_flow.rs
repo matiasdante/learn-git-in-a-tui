@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
-use learn_git_tui::app::{App, ExStatus, Screen};
+use learn_git_tui::app::{App, ExStatus, MapItem, Screen};
 use learn_git_tui::content::Content;
 use learn_git_tui::i18n::Lang;
 use learn_git_tui::progress::Progress;
@@ -166,4 +166,57 @@ fn a_failed_check_restores_the_exercise_snapshot() {
         "snapshot restored"
     );
     assert!(d.root.join("work").join("notes.txt").exists());
+}
+
+/// Aprobar el último ejercicio disponible muestra "¿Y ahora?" (lazygit) y deja la entrada fija
+/// en el mapa. Una lección que esta máquina no puede practicar no lo impide.
+#[test]
+fn finishing_the_last_available_exercise_shows_the_whats_next_screen() {
+    let content = Content::load().unwrap();
+    // `commit-1` queda sin hacer, pero su lección figura como no disponible en esta máquina.
+    let skipped = "commit-1";
+    let mut progress = Progress {
+        lang: Some(Lang::En),
+        exam_done: true,
+        ..Progress::default()
+    };
+    for lesson in &content.lessons {
+        for ex in &lesson.exercises {
+            if ex.id != "init-1" && ex.id != skipped {
+                progress.record_pass(&ex.id, 0, 0);
+            }
+        }
+    }
+    let mut d = Driver::new("whats-next", progress);
+    let unavailable = content
+        .lessons
+        .iter()
+        .position(|l| l.exercises.iter().any(|e| e.id == skipped))
+        .unwrap();
+    d.app.unavailable[unavailable] = vec!["ssh-keygen".to_string()];
+    assert!(!d.app.map_items().contains(&MapItem::WhatsNext));
+
+    d.open_exercise("init");
+    d.type_line("git init");
+    d.press(KeyCode::F(5));
+    match &d.app.screen {
+        Screen::Exercise(s) => assert!(matches!(s.status, ExStatus::Passed { .. })),
+        _ => panic!("expected the exercise screen"),
+    }
+    d.press(KeyCode::F(6));
+    assert!(matches!(d.app.screen, Screen::WhatsNext));
+    assert!(d.app.progress.course_done);
+
+    // Queda como entrada fija del mapa.
+    d.press(KeyCode::Esc);
+    assert!(matches!(d.app.screen, Screen::Map));
+    let pos = d
+        .app
+        .map_items()
+        .iter()
+        .position(|i| *i == MapItem::WhatsNext)
+        .unwrap();
+    d.app.map_selected = pos;
+    d.press(KeyCode::Enter);
+    assert!(matches!(d.app.screen, Screen::WhatsNext));
 }
