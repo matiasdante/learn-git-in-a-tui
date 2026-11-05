@@ -28,16 +28,9 @@ fn git_output_and_input_can_be_redirected() {
 fn chmod_makes_a_hook_runnable() {
     let mut h = Harness::new("hooks");
     h.run("git init");
-    h.run("echo #!/bin/sh > .git/hooks/pre-commit");
-    eprintln!(
-        "DEBUG after first: {:?}",
-        h.run("cat .git/hooks/pre-commit")
-    );
+    // Entre comillas: sin ellas `#` empieza un comentario, como en una shell.
+    h.run("echo \"#!/bin/sh\" > .git/hooks/pre-commit");
     h.run("echo echo hook-ran >> .git/hooks/pre-commit");
-    eprintln!(
-        "DEBUG after second: {:?}",
-        h.run("cat .git/hooks/pre-commit")
-    );
     h.run("chmod +x .git/hooks/pre-commit");
     // Los hooks que dispara git (acá, commit) corren con sh también en Windows.
     assert!(

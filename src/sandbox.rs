@@ -57,8 +57,6 @@ const PASSTHROUGH_ENV: &[&str] = &[
 pub struct Sandbox {
     root: PathBuf,
     exe: PathBuf,
-    /// Carpetas extra para el PATH de git (en Windows, el `sh` de Git for Windows).
-    extra_path: Vec<PathBuf>,
 }
 
 impl Sandbox {
@@ -70,11 +68,7 @@ impl Sandbox {
 
     /// `exe` es el binario que git invoca como editor (`__editor`).
     pub fn new(root: PathBuf, exe: PathBuf) -> Result<Self> {
-        let sandbox = Self {
-            root,
-            exe,
-            extra_path: shell_dirs(),
-        };
+        let sandbox = Self { root, exe };
         sandbox.prepare()?;
         Ok(sandbox)
     }
@@ -154,15 +148,6 @@ impl Sandbox {
         for key in PASSTHROUGH_ENV {
             if let Some(value) = env::var_os(key) {
                 cmd.env(key, value);
-            }
-        }
-        if !self.extra_path.is_empty() {
-            let mut paths: Vec<PathBuf> = env::var_os("PATH")
-                .map(|p| env::split_paths(&p).collect())
-                .unwrap_or_default();
-            paths.extend(self.extra_path.iter().cloned());
-            if let Ok(joined) = env::join_paths(paths) {
-                cmd.env("PATH", joined);
             }
         }
         let editor = self.editor_command();
@@ -247,26 +232,4 @@ fn copy_dir_all(from: &Path, to: &Path) -> Result<()> {
         }
     }
     Ok(())
-}
-
-/// En Windows, git ejecuta hooks y scripts buscando `sh` en el PATH, y el PATH del usuario
-/// suele tener solo `Git\cmd`. Se agregan `usr\bin` y `bin` de la instalación de git.
-/// En otros sistemas no hace falta.
-fn shell_dirs() -> Vec<PathBuf> {
-    if !cfg!(windows) {
-        return Vec::new();
-    }
-    let Ok(out) = Command::new("git").arg("--exec-path").output() else {
-        return Vec::new();
-    };
-    // <git>/mingw64/libexec/git-core  ->  <git>
-    let exec_path = PathBuf::from(String::from_utf8_lossy(&out.stdout).trim());
-    let Some(root) = exec_path.ancestors().nth(3) else {
-        return Vec::new();
-    };
-    ["usr/bin", "bin"]
-        .iter()
-        .map(|d| root.join(d))
-        .filter(|d| d.is_dir())
-        .collect()
 }
