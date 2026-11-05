@@ -1,0 +1,41 @@
+id = "apply"
+level = 6
+order = 3
+
+[title]
+en = "Applying a diff: apply"
+es = "Aplicar un diff: apply"
+
+[theory]
+en = """
+`git apply` takes a plain diff and applies it to your files. It makes no commit: the change just appears in the working tree, as if you had typed it.
+
+  git apply fix.patch            apply
+  git apply --check fix.patch    only test whether it would apply
+  git apply --stat fix.patch     summary of what it touches"""
+es = """
+`git apply` toma un diff común y lo aplica a tus archivos. No crea ningún commit: el cambio aparece en el árbol de trabajo, como si lo hubieras tipeado.
+
+  git apply arreglo.patch            aplica
+  git apply --check arreglo.patch    solo prueba si se podría aplicar
+  git apply --stat arreglo.patch     resumen de qué toca"""
+
+[[exercise]]
+id = "apply-1"
+solution = ["git apply fix.patch"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "hello\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "write", path = "fix.patch", content = "diff --git a/a.txt b/a.txt\n--- a/a.txt\n+++ b/a.txt\n@@ -1 +1 @@\n-hello\n+hello world\n" },
+]
+prompt = { en = "Apply fix.patch to the working tree without creating a commit.", es = "Aplicá fix.patch al árbol de trabajo sin crear un commit." }
+hints = [
+  { en = "Type: git apply fix.patch", es = "Escribí: git apply fix.patch" },
+]
+checks = [
+  { type = "file_content", path = "a.txt", equals = "hello world", fail = { en = "a.txt does not have the patched content.", es = "a.txt no tiene el contenido parcheado." } },
+  { type = "commit_count", count = 1, fail = { en = "apply should not create commits.", es = "apply no debería crear commits." } },
+  { type = "status", path = "a.txt", xy = ".M", fail = { en = "a.txt should be modified but not staged.", es = "a.txt debería estar modificado pero no preparado." } },
+]

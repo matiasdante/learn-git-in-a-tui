@@ -1,0 +1,35 @@
+id = "interpret-trailers"
+level = 6
+order = 6
+
+[title]
+en = "Commit trailers: interpret-trailers"
+es = "Trailers de commit: interpret-trailers"
+
+[theory]
+en = """
+Trailers are the `Key: value` lines at the end of a commit message: Signed-off-by, Reviewed-by, Co-authored-by... Tools read them, so their format matters. `git interpret-trailers` adds and parses them.
+
+  git interpret-trailers --trailer "Reviewed-by: Ana <ana@example.com>" msg.txt
+  git interpret-trailers --in-place --trailer "..." msg.txt     edit the file itself"""
+es = """
+Los trailers son las líneas `Clave: valor` al final de un mensaje de commit: Signed-off-by, Reviewed-by, Co-authored-by... Hay herramientas que las leen, así que su formato importa. `git interpret-trailers` las agrega y las interpreta.
+
+  git interpret-trailers --trailer "Reviewed-by: Ana <ana@example.com>" msg.txt
+  git interpret-trailers --in-place --trailer "..." msg.txt     edita el archivo mismo"""
+
+[[exercise]]
+id = "trailers-1"
+solution = ["git interpret-trailers --in-place --trailer \"Reviewed-by: Ana <ana@example.com>\" msg.txt"]
+setup = [
+  { do = "write", path = "msg.txt", content = "Fix the login bug\n\nThe session was never refreshed.\n" },
+]
+prompt = { en = "Add the trailer Reviewed-by: Ana <ana@example.com> to the message in msg.txt, editing the file in place.", es = "Agregá el trailer Reviewed-by: Ana <ana@example.com> al mensaje de msg.txt, editando el archivo en el lugar." }
+hints = [
+  { en = "--in-place writes the result back to the file.", es = "--in-place escribe el resultado de vuelta en el archivo." },
+  { en = "Quote the trailer: it has spaces.", es = "Poné el trailer entre comillas: tiene espacios." },
+]
+checks = [
+  { type = "file_contains", path = "msg.txt", contains = "Reviewed-by: Ana <ana@example.com>", fail = { en = "msg.txt does not have the trailer yet.", es = "msg.txt todavía no tiene el trailer." } },
+  { type = "file_contains", path = "msg.txt", contains = "Fix the login bug", fail = { en = "The original message must be kept.", es = "Hay que conservar el mensaje original." } },
+]

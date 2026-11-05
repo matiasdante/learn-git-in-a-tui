@@ -117,3 +117,15 @@ id = "level-5-no-hints"
 title = { en = "Elementary", es = "Elemental" }
 description = { en = "Finish level 5 without using a single hint.", es = "Terminá el nivel 5 sin usar ni una pista." }
 condition = { type = "level_no_hints", level = 5 }
+
+[[achievement]]
+id = "level-6-done"
+title = { en = "Postman", es = "Cartero" }
+description = { en = "Finish every exercise of level 6.", es = "Terminá todos los ejercicios del nivel 6." }
+condition = { type = "level_done", level = 6 }
+
+[[achievement]]
+id = "level-6-no-hints"
+title = { en = "Sent without a note", es = "Enviado sin nota" }
+description = { en = "Finish level 6 without using a single hint.", es = "Terminá el nivel 6 sin usar ni una pista." }
+condition = { type = "level_no_hints", level = 6 }

@@ -1,0 +1,54 @@
+id = "request-pull"
+level = 6
+order = 5
+
+[title]
+en = "Asking for a review: request-pull"
+es = "Pedir una revisión: request-pull"
+
+[theory]
+en = """
+`git request-pull` writes the text of a pull request for a maintainer: what changed since a starting point, where to fetch it from, and a summary of the commits.
+
+  git request-pull <start> <url> [<end>]
+
+It checks that the work is really published at <url>, so push first."""
+es = """
+`git request-pull` escribe el texto de un pedido de integración para quien mantiene el proyecto: qué cambió desde un punto de partida, de dónde traerlo y un resumen de los commits.
+
+  git request-pull <inicio> <url> [<fin>]
+
+Verifica que el trabajo esté realmente publicado en <url>, así que primero hacé push."""
+
+[[exercise]]
+id = "request-pull-1"
+cwd = "project"
+solution = ["git request-pull v1.0 ../server.git main > pr.txt"]
+setup = [
+  { do = "git", args = "init --bare server.git" },
+  { do = "git", args = "init seed" },
+  { do = "write", path = "seed/a.txt", content = "one\n" },
+  { do = "git", args = "add a.txt", dir = "seed" },
+  { do = "git", args = "commit -m \"First commit\"", dir = "seed" },
+  { do = "write", path = "seed/b.txt", content = "two\n" },
+  { do = "git", args = "add b.txt", dir = "seed" },
+  { do = "git", args = "commit -m \"Second commit\"", dir = "seed" },
+  { do = "git", args = "remote add origin ../server.git", dir = "seed" },
+  { do = "git", args = "push -u origin main", dir = "seed" },
+  { do = "rm", path = "seed" },
+  { do = "git", args = "clone server.git project" },
+  { do = "git", args = "tag v1.0", dir = "project" },
+  { do = "write", path = "project/feature.txt", content = "x\n" },
+  { do = "git", args = "add feature.txt", dir = "project" },
+  { do = "git", args = "commit -m \"New feature\"", dir = "project" },
+  { do = "git", args = "push", dir = "project" },
+]
+prompt = { en = "You pushed \"New feature\" after the tag v1.0. Write the pull request text for ../server.git (branch main), starting from v1.0, into pr.txt.", es = "Subiste \"New feature\" después del tag v1.0. Escribí en pr.txt el texto del pedido para ../server.git (rama main), desde v1.0." }
+hints = [
+  { en = "Arguments: start point, URL, and the branch.", es = "Argumentos: punto de partida, URL y la rama." },
+  { en = "Type: git request-pull v1.0 ../server.git main > pr.txt", es = "Escribí: git request-pull v1.0 ../server.git main > pr.txt" },
+]
+checks = [
+  { type = "file_contains", path = "pr.txt", contains = "../server.git", fail = { en = "pr.txt does not mention the repository URL.", es = "pr.txt no menciona la URL del repositorio." } },
+  { type = "file_contains", path = "pr.txt", contains = "New feature", fail = { en = "pr.txt does not list the commit \"New feature\".", es = "pr.txt no lista el commit \"New feature\"." } },
+]

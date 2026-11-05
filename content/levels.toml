@@ -17,3 +17,7 @@ title = { en = "Undo and rewrite", es = "Deshacer y reescribir" }
 [[level]]
 id = 5
 title = { en = "Investigating history", es = "Investigar la historia" }
+
+[[level]]
+id = 6
+title = { en = "Patches and the e-mail workflow", es = "Parches y flujo por mail" }

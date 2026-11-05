@@ -1,0 +1,21 @@
+id = "fmt-merge-msg"
+level = 6
+order = 12
+
+[title]
+en = "fmt-merge-msg"
+es = "fmt-merge-msg"
+
+[theory]
+en = """
+`git fmt-merge-msg` builds the default message of a merge commit ("Merge branch 'feature' into main") from the FETCH_HEAD information. `git merge` and `git pull` call it for you; you only meet it when scripting.
+
+  git fmt-merge-msg < .git/FETCH_HEAD
+
+To customize the text, set merge.log (include the titles of merged commits) or merge.branchdesc in your config."""
+es = """
+`git fmt-merge-msg` arma el mensaje por defecto de un commit de fusión ("Merge branch 'feature' into main") a partir de la información de FETCH_HEAD. `git merge` y `git pull` lo llaman por vos; solo lo encontrás al hacer scripts.
+
+  git fmt-merge-msg < .git/FETCH_HEAD
+
+Para personalizar el texto, configurá merge.log (incluye los títulos de los commits fusionados) o merge.branchdesc."""
