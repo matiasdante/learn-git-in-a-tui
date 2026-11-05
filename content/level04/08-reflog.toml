@@ -1,0 +1,78 @@
+id = "reflog"
+level = 4
+order = 8
+
+[title]
+en = "The safety net: reflog"
+es = "La red de seguridad: reflog"
+
+[theory]
+en = """
+You ran `git reset --hard` and your commits vanished from `git log`. They are not gone: git keeps a private journal of where HEAD (and each branch) pointed, the reflog, for weeks.
+
+  git reflog                    list where HEAD has been, newest first
+  HEAD@{1}                      where HEAD was one move ago
+  git reset --hard HEAD@{1}     go back to that state
+  git branch rescued HEAD@{3}   make a branch out of an old position
+
+If you cannot find something in git log, look in git reflog before panicking."""
+es = """
+Ejecutaste `git reset --hard` y tus commits desaparecieron de `git log`. No se perdieron: git lleva un diario privado de dónde apuntó HEAD (y cada rama), el reflog, durante semanas.
+
+  git reflog                    lista dónde estuvo HEAD, lo más nuevo primero
+  HEAD@{1}                      dónde estaba HEAD un movimiento atrás
+  git reset --hard HEAD@{1}     vuelve a ese estado
+  git branch rescatada HEAD@{3} crea una rama a partir de una posición vieja
+
+Si no encontrás algo en git log, mirá en git reflog antes de entrar en pánico."""
+
+[[exercise]]
+id = "reflog-1"
+solution = ["git reset --hard HEAD@{1}"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "write", path = "b.txt", content = "b\n" },
+  { do = "git", args = "add b.txt" },
+  { do = "git", args = "commit -m \"Add b\"" },
+  { do = "write", path = "c.txt", content = "c\n" },
+  { do = "git", args = "add c.txt" },
+  { do = "git", args = "commit -m \"Add c\"" },
+  { do = "git", args = "reset --hard HEAD~2" },
+]
+prompt = { en = "You ran git reset --hard HEAD~2 by mistake and lost \"Add b\" and \"Add c\". Get them back.", es = "Ejecutaste git reset --hard HEAD~2 por error y perdiste \"Add b\" y \"Add c\". Recuperalos." }
+hints = [
+  { en = "git reflog shows where HEAD was before the reset.", es = "git reflog muestra dónde estaba HEAD antes del reset." },
+  { en = "Type: git reset --hard HEAD@{1}", es = "Escribí: git reset --hard HEAD@{1}" },
+]
+checks = [
+  { type = "commit_count", count = 3, fail = { en = "The 3 commits are not back yet.", es = "Los 3 commits todavía no volvieron." } },
+  { type = "file_exists", path = "c.txt", fail = { en = "c.txt is still missing.", es = "Todavía falta c.txt." } },
+]
+
+[[exercise]]
+id = "reflog-2"
+solution = ["git branch feature HEAD@{1}"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "a.txt", content = "a\n" },
+  { do = "git", args = "add a.txt" },
+  { do = "git", args = "commit -m \"Add a\"" },
+  { do = "git", args = "switch -c feature" },
+  { do = "write", path = "f.txt", content = "f\n" },
+  { do = "git", args = "add f.txt" },
+  { do = "git", args = "commit -m \"Add f\"" },
+  { do = "git", args = "switch main" },
+  { do = "git", args = "branch -D feature" },
+]
+prompt = { en = "You deleted the branch feature with -D before merging it. Recreate it with its commit \"Add f\".", es = "Borraste la rama feature con -D antes de fusionarla. Recreala con su commit \"Add f\"." }
+hints = [
+  { en = "The commit is still in the reflog, one move ago.", es = "El commit sigue en el reflog, un movimiento atrás." },
+  { en = "Type: git branch feature HEAD@{1}", es = "Escribí: git branch feature HEAD@{1}" },
+]
+checks = [
+  { type = "branch_exists", name = "feature", fail = { en = "The branch feature does not exist yet.", es = "La rama feature todavía no existe." } },
+  { type = "git_ok", args = "cat-file -e feature:f.txt", fail = { en = "feature does not have the commit \"Add f\".", es = "feature no tiene el commit \"Add f\"." } },
+]

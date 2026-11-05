@@ -1,0 +1,51 @@
+id = "cherry"
+level = 4
+order = 6
+
+[title]
+en = "What is still missing: cherry"
+es = "Qué falta todavía: cherry"
+
+[theory]
+en = """
+After cherry-picking, how do you know which commits of a branch are already in another one? `git cherry <upstream> <branch>` compares by patch content, not by hash:
+
+  + commit still missing in upstream
+  - commit that upstream already has (an equivalent patch)
+
+  git cherry main feature
+  git cherry -v main feature     also shows the subjects"""
+es = """
+Después de un cherry-pick, ¿cómo sabés qué commits de una rama ya están en otra? `git cherry <upstream> <rama>` compara por contenido del parche, no por hash:
+
+  + commit que todavía falta en upstream
+  - commit que upstream ya tiene (un parche equivalente)
+
+  git cherry main feature
+  git cherry -v main feature     muestra también los títulos"""
+
+[[exercise]]
+id = "cherry-1"
+solution = ["git cherry main feature > answer.txt"]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "base.txt", content = "base\n" },
+  { do = "git", args = "add base.txt" },
+  { do = "git", args = "commit -m \"Add base\"" },
+  { do = "git", args = "switch -c feature" },
+  { do = "write", path = "b.txt", content = "b\n" },
+  { do = "git", args = "add b.txt" },
+  { do = "git", args = "commit -m \"Add b\"" },
+  { do = "write", path = "c.txt", content = "c\n" },
+  { do = "git", args = "add c.txt" },
+  { do = "git", args = "commit -m \"Fix c\"" },
+  { do = "git", args = "switch main" },
+  { do = "git", args = "cherry-pick feature" },
+]
+prompt = { en = "The fix of feature was cherry-picked into main, but \"Add b\" was not. Save the output of git cherry main feature into answer.txt.", es = "El arreglo de feature se copió a main con cherry-pick, pero \"Add b\" no. Guardá la salida de git cherry main feature en answer.txt." }
+hints = [
+  { en = "Redirect the output with > answer.txt.", es = "Redirigí la salida con > answer.txt." },
+]
+checks = [
+  { type = "file_equals_git", path = "answer.txt", args = "cherry main feature", fail = { en = "answer.txt must contain exactly the output of git cherry main feature.", es = "answer.txt tiene que contener exactamente la salida de git cherry main feature." } },
+]

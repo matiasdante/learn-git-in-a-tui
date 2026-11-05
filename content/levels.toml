@@ -9,3 +9,7 @@ title = { en = "Branches and tags", es = "Ramas y tags" }
 [[level]]
 id = 3
 title = { en = "Remotes", es = "Remotos" }
+
+[[level]]
+id = 4
+title = { en = "Undo and rewrite", es = "Deshacer y reescribir" }

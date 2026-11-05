@@ -1,0 +1,48 @@
+id = "rerere"
+level = 4
+order = 9
+
+[title]
+en = "Remembering resolutions: rerere"
+es = "Recordar resoluciones: rerere"
+
+[theory]
+en = """
+If you rebase the same branch many times, you resolve the same conflict again and again. `rerere` ("reuse recorded resolution") records how you resolved a conflict and applies the same resolution automatically next time.
+
+  git config rerere.enabled true    turn it on
+  (resolve a conflict as usual)     git records the before/after in .git/rr-cache
+  next identical conflict           resolved automatically (git rerere status/diff show it)"""
+es = """
+Si rebaseás muchas veces la misma rama, resolvés el mismo conflicto una y otra vez. `rerere` ("reuse recorded resolution") graba cómo resolviste un conflicto y aplica la misma resolución automáticamente la próxima vez.
+
+  git config rerere.enabled true    lo activa
+  (resolvés un conflicto como siempre)  git graba el antes/después en .git/rr-cache
+  próximo conflicto idéntico         se resuelve solo (git rerere status/diff lo muestran)"""
+
+[[exercise]]
+id = "rerere-1"
+solution = ["git config rerere.enabled true", { run = "git merge feature", allow_fail = true }, "echo Hello from both > greeting.txt", "git add greeting.txt", "git commit -m \"Merge feature\""]
+setup = [
+  { do = "git", args = "init" },
+  { do = "write", path = "greeting.txt", content = "Hello\n" },
+  { do = "git", args = "add greeting.txt" },
+  { do = "git", args = "commit -m \"Add greeting\"" },
+  { do = "git", args = "switch -c feature" },
+  { do = "write", path = "greeting.txt", content = "Hello from feature\n" },
+  { do = "git", args = "commit -am \"Greet from feature\"" },
+  { do = "git", args = "switch main" },
+  { do = "write", path = "greeting.txt", content = "Hello from main\n" },
+  { do = "git", args = "commit -am \"Greet from main\"" },
+]
+prompt = { en = "Turn on rerere, then merge feature (it conflicts), resolve greeting.txt however you like and commit. Git will record your resolution.", es = "Activá rerere, después fusioná feature (da conflicto), resolvé greeting.txt como quieras y commiteá. Git va a grabar tu resolución." }
+hints = [
+  { en = "Enable it BEFORE the merge: git config rerere.enabled true", es = "Activalo ANTES de la fusión: git config rerere.enabled true" },
+  { en = "Then resolve the conflict as in the merge lesson.", es = "Después resolvé el conflicto como en la lección de fusión." },
+]
+checks = [
+  { type = "config", key = "rerere.enabled", value = "true", fail = { en = "rerere is not enabled.", es = "rerere no está activado." } },
+  { type = "git_ok", args = "rev-parse --verify HEAD^2", fail = { en = "The merge is not committed yet.", es = "La fusión todavía no está commiteada." } },
+  { type = "file_not_contains", path = "greeting.txt", text = "<<<<<<<", fail = { en = "greeting.txt still has conflict markers.", es = "greeting.txt todavía tiene marcas de conflicto." } },
+  { type = "file_exists", path = ".git/rr-cache", fail = { en = "git did not record the resolution. Was rerere enabled before the merge?", es = "git no grabó la resolución. ¿Activaste rerere antes de la fusión?" } },
+]
